@@ -1,0 +1,21 @@
+{
+  "appId": "fr.sereinapp.sommeil",
+  "appName": "Serein Sommeil",
+  "webDir": "www",
+  "android": {
+    "path": "android"
+  },
+  "ios": {
+    "path": "ios"
+  },
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_moon",
+      "iconColor": "#93c9ac",
+      "sound": null
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "serein-sommeil-cbti",
+  "version": "1.0.0",
+  "description": "App CBTI — Thérapie cognitivo-comportementale de l'insomnie, extension de Serein",
+  "author": "César Broche Aguilar <contact@cesarbroche.fr>",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/gen-icons.mjs && node scripts/build.mjs",
+    "icons": "node scripts/gen-icons.mjs",
+    "cap:add:android": "npx cap add android",
+    "cap:add:ios": "npx cap add ios",
+    "cap:sync": "npx cap sync",
+    "cap:open:android": "npx cap open android",
+    "cap:open:ios": "npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.4.0",
+    "@capacitor/cli": "^8.4.0",
+    "@capacitor/core": "^8.4.0",
+    "@capacitor/ios": "^8.4.0",
+    "@capacitor/local-notifications": "^8.1.0"
+  }
+}
