@@ -412,7 +412,7 @@ function computeEntry(e) {
 function effMsg(eff) {
   if (eff >= 85) return { txt:"Pas si mal. On affine.", cls:"good", emoji:"😊" };
   if (eff >= 75) return { txt:"Ton cerveau passe du temps au lit à ne pas dormir. On corrige.", cls:"warn", emoji:"😐" };
-  return { txt:"Tu passes plus de temps à galérer qu'à dormir. C'est exactement ce que cette méthode traite.", cls:"bad", emoji:"😴" };
+  return { txt:"Tu passes plus de temps éveillé·e au lit qu'à dormir. C'est exactement ce que cette méthode traite.", cls:"bad", emoji:"😴" };
 }
 
 /* fenêtre prescrite */
@@ -466,8 +466,8 @@ const isNative = () => { const c = Cap(); return !!(c && c.isNativePlatform && c
 const LN = () => { const c = Cap(); return c && c.Plugins && c.Plugins.LocalNotifications; };
 
 const NOTIF_DEFS = [
-  { key:"journal", id:101, time:()=> "08:00", title:"Serein Sommeil", body:"Pense à noter ta nuit d'hier ✏️" },
-  { key:"worry",   id:102, time:()=> state.worryTime, title:"Worry Time", body:"15 minutes. Vide ta tête maintenant, pas au lit." },
+  { key:"journal", id:101, time:()=> "08:00", title:"Serein Sommeil", body:"N'oublie pas de noter ta nuit d'hier ✏️" },
+  { key:"worry",   id:102, time:()=> state.worryTime, title:"Worry Time", body:"15 minutes pour noter tes pensées. Maintenant, pas au lit." },
   { key:"bedtime", id:103, time:()=>{ const w=prescribedWindow(); return minToTime((timeToMin(w.bed)-30+1440)%1440); }, title:"Fenêtre de sommeil", body:"Coucher dans 30 min — seulement si tu tombes de sommeil." },
 ];
 
@@ -640,7 +640,7 @@ const STIMULUS_RULES = [
   { emoji:"🛏️", title:"Ton lit sert à dormir. C'est tout.", body:"Pas à scroller, pas à manger, pas à regarder Netflix. Si ton cerveau apprend que le lit = dormir + scroller + séries, il ne sait plus quelle est la priorité." },
   { emoji:"⏰", title:"Réveil à la même heure. Chaque jour. Week-end inclus.", body:"Même si tu as mal dormi. Surtout si tu as mal dormi. C'est l'ancre de tout le système." },
   { emoji:"😴", title:"Tu vas au lit SEULEMENT quand tu as vraiment sommeil.", body:"Pas quand tu es fatigué·e. Quand tu tombes de sommeil." },
-  { emoji:"🚶", title:"Pas dormi en 20 min ? Tu te lèves.", body:"Tu vas dans une autre pièce. Tu lis un truc chiant. Tu reviens seulement quand tu tombes de sommeil. Oui, c'est contre-intuitif. Oui, ça marche." },
+  { emoji:"🚶", title:"Tu n'es pas endormi·e en 20 min ? Lève-toi.", body:"Va dans une autre pièce. Lis quelque chose de calme. Reviens seulement quand tu te sens vraiment prêt·e à dormir. C'est contre-intuitif, mais c'est l'une des règles les plus efficaces de la méthode." },
   { emoji:"🌙", title:"Pas de sieste si tu souffres d'insomnie.", body:"La pression de sommeil est ton alliée — ne la gâche pas." },
 ];
 
@@ -963,7 +963,7 @@ function worrySection() {
       closeBtn.disabled = !allClassed;
       if (allClassed && !msgBox.dataset.shown) {
         msgBox.dataset.shown="1";
-        msgBox.appendChild(el(`<div class="card solid mt"><p class="small">Pour les trucs sur lesquels tu ne peux rien : quand la pensée revient dans ton lit ce soir, tu te dis : <em>« J'ai un moment pour ça demain. Et de toute façon je peux rien y faire. Casse-toi. »</em> C'est pas magique, mais petit à petit, ça marche.</p></div>`));
+        msgBox.appendChild(el(`<div class="card solid mt"><p class="small">Pour les pensées sur lesquelles tu n'as pas prise : quand elles reviennent au moment de dormir, rappelle-toi que tu as déjà prévu un moment pour y revenir demain. Tu peux les laisser passer sans t'y accrocher. Avec de la régularité, cette pratique devient un vrai outil.</p></div>`));
       }
     }
     closeBtn.onclick = ()=>{
@@ -989,11 +989,11 @@ function worrySection() {
 
 const BELIEFS = [
   { q:"J'ai besoin de 8h exactement.", a:"Les besoins varient. L'obsession des 8h crée une anxiété qui nuit plus que le manque lui-même." },
-  { q:"Si je dors mal, ma journée est foutue.", a:"Une mauvaise nuit ponctuelle a des effets modestes. Ton cerveau récupère mieux que tu ne le crois." },
+  { q:"Si je dors mal, ma journée est compromise.", a:"Une mauvaise nuit ponctuelle a des effets bien plus modestes qu'on ne le pense. Le cerveau dispose de mécanismes de récupération remarquablement efficaces." },
   { q:"Rester au lit va m'aider à récupérer.", a:"Non. Chaque minute au lit sans dormir apprend à ton cerveau que le lit ne sert pas à dormir. C'est l'ennemi." },
   { q:"Je dois rattraper le sommeil perdu le week-end.", a:"La grasse matinée décale ton horloge et aggrave l'insomnie la semaine suivante. Réveil fixe, même le dimanche." },
-  { q:"L'alcool m'aide à dormir.", a:"L'alcool t'assomme mais fragmente ton sommeil et supprime le sommeil REM. Tu te réveilles plus fatigué·e." },
-  { q:"Je ne peux rien faire contre mon insomnie.", a:"La CBTI a un taux de succès de 80%. Tu n'es pas cassé·e, tu es déconditionné·e." },
+  { q:"L'alcool m'aide à dormir.", a:"L'alcool crée une sédation qui peut faciliter l'endormissement, mais fragmente le sommeil et supprime les phases REM. Au bilan, le repos est bien moins récupérateur, et la fatigue au réveil souvent plus marquée." },
+  { q:"Je ne peux rien faire contre mon insomnie.", a:"La CBTI présente un taux de succès supérieur à 80 %. L'insomnie chronique est avant tout un problème d'apprentissage — et ce qui s'apprend peut se désapprendre." },
   { q:"Il faut que ma tête soit vide pour m'endormir.", a:"Impossible. L'objectif n'est pas de ne pas penser, c'est d'observer les pensées sans les combattre." },
   { q:"Si je me réveille la nuit, c'est grave.", a:"4 à 6 micro-réveils par nuit sont normaux. C'est l'anxiété qu'ils génèrent qui est le problème, pas les réveils eux-mêmes." },
 ];
@@ -1049,7 +1049,7 @@ function beliefsSection() {
    SCREEN 5 — CE SOIR
    ================================================================= */
 const WINDDOWN = [
-  { id:"social", time:"20h30", txt:"Plus de réseaux sociaux, plus de réponse aux messages", note:"Les gens qui t'écrivent après 20h30 : tu ne leur dois pas une réponse." },
+  { id:"social", time:"20h30", txt:"Plus de réseaux sociaux, plus de réponse aux messages", note:"Les messages reçus après 20h30 peuvent attendre. Ta disponibilité après cette heure n'a pas à être systématique." },
   { id:"lights", time:"20h30", txt:"Lumières basses dans l'appartement", note:"Une seule lumière dans un coin. Ton cerveau commence à voir la nuit tomber." },
   { id:"screens", time:"21h30", txt:"Plus d'écrans", note:"Étirements, yoga doux, brossage de dents. Ça remplit le temps où ton cerveau se détache des écrans." },
   { id:"shower", time:"22h00", txt:"Douche ou bain chaud", note:"Ça force ton corps à baisser sa température. Ta température descend quand tu t'endors — tu prédisposes ton corps." },
@@ -1128,7 +1128,7 @@ function toggleRow(label, val, onChange) {
 /* ---------- Relaxation modals ---------- */
 function openBreathSlow() {
   const body = el(`<div class="center"><h2>Respiration lente</h2>
-    <p class="small muted">Dans une situation stressée, c'est impossible de respirer lentement. Donc quand tu respires lentement, ton système nerveux croit que tu es calme. Et du coup, tu l'es un peu plus.</p>
+    <p class="small muted">En situation de stress, respirer lentement est difficile — et c'est précisément pour cette raison que ça fonctionne. Lorsque tu y parviens, ton système nerveux reçoit un signal de sécurité. La détente suit naturellement.</p>
     <div class="breath-stage"><div class="breath-circle">Prêt·e ?</div></div></div>`);
   const circle = body.querySelector(".breath-circle");
   let stop=false;
@@ -1171,7 +1171,7 @@ function openWalk() {
     <div class="card solid mt"><p>Choisis une promenade que tu connais par cœur.</p>
     <p class="small muted mt">Comment tu es habillé·e. Ta façon de marcher. Les sons, les immeubles, les gens qui passent. Chaque détail.</p>
     <p class="small mt">Effort cognitif minimal, mais tu es loin de tes pensées. C'est exactement ce qu'on cherche : occuper l'esprit sans le stimuler.</p></div></div>`);
-  const close=el(`<button class="btn primary block mt">C'est parti</button>`); close.onclick=closeModal; body.appendChild(close);
+  const close=el(`<button class="btn primary block mt">Commencer la visualisation</button>`); close.onclick=closeModal; body.appendChild(close);
   openModal(body);
 }
 const wait = ms => new Promise(r=>setTimeout(r,ms));
@@ -1180,7 +1180,7 @@ const wait = ms => new Promise(r=>setTimeout(r,ms));
 function openSOS() {
   const body = el(`<div><h2>🌙 Tu n'arrives pas à dormir</h2>
     <div class="card solid mt"><p><strong>Lève-toi. Maintenant.</strong></p>
-    <p class="small mt">C'est la règle la plus difficile et la plus importante. Va dans une autre pièce. Pas ton téléphone. Quelque chose de chiant.</p>
+    <p class="small mt">C'est la règle la plus difficile et la plus importante. Rends-toi dans une autre pièce. Laisse le téléphone de côté. Lis quelque chose de calme ou d'un peu ennuyeux.</p>
     <p class="small muted mt">Reviens te coucher seulement quand tu tombes de sommeil — pas avant.</p></div></div>`);
   const timerBox = el(`<div class="card center"><div class="tiny muted">SI TU AS BESOIN D'UN REPÈRE</div><div class="countdown" id="sosTimer">20:00</div></div>`);
   const startBtn = el(`<button class="btn primary block">Lancer 20 min</button>`);
@@ -1238,7 +1238,7 @@ function startOnboarding() {
   function stepDiagnostic() {
     const c = el(`<div></div>`);
     c.appendChild(el(`<h2>Le diagnostic honnête</h2>
-      <p class="small muted mt">Peu importe ce qui a déclenché tes problèmes — stress, horaires décalés, écrans. Ce qui compte : ton cerveau a désappris que le lit sert à dormir. Cette méthode va lui réapprendre.</p>`));
+      <p class="small muted mt">Quelle qu'en soit la cause — stress, horaires décalés, écrans — l'insomnie chronique suit le même mécanisme : le cerveau a progressivement dissocié le lit du sommeil. Cette méthode va restaurer cette association.</p>`));
     c.appendChild(choiceField("Depuis combien de temps tu dors mal ?", ["< 1 mois","1-3 mois","3-6 mois","> 6 mois"], data.duration, v=>data.duration=v));
     c.appendChild(choiceField("Ton problème principal ?", ["Mal à m'endormir","Réveils nocturnes","Réveil trop tôt","Sommeil non réparateur"], data.problem, v=>data.problem=v));
     c.appendChild(timeField("Heure de coucher habituelle", data.usualBed, v=>data.usualBed=v));
@@ -1262,7 +1262,7 @@ function startOnboarding() {
       <p class="small muted mt">Le temps que tu dors vraiment, divisé par le temps que tu passes au lit.</p>
       <div class="metric-big mt">${eff}%</div>
       <div class="card solid mt"><p>${m.emoji} ${esc(m.txt)}</p></div></div>`);
-    const next = el(`<button class="btn primary block mt">C'est parti →</button>`); next.onclick=()=>{ step=2; render(); };
+    const next = el(`<button class="btn primary block mt">Voir ma fenêtre de sommeil →</button>`); next.onclick=()=>{ step=2; render(); };
     const back = el(`<button class="btn ghost block mt">← Retour</button>`); back.onclick=()=>{ step=0; render(); };
     c.appendChild(next); c.appendChild(back);
     return c;
@@ -1284,7 +1284,7 @@ function startOnboarding() {
         <p class="small muted mt">${fmtHM(presMin)} au lit · ton réveil ne change JAMAIS, même le week-end.</p>
       </div>
       <div class="card mt"><p class="small">Au début, tu vas peut-être dormir encore moins. C'est normal et temporaire. L'objectif : créer une vraie pression de sommeil pour que ton cerveau réapprenne à s'endormir vite et à dormir profondément.</p>
-      <p class="small mt"><strong>Tu n'es pas cassé·e. Tu as juste déconditionné ton cerveau. On va le reconditionner.</strong></p></div>`);
+      <p class="small mt"><strong>Tu n'as rien de cassé. Ton cerveau a simplement appris quelque chose qu'il peut désapprendre. C'est précisément l'objet de cette méthode.</strong></p></div>`);
     const next = el(`<button class="btn primary block mt">Voir les 5 règles →</button>`); next.onclick=()=>{ step=3; render(); };
     const back = el(`<button class="btn ghost block mt">← Retour</button>`); back.onclick=()=>{ step=1; render(); };
     c.appendChild(next); c.appendChild(back);
