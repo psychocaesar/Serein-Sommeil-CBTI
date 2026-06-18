@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="Serein Sommeil — Thérapie cognitivo-comportementale de l'insomnie (CBTI), offline, sans compte, sans pub.">
+<meta name="theme-color" content="#0d1b15">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Serein Sommeil">
+<title>Serein Sommeil — CBTI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================ TOKENS ============================ */
+:root {
+  --color-bg: #0d1b15;
+  --color-surface: rgba(28,49,39,0.6);
+  --color-surface-2: #1c3127;
+  --color-primary: #93c9ac;
+  --color-primary-2: #d8b78a;
+  --color-primary-light: rgba(147,201,172,0.13);
+  --color-text: #f0f4f0;
+  --color-muted: #93a89b;
+  --color-border: rgba(255,255,255,0.08);
+  --color-danger: #e0917f;
+  --radius: 1.625rem;
+  --radius-sm: 0.9rem;
+  --gradient: linear-gradient(120deg, #93c9ac, #d8b78a);
+  --shadow: 0 8px 30px rgba(0,0,0,0.35);
+  --font-title: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Hanken Grotesk', system-ui, sans-serif;
+  --ease: cubic-bezier(.22,.61,.36,1);
+}
+html[data-theme="light"] {
+  --color-bg: #f4f2ec;
+  --color-surface: #ffffff;
+  --color-surface-2: #f0ede4;
+  --color-primary: #2f6b50;
+  --color-primary-2: #c0883e;
+  --color-primary-light: rgba(47,107,80,0.10);
+  --color-text: #1b2a20;
+  --color-muted: #5d7066;
+  --color-border: rgba(0,0,0,0.09);
+  --color-danger: #b9543d;
+  --gradient: linear-gradient(120deg, #2f6b50, #c0883e);
+  --shadow: 0 8px 30px rgba(0,0,0,0.10);
+}
+/* night mode overlay (21h-7h) — softens everything */
+html[data-night="1"] {
+  --color-bg: #060f0b;
+  --color-text: #cdd8cf;
+  --color-muted: #7e948a;
+  --color-surface-2: #122019;
+}
+html[data-night="1"] body { font-size: 1.06rem; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  transition: background .4s var(--ease), color .4s var(--ease);
+  overscroll-behavior-y: contain;
+}
+h1,h2,h3,h4 { font-family: var(--font-title); font-weight: 700; line-height: 1.15; letter-spacing: -0.01em; }
+button { font-family: var(--font-body); cursor: pointer; border: none; background: none; color: inherit; font-size: 1rem; }
+input, textarea, select { font-family: var(--font-body); color: var(--color-text); }
+a { color: var(--color-primary); }
+
+/* ============================ APP SHELL ============================ */
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-top: env(safe-area-inset-top);
+}
+header.app-header {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: calc(0.9rem + env(safe-area-inset-top)) 1.25rem 0.9rem;
+  background: linear-gradient(to bottom, var(--color-bg) 70%, transparent);
+  backdrop-filter: blur(6px);
+}
+.app-header .brand { display:flex; align-items:center; gap:.55rem; }
+.app-header .brand .logo {
+  width: 30px; height: 30px; border-radius: 9px; background: var(--gradient);
+  display:grid; place-items:center; font-size: 1rem;
+}
+.app-header .brand h1 { font-size: 1.15rem; }
+.app-header .brand small { display:block; font-size:.62rem; color:var(--color-muted); font-family:var(--font-body); font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 1.2rem;
+  background: var(--color-surface-2); color: var(--color-text);
+  transition: transform .2s var(--ease), background .2s;
+}
+.icon-btn:active { transform: scale(.9); }
+
+main {
+  flex: 1;
+  padding: 0.5rem 1.25rem 7rem;
+  overflow-x: hidden;
+}
+.screen { animation: fadein .25s var(--ease); }
+@keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+
+/* ============================ COMPONENTS ============================ */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow);
+}
+.card.solid { background: var(--color-surface-2); }
+.card-title { font-size: 1.02rem; margin-bottom: .35rem; }
+.muted { color: var(--color-muted); }
+.small { font-size: .82rem; }
+.tiny { font-size: .72rem; }
+.center { text-align: center; }
+.mb0 { margin-bottom: 0; }
+.mt { margin-top: 1rem; }
+.row { display:flex; gap:.6rem; }
+.row.between { justify-content: space-between; align-items:center; }
+.wrap { flex-wrap: wrap; }
+.grow { flex: 1; }
+
+.btn {
+  display: inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  padding: .85rem 1.3rem; border-radius: 999px; font-weight: 700; font-size: .98rem;
+  background: var(--color-surface-2); color: var(--color-text);
+  transition: transform .15s var(--ease), opacity .2s, background .2s;
+}
+.btn:active { transform: scale(.97); }
+.btn.primary { background: var(--gradient); color: #0d1b15; }
+.btn.block { display:flex; width: 100%; }
+.btn.ghost { background: transparent; border: 1px solid var(--color-border); }
+.btn.danger { background: var(--color-danger); color:#fff; }
+.btn:disabled { opacity: .4; pointer-events: none; }
+
+.pill {
+  display:inline-flex; align-items:center; gap:.35rem;
+  padding:.3rem .7rem; border-radius:999px; font-size:.74rem; font-weight:700;
+  background: var(--color-primary-light); color: var(--color-primary);
+}
+.badge { font-size:.72rem; font-weight:700; padding:.25rem .6rem; border-radius:999px; }
+.badge.good { background:rgba(147,201,172,.18); color:var(--color-primary); }
+.badge.warn { background:rgba(216,183,138,.18); color:var(--color-primary-2); }
+.badge.bad  { background:rgba(224,145,127,.18); color:var(--color-danger); }
+
+label.field { display:block; margin-bottom: 1rem; }
+label.field > span.lbl { display:block; font-weight:600; font-size:.9rem; margin-bottom:.45rem; }
+label.field .hint { font-weight:400; color: var(--color-muted); font-size:.78rem; }
+input[type=time], input[type=text], textarea, select {
+  width: 100%; background: var(--color-surface-2); border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm); padding: .8rem .9rem; font-size: 1rem; outline: none;
+  transition: border-color .2s;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--color-primary); }
+textarea { resize: vertical; min-height: 70px; line-height:1.5; }
+
+/* segmented choice */
+.choices { display:flex; flex-wrap:wrap; gap:.5rem; }
+.choices button {
+  flex:1 1 auto; min-width: fit-content;
+  padding:.65rem .9rem; border-radius:999px; font-size:.88rem; font-weight:600;
+  background: var(--color-surface-2); border:1px solid var(--color-border); color:var(--color-text);
+  transition: all .18s var(--ease);
+}
+.choices button[aria-pressed="true"] { background: var(--color-primary); color:#0d1b15; border-color:transparent; }
+
+/* slider */
+.slider-wrap { display:flex; align-items:center; gap:1rem; }
+.slider-val { font-family:var(--font-title); font-size:1.4rem; min-width:4.2rem; text-align:right; color:var(--color-primary); }
+input[type=range] { -webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:6px; background: var(--color-surface-2); outline:none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:26px; height:26px; border-radius:50%; background: var(--gradient); border:3px solid var(--color-bg); cursor:pointer; }
+input[type=range]::-moz-range-thumb { width:24px; height:24px; border-radius:50%; background: var(--color-primary); border:3px solid var(--color-bg); cursor:pointer; }
+
+/* big metric */
+.metric-big { font-family:var(--font-title); font-size:3rem; line-height:1; background:var(--gradient); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+.metric-row { display:grid; grid-template-columns:1fr 1fr; gap:.8rem; }
+.metric-cell { background:var(--color-surface-2); border-radius:var(--radius-sm); padding:.9rem; }
+.metric-cell .v { font-family:var(--font-title); font-size:1.5rem; }
+.metric-cell .k { font-size:.72rem; color:var(--color-muted); }
+
+/* ============================ BOTTOM NAV ============================ */
+nav.tabbar {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 480px; z-index: 60;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  background: var(--color-surface-2);
+  border-top: 1px solid var(--color-border);
+  padding: .4rem .3rem calc(.4rem + env(safe-area-inset-bottom));
+  backdrop-filter: blur(12px);
+}
+nav.tabbar button {
+  display:flex; flex-direction:column; align-items:center; gap:.15rem;
+  padding:.45rem .2rem; border-radius: 14px; color: var(--color-muted); font-size:.62rem; font-weight:600;
+  transition: color .2s, background .2s;
+}
+nav.tabbar button .ico { font-size:1.35rem; line-height:1; filter: grayscale(.4); transition: filter .2s, transform .2s; }
+nav.tabbar button[aria-current="true"] { color: var(--color-primary); }
+nav.tabbar button[aria-current="true"] .ico { filter:none; transform: translateY(-2px) scale(1.08); }
+
+/* ============================ MODAL ============================ */
+.modal-backdrop {
+  position: fixed; inset:0; z-index:100; background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
+  display:flex; align-items:flex-end; justify-content:center; animation: fadein .2s;
+}
+.modal {
+  background: var(--color-bg); width:100%; max-width:480px; border-radius: 28px 28px 0 0;
+  padding: 1.6rem 1.4rem calc(1.6rem + env(safe-area-inset-bottom));
+  max-height: 92vh; overflow-y:auto; box-shadow: var(--shadow);
+  animation: slideup .35s var(--ease);
+  border-top: 1px solid var(--color-border);
+}
+@keyframes slideup { from { transform: translateY(100%); } to { transform:none; } }
+.modal h2 { font-size:1.3rem; margin-bottom:.6rem; }
+
+/* progress dots */
+.dots { display:flex; gap:.4rem; justify-content:center; margin: .5rem 0 1.2rem; }
+.dots span { width:7px; height:7px; border-radius:50%; background:var(--color-border); transition: all .3s; }
+.dots span.on { background: var(--color-primary); width:22px; border-radius:4px; }
+
+/* rule cards */
+.rule { display:flex; gap:.9rem; align-items:flex-start; background:var(--color-surface-2); border-radius:var(--radius-sm); padding:1rem; margin-bottom:.7rem; }
+.rule .emoji { font-size:1.7rem; line-height:1; }
+.rule strong { display:block; margin-bottom:.2rem; }
+
+/* worry columns */
+.worry-cols { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; margin-top:.8rem; }
+.worry-col { background:var(--color-surface-2); border-radius:var(--radius-sm); padding:.8rem; min-height:80px; }
+.worry-col h4 { font-size:.85rem; margin-bottom:.5rem; }
+.thought-chip { display:flex; align-items:center; gap:.5rem; background:var(--color-surface); border:1px solid var(--color-border); border-radius:12px; padding:.5rem .6rem; margin-bottom:.4rem; font-size:.84rem; }
+.thought-chip .act { display:flex; gap:.3rem; margin-left:auto; }
+.thought-chip .act button { width:28px; height:28px; border-radius:8px; background:var(--color-surface-2); font-size:.85rem; }
+.thought-chip .act button.sel-a { background:var(--color-primary); color:#0d1b15; }
+.thought-chip .act button.sel-b { background:var(--color-primary-2); color:#0d1b15; }
+
+/* breathing */
+.breath-stage { display:grid; place-items:center; height: 280px; position:relative; }
+.breath-circle {
+  width: 150px; height:150px; border-radius:50%;
+  background: var(--gradient); opacity:.85;
+  display:grid; place-items:center; color:#0d1b15; font-family:var(--font-title); font-weight:700; font-size:1.1rem; text-align:center;
+  transition: transform 5s var(--ease), opacity .5s;
+  box-shadow: 0 0 60px var(--color-primary-light);
+}
+.body-zone { font-family:var(--font-title); font-size:1.8rem; text-align:center; min-height:2.4rem; transition: opacity .4s; }
+
+/* SOS float */
+.sos-fab {
+  position: fixed; right: max(1rem, calc(50% - 240px + 1rem)); bottom: calc(5.5rem + env(safe-area-inset-bottom)); z-index: 70;
+  width:58px; height:58px; border-radius:50%; background: var(--gradient); color:#0d1b15;
+  font-size:1.6rem; display:grid; place-items:center; box-shadow: 0 6px 24px rgba(0,0,0,.4);
+  transition: transform .2s var(--ease);
+}
+.sos-fab:active { transform: scale(.9); }
+
+/* checklist */
+.check-item { display:flex; gap:.8rem; align-items:flex-start; padding:.85rem 0; border-bottom:1px solid var(--color-border); }
+.check-item:last-child { border-bottom:none; }
+.check-box { flex-shrink:0; width:26px; height:26px; border-radius:8px; border:2px solid var(--color-border); display:grid; place-items:center; margin-top:2px; transition: all .2s; font-size:.9rem; }
+.check-item[data-done="1"] .check-box { background: var(--color-primary); border-color:transparent; color:#0d1b15; }
+.check-item[data-done="1"] .ci-text { opacity:.55; text-decoration: line-through; }
+.check-time { font-size:.72rem; color:var(--color-primary-2); font-weight:700; }
+
+.empty { text-align:center; padding:2.5rem 1rem; color:var(--color-muted); }
+.empty .big { font-size:2.5rem; margin-bottom:.5rem; }
+
+.divider { height:1px; background:var(--color-border); margin:1.2rem 0; }
+.toast {
+  position: fixed; bottom: calc(6rem + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%);
+  background: var(--color-text); color: var(--color-bg); padding:.7rem 1.2rem; border-radius:999px;
+  font-weight:600; font-size:.88rem; z-index:120; box-shadow:var(--shadow); animation: fadein .2s;
+  max-width: 90%; text-align:center;
+}
+.countdown { font-family:var(--font-title); font-size:2.6rem; background:var(--gradient); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+
+.list-entry { background:var(--color-surface-2); border-radius:var(--radius-sm); padding:.85rem 1rem; margin-bottom:.6rem; }
+.list-entry .date { font-size:.72rem; color:var(--color-muted); }
+
+svg.chart { width:100%; height:auto; display:block; overflow:visible; }
+.legend { display:flex; gap:1rem; flex-wrap:wrap; font-size:.72rem; color:var(--color-muted); margin-top:.4rem; }
+.legend i { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:.3rem; vertical-align:middle; }
+.sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="app-header">
+    <div class="brand">
+      <div class="logo">🌙</div>
+      <div>
+        <h1>Serein Sommeil</h1>
+        <small>Méthode CBTI</small>
+      </div>
+    </div>
+    <button class="icon-btn" id="themeToggle" aria-label="Changer le thème clair/sombre">🌙</button>
+  </header>
+  <main id="view" role="main"></main>
+  <button class="sos-fab" id="sosBtn" aria-label="Mode SOS — je n'arrive pas à dormir" hidden>🌙</button>
+  <nav class="tabbar" id="tabbar" role="tablist"></nav>
+</div>
+<div id="modalRoot"></div>
+
+<script>
+"use strict";
+/* ===================================================================
+   SEREIN SOMMEIL — CBTI  (single-file PWA, vanilla JS)
+   Méthode Matthew Walker · données 100% locales · offline-first
+   =================================================================== */
+
+/* ----------------------------- STATE ----------------------------- */
+const LS_KEY = "serein_cbti_v1";
+const DEFAULT_STATE = {
+  version: 1,
+  onboarded: false,
+  disclaimerSeen: false,
+  theme: "dark",
+  profile: {
+    duration: null, problem: null,
+    usualBed: "23:30", usualWake: "07:00",
+    sleptHours: 6, latency: 30,
+    stayInBed: null, phoneInBed: null, watchClock: null,
+    wakeAnchor: "07:00",      // ancre fixe
+    prescribedHours: 5.5,     // temps au lit prescrit (h)
+    startDate: null           // ISO date début du programme
+  },
+  journal: [],   // {date, bed, wake, latency, awakenings, awakeTime, watchedClock, phone, respected, quality, mood, notes, eff, sleptMin}
+  worry: [],     // {date, raw, thoughts:[{text, cat}]}
+  beliefsScore: null,
+  windDown: {},  // {ruleId: lastDoneDate}
+  windDownDoneToday: {},
+  worryTime: "18:00",
+  reminders: { journal:false, worry:false, bedtime:false },
+  nightModeAuto: true,
+  weeklyAdjust: { lastWeek: null, history: [] }
+};
+
+let state = load();
+
+function load() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return structuredClone(DEFAULT_STATE);
+    const parsed = JSON.parse(raw);
+    return deepMerge(structuredClone(DEFAULT_STATE), parsed);
+  } catch(e) { console.warn("load failed", e); return structuredClone(DEFAULT_STATE); }
+}
+function deepMerge(base, over) {
+  for (const k in over) {
+    if (over[k] && typeof over[k] === "object" && !Array.isArray(over[k]) && typeof base[k] === "object" && !Array.isArray(base[k])) {
+      deepMerge(base[k], over[k]);
+    } else base[k] = over[k];
+  }
+  return base;
+}
+function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){ console.warn(e); } }
+
+/* --------------------------- UTILITIES --------------------------- */
+const $ = (s, r=document) => r.querySelector(s);
+const el = (html) => { const t=document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstElementChild; };
+const esc = (s="") => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const todayISO = () => new Date().toISOString().slice(0,10);
+const pad = n => String(n).padStart(2,"0");
+
+function timeToMin(t) { if(!t) return null; const [h,m]=t.split(":").map(Number); return h*60+m; }
+function minToTime(m) { m=((m%1440)+1440)%1440; return pad(Math.floor(m/60))+":"+pad(m%60); }
+function fmtHM(min) { // 330 -> "5h30"
+  if (min == null) return "—"; const h=Math.floor(min/60), m=Math.round(min%60);
+  return m ? `${h}h${pad(m)}` : `${h}h`;
+}
+function diffMin(bed, wake) { // durée au lit (gère passage minuit)
+  let b=timeToMin(bed), w=timeToMin(wake); if(b==null||w==null) return null;
+  let d = w - b; if (d <= 0) d += 1440; return d;
+}
+function toast(msg, ms=2200) {
+  const t = el(`<div class="toast">${esc(msg)}</div>`); document.body.appendChild(t);
+  setTimeout(()=>{ t.style.opacity="0"; t.style.transition="opacity .3s"; setTimeout(()=>t.remove(),300); }, ms);
+}
+
+/* -------- efficacité / sommeil ---------- */
+function computeEntry(e) {
+  const inBed = diffMin(e.bed, e.wake);
+  const sleptMin = Math.max(0, (inBed||0) - (Number(e.latency)||0) - (Number(e.awakeTime)||0));
+  const eff = inBed ? Math.round(sleptMin / inBed * 100) : 0;
+  return { inBed, sleptMin, eff };
+}
+function effMsg(eff) {
+  if (eff >= 85) return { txt:"Pas si mal. On affine.", cls:"good", emoji:"😊" };
+  if (eff >= 75) return { txt:"Ton cerveau passe du temps au lit à ne pas dormir. On corrige.", cls:"warn", emoji:"😐" };
+  return { txt:"Tu passes plus de temps à galérer qu'à dormir. C'est exactement ce que cette méthode traite.", cls:"bad", emoji:"😴" };
+}
+
+/* fenêtre prescrite */
+function prescribedWindow() {
+  const p = state.profile;
+  const presMin = Math.round(p.prescribedHours * 60);
+  const wake = p.wakeAnchor;
+  const bedMin = (timeToMin(wake) - presMin + 1440) % 1440;
+  return { bed: minToTime(bedMin), wake, durMin: presMin };
+}
+
+/* semaine de programme */
+function programWeek() {
+  if (!state.profile.startDate) return 1;
+  const start = new Date(state.profile.startDate);
+  const days = Math.floor((Date.now() - start.getTime()) / 86400000);
+  return Math.min(6, Math.floor(days/7) + 1);
+}
+
+/* ============ AJUSTEMENT HEBDOMADAIRE AUTOMATIQUE ============ */
+function maybeWeeklyAdjust() {
+  const wk = todayISO() + "-W" + getWeekNum();
+  // on évalue le lundi (ou au 1er lancement de la semaine) sur les 5 dernières nuits
+  if (state.weeklyAdjust.lastWeek === wk) return null;
+  const recent = state.journal.slice(-5);
+  if (recent.length < 5) return null;
+  const avgEff = recent.reduce((s,e)=>s+(e.eff||0),0)/recent.length;
+  let change = 0, msg = "";
+  if (avgEff > 90) { change = 15; msg = "+15 min au lit. Tu progresses."; }
+  else if (avgEff >= 85) { change = 0; msg = "On maintient ta fenêtre. C'est solide."; }
+  else { change = 0; msg = "On maintient. Encore un peu de pression de sommeil à construire."; }
+  if (change) {
+    state.profile.prescribedHours = Math.min(8.5, state.profile.prescribedHours + change/60);
+  }
+  state.weeklyAdjust.lastWeek = wk;
+  state.weeklyAdjust.history.push({ wk, avgEff: Math.round(avgEff), change });
+  save();
+  return { change, msg, avgEff: Math.round(avgEff) };
+}
+function getWeekNum() {
+  const d = new Date(); const onejan = new Date(d.getFullYear(),0,1);
+  return Math.ceil((((d - onejan) / 86400000) + onejan.getDay()+1)/7);
+}
+
+/* ===================== NOTIFICATIONS ===================== */
+const Notif = {
+  timers: [],
+  async ensure() {
+    if (!("Notification" in window)) return false;
+    if (Notification.permission === "granted") return true;
+    if (Notification.permission === "denied") return false;
+    const p = await Notification.requestPermission();
+    return p === "granted";
+  },
+  fire(title, body) {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+    try { new Notification(title, { body, icon: undefined, silent:false }); } catch(e){}
+  },
+  // planification "best effort" tant que l'app est ouverte (sera relayé par Capacitor LocalNotifications natif plus tard)
+  reschedule() {
+    this.timers.forEach(clearTimeout); this.timers = [];
+    const now = new Date();
+    const at = (timeStr, title, body) => {
+      const m = timeToMin(timeStr); if (m==null) return;
+      const target = new Date(); target.setHours(Math.floor(m/60), m%60, 0, 0);
+      if (target <= now) return; // déjà passé aujourd'hui
+      const ms = target - now;
+      if (ms < 86400000) this.timers.push(setTimeout(()=>this.fire(title, body), ms));
+    };
+    if (state.reminders.journal) at("08:00", "Serein Sommeil", "Pense à noter ta nuit d'hier ✏️");
+    if (state.reminders.worry) at(state.worryTime, "Worry Time", "15 minutes. Vide ta tête maintenant, pas au lit.");
+    if (state.reminders.bedtime) {
+      const w = prescribedWindow(); const bedMin = (timeToMin(w.bed)-30+1440)%1440;
+      at(minToTime(bedMin), "Fenêtre de sommeil", "Coucher dans 30 min — seulement si tu tombes de sommeil.");
+    }
+  }
+};
+
+/* ===================== NIGHT MODE (21h-7h) ===================== */
+function applyNightMode() {
+  const h = new Date().getHours();
+  const night = state.nightModeAuto && (h >= 21 || h < 7);
+  document.documentElement.dataset.night = night ? "1" : "0";
+}
+
+/* ============================ ROUTER ============================ */
+const TABS = [
+  { id:"programme", icon:"📋", label:"Programme", render: renderProgramme },
+  { id:"journal",   icon:"😴", label:"Journal",   render: renderJournal },
+  { id:"suivi",     icon:"📊", label:"Suivi",     render: renderSuivi },
+  { id:"recond",    icon:"🧠", label:"Recond.",   render: renderRecond },
+  { id:"cesoir",    icon:"🌙", label:"Ce soir",   render: renderCeSoir },
+];
+let currentTab = "programme";
+
+function navigate(id) {
+  currentTab = id;
+  renderTabs();
+  const view = $("#view");
+  view.innerHTML = "";
+  const tab = TABS.find(t=>t.id===id);
+  const node = tab.render();
+  node.classList.add("screen");
+  view.appendChild(node);
+  view.scrollTop = 0; window.scrollTo(0,0);
+  $("#sosBtn").hidden = false;
+}
+function renderTabs() {
+  const bar = $("#tabbar");
+  bar.innerHTML = "";
+  TABS.forEach(t => {
+    const b = el(`<button role="tab" aria-current="${t.id===currentTab}" aria-label="${t.label}">
+      <span class="ico">${t.icon}</span><span>${t.label}</span></button>`);
+    b.onclick = () => navigate(t.id);
+    bar.appendChild(b);
+  });
+}
+
+/* =================================================================
+   SCREEN 1 — PROGRAMME
+   ================================================================= */
+function renderProgramme() {
+  const wrap = el(`<div></div>`);
+  const w = prescribedWindow();
+  const week = programWeek();
+  const adj = maybeWeeklyAdjust();
+
+  // ajustement banner (lundi)
+  if (adj && (adj.change || adj.avgEff)) {
+    const b = el(`<div class="card solid" style="border-left:4px solid var(--color-primary)">
+      <div class="pill">📈 Ajustement hebdo</div>
+      <p class="mt small">Efficacité moyenne : <strong>${adj.avgEff}%</strong>.<br>${esc(adj.msg)}
+      ${adj.change ? `<br>Nouvelle fenêtre : coucher à <strong>${prescribedWindow().bed}</strong>.` : ""}</p>
+    </div>`);
+    wrap.appendChild(b);
+  }
+
+  // compte à rebours coucher
+  const bedMin = timeToMin(w.bed);
+  const nowMin = new Date().getHours()*60 + new Date().getMinutes();
+  let toBed = bedMin - nowMin; if (toBed < 0) toBed += 1440;
+  const countdown = toBed < 720 ? `dans ${fmtHM(toBed)}` : "ce soir";
+
+  wrap.appendChild(el(`<div class="card">
+    <div class="row between">
+      <span class="pill">Semaine ${week} sur 6</span>
+      <span class="tiny muted">Méthode Walker · CBTI</span>
+    </div>
+    <h2 class="mt">Ta fenêtre de sommeil</h2>
+    <div class="row between mt" style="align-items:flex-end">
+      <div>
+        <div class="tiny muted">COUCHER</div>
+        <div class="metric-big" style="font-size:2.2rem">${w.bed}</div>
+        <div class="tiny" style="color:var(--color-primary-2)">${countdown}</div>
+      </div>
+      <div class="muted" style="font-size:1.4rem">→</div>
+      <div style="text-align:right">
+        <div class="tiny muted">RÉVEIL (ancre)</div>
+        <div class="metric-big" style="font-size:2.2rem">${w.wake}</div>
+        <div class="tiny muted">${fmtHM(w.durMin)} au lit</div>
+      </div>
+    </div>
+  </div>`));
+
+  // efficacité semaine
+  const wk = lastNEntries(7);
+  const avgEff = wk.length ? Math.round(wk.reduce((s,e)=>s+(e.eff||0),0)/wk.length) : null;
+  const m = avgEff!=null ? effMsg(avgEff) : null;
+  wrap.appendChild(el(`<div class="card">
+    <div class="row between">
+      <span class="card-title">Efficacité cette semaine</span>
+      ${avgEff!=null ? `<span class="badge ${m.cls}">${avgEff}%</span>` : `<span class="badge warn">—</span>`}
+    </div>
+    <p class="small muted mt">${avgEff!=null ? esc(m.txt) : "Remplis ton journal chaque matin pour suivre ta progression."}</p>
+  </div>`));
+
+  // règle du jour (rotation)
+  const ruleIdx = (new Date().getDate()) % STIMULUS_RULES.length;
+  const r = STIMULUS_RULES[ruleIdx];
+  wrap.appendChild(el(`<div class="card solid">
+    <div class="pill">${r.emoji} Règle du jour</div>
+    <p class="mt"><strong>${esc(r.title)}</strong></p>
+    <p class="small muted mt">${esc(r.body)}</p>
+  </div>`));
+
+  // accès rapide
+  const quick = el(`<div class="row mt"><button class="btn primary grow">✏️ Noter ma nuit</button><button class="btn ghost grow">📊 Mon suivi</button></div>`);
+  quick.children[0].onclick = ()=>navigate("journal");
+  quick.children[1].onclick = ()=>navigate("suivi");
+  wrap.appendChild(quick);
+
+  // rappel des 5 règles
+  const det = el(`<div class="card"><div class="row between"><span class="card-title">Les 5 règles du contrôle du stimulus</span><span class="muted">›</span></div></div>`);
+  det.style.cursor="pointer";
+  det.onclick = ()=>openRulesModal();
+  wrap.appendChild(det);
+
+  return wrap;
+}
+
+const STIMULUS_RULES = [
+  { emoji:"🛏️", title:"Ton lit sert à dormir. C'est tout.", body:"Pas à scroller, pas à manger, pas à regarder Netflix. Si ton cerveau apprend que le lit = dormir + scroller + séries, il ne sait plus quelle est la priorité." },
+  { emoji:"⏰", title:"Réveil à la même heure. Chaque jour. Week-end inclus.", body:"Même si tu as mal dormi. Surtout si tu as mal dormi. C'est l'ancre de tout le système." },
+  { emoji:"😴", title:"Tu vas au lit SEULEMENT quand tu as vraiment sommeil.", body:"Pas quand tu es fatigué·e. Quand tu tombes de sommeil." },
+  { emoji:"🚶", title:"Pas dormi en 20 min ? Tu te lèves.", body:"Tu vas dans une autre pièce. Tu lis un truc chiant. Tu reviens seulement quand tu tombes de sommeil. Oui, c'est contre-intuitif. Oui, ça marche." },
+  { emoji:"🌙", title:"Pas de sieste si tu souffres d'insomnie.", body:"La pression de sommeil est ton alliée — ne la gâche pas." },
+];
+
+function openRulesModal() {
+  const body = el(`<div><h2>Les 5 règles du contrôle du stimulus</h2></div>`);
+  STIMULUS_RULES.forEach(r => body.appendChild(el(`<div class="rule"><span class="emoji">${r.emoji}</span><div><strong>${esc(r.title)}</strong><span class="small muted">${esc(r.body)}</span></div></div>`)));
+  const close = el(`<button class="btn block primary mt">Compris</button>`);
+  close.onclick = closeModal; body.appendChild(close);
+  openModal(body);
+}
+
+/* =================================================================
+   SCREEN 2 — JOURNAL
+   ================================================================= */
+function renderJournal() {
+  const wrap = el(`<div></div>`);
+  const today = todayISO();
+  const filled = state.journal.some(e=>e.date===today);
+
+  if (!filled) {
+    wrap.appendChild(el(`<div class="card solid" style="border-left:4px solid var(--color-primary-2)">
+      <strong>Ta nuit d'hier n'est pas encore notée ✏️</strong>
+      <p class="small muted mt">Remplis-le idéalement le matin, de mémoire. Pas besoin d'être précis à la minute.</p>
+    </div>`));
+  }
+
+  const form = buildJournalForm(today);
+  wrap.appendChild(form);
+
+  // historique récent
+  if (state.journal.length) {
+    const hist = el(`<div class="card"><div class="card-title">Dernières nuits</div></div>`);
+    [...state.journal].slice(-5).reverse().forEach(e=>{
+      const m = effMsg(e.eff);
+      hist.appendChild(el(`<div class="list-entry">
+        <div class="row between"><span class="date">${frDate(e.date)}</span><span class="badge ${m.cls}">${e.eff}% ${m.emoji}</span></div>
+        <div class="small muted">${e.bed}→${e.wake} · ${fmtHM(e.sleptMin)} dormi · endormissement ${e.latency}min</div>
+      </div>`));
+    });
+    wrap.appendChild(hist);
+  }
+  return wrap;
+}
+
+function frDate(iso) {
+  const d = new Date(iso+"T00:00");
+  return d.toLocaleDateString("fr-FR",{ weekday:"short", day:"numeric", month:"short" });
+}
+
+function buildJournalForm(date) {
+  const existing = state.journal.find(e=>e.date===date) || {};
+  const f = { bed: existing.bed||"23:30", wake: existing.wake||state.profile.wakeAnchor, latency: existing.latency??20,
+              awakenings: existing.awakenings??"0", awakeTime: existing.awakeTime??0, watchedClock: existing.watchedClock??null,
+              phone: existing.phone??null, respected: existing.respected??null, quality: existing.quality??6,
+              mood: existing.mood??null, notes: existing.notes||"" };
+
+  const card = el(`<div class="card"></div>`);
+  card.appendChild(el(`<h2>${existing.date?"Modifier la nuit":"Ta nuit"}</h2>`));
+
+  card.appendChild(timeField("Heure de coucher réelle", f.bed, v=>f.bed=v));
+  card.appendChild(timeField("Heure de lever réelle", f.wake, v=>f.wake=v));
+  card.appendChild(sliderField("Temps pour t'endormir", f.latency, 0, 120, 5, "min", v=>f.latency=v));
+  card.appendChild(choiceField("Réveils nocturnes", ["0","1","2","3","4+"], f.awakenings, v=>f.awakenings=v));
+  card.appendChild(sliderField("Temps total éveillé la nuit", f.awakeTime, 0, 120, 5, "min", v=>f.awakeTime=v));
+  card.appendChild(choiceField("As-tu regardé l'heure cette nuit ?", ["Oui","Non"], f.watchedClock, v=>f.watchedClock=v));
+  card.appendChild(choiceField("As-tu utilisé ton téléphone au lit ?", ["Oui","Non"], f.phone, v=>f.phone=v));
+  card.appendChild(choiceField("As-tu respecté la fenêtre prescrite ?", ["Oui","Non","Partiellement"], f.respected, v=>f.respected=v));
+  card.appendChild(sliderField("Qualité subjective", f.quality, 1, 10, 1, "/10", v=>f.quality=v));
+  card.appendChild(choiceField("Humeur au réveil", ["😵 Épuisé·e","😔 Fatigué·e","😐 Correct","😊 Reposé·e","⚡ En forme"], f.mood, v=>f.mood=v));
+
+  const notes = el(`<label class="field"><span class="lbl">Notes libres <span class="hint">(200 car.)</span></span><textarea maxlength="200" placeholder="Optionnel">${esc(f.notes)}</textarea></label>`);
+  notes.querySelector("textarea").oninput = e=>f.notes=e.target.value;
+  card.appendChild(notes);
+
+  // live efficacité preview
+  const preview = el(`<div class="card solid center mb0"><div class="tiny muted">EFFICACITÉ ESTIMÉE</div><div class="metric-big" id="jpEff">—</div><p class="small" id="jpMsg"></p></div>`);
+  card.appendChild(preview);
+  const updatePreview = ()=>{
+    const c = computeEntry(f); const m = effMsg(c.eff);
+    $("#jpEff", preview).textContent = c.eff + "%";
+    $("#jpMsg", preview).innerHTML = `${m.emoji} ${esc(m.txt)}<br><span class="muted">${fmtHM(c.sleptMin)} de sommeil sur ${fmtHM(c.inBed)} au lit</span>`;
+  };
+  // recompute on any change → re-bind via observer-ish: simplest is to update on input events of the whole card
+  card.addEventListener("input", updatePreview);
+  card.addEventListener("click", ()=>setTimeout(updatePreview,0));
+  setTimeout(updatePreview,0);
+
+  const submit = el(`<button class="btn primary block mt">Enregistrer ma nuit</button>`);
+  submit.onclick = ()=>{
+    if (f.mood===null) { toast("Indique ton humeur au réveil 🙂"); return; }
+    const c = computeEntry(f);
+    const entry = { date, ...f, ...c };
+    const idx = state.journal.findIndex(e=>e.date===date);
+    if (idx>=0) state.journal[idx]=entry; else state.journal.push(entry);
+    state.journal.sort((a,b)=>a.date.localeCompare(b.date));
+    save();
+    const m = effMsg(c.eff);
+    toast(`Nuit enregistrée — ${c.eff}% ${m.emoji}`);
+    navigate("suivi");
+  };
+  card.appendChild(submit);
+  return card;
+}
+
+/* field builders */
+function timeField(label, val, onChange) {
+  const f = el(`<label class="field"><span class="lbl">${esc(label)}</span><input type="time" value="${val}"></label>`);
+  f.querySelector("input").onchange = e=>onChange(e.target.value);
+  return f;
+}
+function sliderField(label, val, min, max, step, unit, onChange) {
+  const f = el(`<label class="field"><span class="lbl">${esc(label)}</span>
+    <div class="slider-wrap"><input type="range" min="${min}" max="${max}" step="${step}" value="${val}"><span class="slider-val">${val}${unit}</span></div></label>`);
+  const inp = f.querySelector("input"), out = f.querySelector(".slider-val");
+  inp.oninput = e=>{ const v=Number(e.target.value); out.textContent=v+unit; onChange(v); };
+  return f;
+}
+function choiceField(label, opts, val, onChange) {
+  const f = el(`<div class="field"><span class="lbl">${esc(label)}</span><div class="choices"></div></div>`);
+  const box = f.querySelector(".choices");
+  opts.forEach(o=>{
+    const b = el(`<button type="button" aria-pressed="${o===val}">${esc(o)}</button>`);
+    b.onclick = ()=>{ box.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed","false")); b.setAttribute("aria-pressed","true"); onChange(o); };
+    box.appendChild(b);
+  });
+  return f;
+}
+
+/* =================================================================
+   SCREEN 3 — SUIVI (charts SVG)
+   ================================================================= */
+function lastNEntries(n) { return state.journal.slice(-n); }
+
+function renderSuivi() {
+  const wrap = el(`<div></div>`);
+  const data = lastNEntries(14);
+
+  if (data.length < 2) {
+    wrap.appendChild(el(`<div class="empty"><div class="big">📊</div><p>Note au moins 2 nuits dans ton journal pour voir tes courbes apparaître.</p></div>`));
+    const go = el(`<button class="btn primary block">✏️ Aller au journal</button>`); go.onclick=()=>navigate("journal");
+    wrap.appendChild(go);
+    return wrap;
+  }
+
+  // métriques
+  const last7 = lastNEntries(7);
+  const avgEff7 = Math.round(last7.reduce((s,e)=>s+e.eff,0)/last7.length);
+  const wakeMins = last7.map(e=>timeToMin(e.wake));
+  const std = stdDev(wakeMins);
+  const avgLat = Math.round(last7.reduce((s,e)=>s+Number(e.latency),0)/last7.length);
+  const prev7 = state.journal.slice(-14,-7);
+  const prevEff = prev7.length ? Math.round(prev7.reduce((s,e)=>s+e.eff,0)/prev7.length) : null;
+  const delta = prevEff!=null ? avgEff7 - prevEff : null;
+  const respectedPct = Math.round(last7.filter(e=>e.respected==="Oui").length/last7.length*100);
+
+  wrap.appendChild(el(`<div class="card">
+    <div class="card-title">Tes chiffres (7 derniers jours)</div>
+    <div class="metric-row mt">
+      <div class="metric-cell"><div class="v">${avgEff7}%</div><div class="k">Efficacité moyenne</div></div>
+      <div class="metric-cell"><div class="v">±${Math.round(std)} min</div><div class="k">Régularité du réveil</div></div>
+      <div class="metric-cell"><div class="v">${avgLat} min</div><div class="k">Endormissement moyen</div></div>
+      <div class="metric-cell"><div class="v">${delta!=null?(delta>=0?"▲ +":"▼ ")+delta+"%":"—"}</div><div class="k">vs semaine préc.</div></div>
+    </div>
+    <div class="metric-cell mt"><div class="v">${respectedPct}%</div><div class="k">Nuits où tu as respecté la fenêtre</div></div>
+  </div>`));
+
+  // chart 1 — efficacité
+  wrap.appendChild(chartCard("Efficacité du sommeil — 14 jours", lineChartEff(data)));
+  // chart 2 — durée
+  wrap.appendChild(chartCard("Durée de sommeil — 14 jours", barChartDuration(data)));
+  // chart 3 — régularité
+  wrap.appendChild(chartCard("Régularité coucher / lever", regularityChart(data)));
+
+  return wrap;
+}
+
+function chartCard(title, node) {
+  const c = el(`<div class="card"><div class="card-title">${esc(title)}</div></div>`);
+  c.appendChild(node);
+  return c;
+}
+function stdDev(arr) {
+  if (arr.length<2) return 0;
+  const m = arr.reduce((a,b)=>a+b,0)/arr.length;
+  return Math.sqrt(arr.reduce((s,x)=>s+(x-m)**2,0)/arr.length);
+}
+
+const CH = { w: 320, h: 150, pad: 24 };
+function xPos(i, n) { return CH.pad + (CH.w - CH.pad*2) * (n<=1?0.5:i/(n-1)); }
+
+function lineChartEff(data) {
+  const n = data.length;
+  const yMin=40, yMax=100;
+  const yPos = v => CH.h - CH.pad - (CH.h - CH.pad*2) * ((Math.max(yMin,Math.min(yMax,v))-yMin)/(yMax-yMin));
+  const pts = data.map((e,i)=>`${xPos(i,n).toFixed(1)},${yPos(e.eff).toFixed(1)}`);
+  const target = yPos(85);
+  const lastEff = data[n-1].eff;
+  const stroke = lastEff>=85?"var(--color-primary)":(lastEff>=75?"var(--color-primary-2)":"var(--color-danger)");
+  const area = `M${xPos(0,n)},${CH.h-CH.pad} L${pts.join(" L")} L${xPos(n-1,n)},${CH.h-CH.pad} Z`;
+  return el(`<svg class="chart" viewBox="0 0 ${CH.w} ${CH.h}" role="img" aria-label="Efficacité sur 14 jours">
+    <defs><linearGradient id="effFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${stroke}" stop-opacity="0.25"/><stop offset="100%" stop-color="${stroke}" stop-opacity="0"/></linearGradient></defs>
+    <line x1="${CH.pad}" y1="${target}" x2="${CH.w-CH.pad}" y2="${target}" stroke="var(--color-muted)" stroke-dasharray="4 4" stroke-width="1" opacity="0.6"/>
+    <text x="${CH.w-CH.pad}" y="${target-5}" fill="var(--color-muted)" font-size="9" text-anchor="end">objectif 85%</text>
+    <path d="${area}" fill="url(#effFill)"/>
+    <polyline points="${pts.join(" ")}" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${data.map((e,i)=>`<circle cx="${xPos(i,n).toFixed(1)}" cy="${yPos(e.eff).toFixed(1)}" r="3" fill="${stroke}"/>`).join("")}
+  </svg>`);
+}
+
+function barChartDuration(data) {
+  const n = data.length;
+  const yMax = 600; // 10h en min
+  const goal = state.profile.prescribedHours*60;
+  const yPos = v => CH.h - CH.pad - (CH.h - CH.pad*2)*(Math.min(yMax,v)/yMax);
+  const bw = Math.max(6, (CH.w-CH.pad*2)/n - 4);
+  const goalY = yPos(goal);
+  const bars = data.map((e,i)=>{
+    const x = xPos(i,n)-bw/2, y=yPos(e.sleptMin), h=CH.h-CH.pad-y;
+    const col = e.sleptMin>=goal?"var(--color-primary)":"var(--color-primary-2)";
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0,h).toFixed(1)}" rx="3" fill="${col}" opacity="0.85"/>`;
+  }).join("");
+  return el(`<svg class="chart" viewBox="0 0 ${CH.w} ${CH.h}" role="img" aria-label="Durée de sommeil sur 14 jours">
+    ${bars}
+    <line x1="${CH.pad}" y1="${goalY}" x2="${CH.w-CH.pad}" y2="${goalY}" stroke="var(--color-primary)" stroke-dasharray="4 4" stroke-width="1"/>
+    <text x="${CH.w-CH.pad}" y="${goalY-4}" fill="var(--color-primary)" font-size="9" text-anchor="end">fenêtre ${fmtHM(goal)}</text>
+  </svg>`);
+}
+
+function regularityChart(data) {
+  const n = data.length;
+  // normalise les heures autour d'un axe nuit (18h -> 12h le lendemain)
+  const norm = m => { let v=m; if (v<720) v+=1440; return v; }; // <12h => lendemain
+  const all = data.flatMap(e=>[norm(timeToMin(e.bed)), norm(timeToMin(e.wake))]);
+  const lo = Math.min(...all)-30, hi = Math.max(...all)+30;
+  const yPos = v => CH.pad + (CH.h-CH.pad*2)*((v-lo)/(hi-lo));
+  const bed = data.map((e,i)=>`${xPos(i,n).toFixed(1)},${yPos(norm(timeToMin(e.bed))).toFixed(1)}`);
+  const wake = data.map((e,i)=>`${xPos(i,n).toFixed(1)},${yPos(norm(timeToMin(e.wake))).toFixed(1)}`);
+  const svg = el(`<svg class="chart" viewBox="0 0 ${CH.w} ${CH.h}" role="img" aria-label="Régularité coucher et lever">
+    <polyline points="${bed.join(" ")}" fill="none" stroke="var(--color-primary-2)" stroke-width="2.5" stroke-linejoin="round"/>
+    <polyline points="${wake.join(" ")}" fill="none" stroke="var(--color-primary)" stroke-width="2.5" stroke-linejoin="round"/>
+    ${data.map((e,i)=>`<circle cx="${xPos(i,n).toFixed(1)}" cy="${yPos(norm(timeToMin(e.bed))).toFixed(1)}" r="2.5" fill="var(--color-primary-2)"/>`).join("")}
+    ${data.map((e,i)=>`<circle cx="${xPos(i,n).toFixed(1)}" cy="${yPos(norm(timeToMin(e.wake))).toFixed(1)}" r="2.5" fill="var(--color-primary)"/>`).join("")}
+  </svg>`);
+  const card = el(`<div></div>`); card.appendChild(svg);
+  card.appendChild(el(`<div class="legend"><span><i style="background:var(--color-primary-2)"></i>Coucher</span><span><i style="background:var(--color-primary)"></i>Lever</span></div>`));
+  return card;
+}
+
+/* =================================================================
+   SCREEN 4 — RECONDITIONNEMENT COGNITIF
+   ================================================================= */
+function renderRecond() {
+  const wrap = el(`<div></div>`);
+
+  // tabs internes
+  const seg = el(`<div class="choices mb0" style="margin-bottom:1rem"></div>`);
+  ["Worry Time","Quiz croyances"].forEach((t,i)=>{
+    const b = el(`<button aria-pressed="${i===0}">${t}</button>`);
+    b.onclick=()=>{ seg.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed","false")); b.setAttribute("aria-pressed","true"); body.innerHTML=""; body.appendChild(i===0?worrySection():beliefsSection()); };
+    seg.appendChild(b);
+  });
+  wrap.appendChild(seg);
+  const body = el(`<div></div>`);
+  body.appendChild(worrySection());
+  wrap.appendChild(body);
+  return wrap;
+}
+
+function worrySection() {
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(el(`<div class="card solid">
+    <p>Toutes les pensées qui te stressent la nuit, tu vas les mettre dans une boîte <strong>pendant la journée</strong>.</p>
+    <p class="small muted mt">À 18h. 15 minutes. Pas plus. Pas au lit.</p>
+  </div>`));
+
+  // sélecteur d'heure
+  const timeCard = el(`<div class="card"><label class="field mb0"><span class="lbl">Heure de ton Worry Time</span><input type="time" value="${state.worryTime}"></label></div>`);
+  timeCard.querySelector("input").onchange = e=>{ state.worryTime=e.target.value; save(); Notif.reschedule(); toast("Worry Time mis à jour"); };
+  wrap.appendChild(timeCard);
+
+  // nouvelle session
+  const sess = { raw:"", thoughts:[] };
+  const card = el(`<div class="card"><div class="card-title">Nouvelle session</div></div>`);
+  const ta = el(`<label class="field"><span class="lbl">Qu'est-ce qui t'a trotté dans la tête cette nuit ?</span><textarea placeholder="Une pensée par ligne…"></textarea></label>`);
+  card.appendChild(ta);
+
+  const colsWrap = el(`<div></div>`);
+  const classifyBtn = el(`<button class="btn ghost block">Classer ces pensées →</button>`);
+  classifyBtn.onclick = ()=>{
+    const lines = ta.querySelector("textarea").value.split("\n").map(s=>s.trim()).filter(Boolean);
+    if (!lines.length) { toast("Écris au moins une pensée"); return; }
+    sess.raw = ta.querySelector("textarea").value;
+    sess.thoughts = lines.map(t=>({text:t, cat:null}));
+    renderClassify();
+  };
+  card.appendChild(classifyBtn);
+  card.appendChild(colsWrap);
+  wrap.appendChild(card);
+
+  function renderClassify() {
+    colsWrap.innerHTML="";
+    colsWrap.appendChild(el(`<p class="small muted mt">Classe chaque pensée : <strong>☑ je peux agir</strong> ou <strong>☑ je ne peux pas agir</strong>.</p>`));
+    sess.thoughts.forEach((th,idx)=>{
+      const chip = el(`<div class="thought-chip"><span class="grow">${esc(th.text)}</span><div class="act">
+        <button title="Je peux agir">✅</button><button title="Je ne peux pas agir">🚫</button></div></div>`);
+      const [a,b]=chip.querySelectorAll(".act button");
+      const sync=()=>{ a.className=th.cat==="act"?"sel-a":""; b.className=th.cat==="no"?"sel-b":""; };
+      a.onclick=()=>{ th.cat="act"; sync(); checkDone(); };
+      b.onclick=()=>{ th.cat="no"; sync(); checkDone(); };
+      sync();
+      colsWrap.appendChild(chip);
+    });
+    const msgBox = el(`<div></div>`);
+    colsWrap.appendChild(msgBox);
+    const closeBtn = el(`<button class="btn primary block mt" disabled>Fermer le créneau 🔒</button>`);
+    colsWrap.appendChild(closeBtn);
+    function checkDone() {
+      const allClassed = sess.thoughts.every(t=>t.cat);
+      closeBtn.disabled = !allClassed;
+      if (allClassed && !msgBox.dataset.shown) {
+        msgBox.dataset.shown="1";
+        msgBox.appendChild(el(`<div class="card solid mt"><p class="small">Pour les trucs sur lesquels tu ne peux rien : quand la pensée revient dans ton lit ce soir, tu te dis : <em>« J'ai un moment pour ça demain. Et de toute façon je peux rien y faire. Casse-toi. »</em> C'est pas magique, mais petit à petit, ça marche.</p></div>`));
+      }
+    }
+    closeBtn.onclick = ()=>{
+      state.worry.push({ date:new Date().toISOString(), raw:sess.raw, thoughts:sess.thoughts });
+      save();
+      // animation de clôture
+      card.style.transition="all .5s var(--ease)"; card.style.opacity="0"; card.style.transform="scale(.95)";
+      setTimeout(()=>{ toast("Créneau fermé. Repose ta tête. 🔒"); navigate("recond"); $("#view .choices button")?.click?.(); }, 500);
+    };
+  }
+
+  // historique
+  if (state.worry.length) {
+    const hist = el(`<div class="card"><div class="card-title">Historique des sessions</div></div>`);
+    [...state.worry].slice(-6).reverse().forEach(s=>{
+      const act = s.thoughts.filter(t=>t.cat==="act").length, no = s.thoughts.filter(t=>t.cat==="no").length;
+      hist.appendChild(el(`<div class="list-entry"><div class="date">${frDate(s.date.slice(0,10))}</div><div class="small">${s.thoughts.length} pensée(s) · ${act} actionnable(s) · ${no} à lâcher</div></div>`));
+    });
+    wrap.appendChild(hist);
+  }
+  return wrap;
+}
+
+const BELIEFS = [
+  { q:"J'ai besoin de 8h exactement.", a:"Les besoins varient. L'obsession des 8h crée une anxiété qui nuit plus que le manque lui-même." },
+  { q:"Si je dors mal, ma journée est foutue.", a:"Une mauvaise nuit ponctuelle a des effets modestes. Ton cerveau récupère mieux que tu ne le crois." },
+  { q:"Rester au lit va m'aider à récupérer.", a:"Non. Chaque minute au lit sans dormir apprend à ton cerveau que le lit ne sert pas à dormir. C'est l'ennemi." },
+  { q:"Je dois rattraper le sommeil perdu le week-end.", a:"La grasse matinée décale ton horloge et aggrave l'insomnie la semaine suivante. Réveil fixe, même le dimanche." },
+  { q:"L'alcool m'aide à dormir.", a:"L'alcool t'assomme mais fragmente ton sommeil et supprime le sommeil REM. Tu te réveilles plus fatigué·e." },
+  { q:"Je ne peux rien faire contre mon insomnie.", a:"La CBTI a un taux de succès de 80%. Tu n'es pas cassé·e, tu es déconditionné·e." },
+  { q:"Il faut que ma tête soit vide pour m'endormir.", a:"Impossible. L'objectif n'est pas de ne pas penser, c'est d'observer les pensées sans les combattre." },
+  { q:"Si je me réveille la nuit, c'est grave.", a:"4 à 6 micro-réveils par nuit sont normaux. C'est l'anxiété qu'ils génèrent qui est le problème, pas les réveils eux-mêmes." },
+];
+
+function beliefsSection() {
+  const wrap = el(`<div></div>`);
+  let idx = 0; const answers = [];
+  const card = el(`<div class="card"></div>`);
+  wrap.appendChild(card);
+
+  function show() {
+    if (idx >= BELIEFS.length) return showResult();
+    const b = BELIEFS[idx];
+    card.innerHTML="";
+    card.appendChild(el(`<div class="dots">${BELIEFS.map((_,i)=>`<span class="${i<=idx?"on":""}"></span>`).join("")}</div>`));
+    card.appendChild(el(`<div class="tiny muted">CROYANCE ${idx+1} / ${BELIEFS.length}</div>`));
+    card.appendChild(el(`<h2 class="mt">« ${esc(b.q)} »</h2>`));
+    card.appendChild(el(`<p class="small muted mt">À quel point tu es d'accord ?</p>`));
+    const scale = el(`<div class="choices mt"></div>`);
+    ["1","2","3","4","5"].forEach(v=>{
+      const btn = el(`<button>${v}</button>`);
+      btn.onclick=()=>{ answers[idx]=Number(v); showReframe(b, Number(v)); };
+      scale.appendChild(btn);
+    });
+    card.appendChild(scale);
+    card.appendChild(el(`<div class="row between tiny muted mt"><span>Pas du tout</span><span>Tout à fait</span></div>`));
+  }
+  function showReframe(b, v) {
+    card.innerHTML="";
+    card.appendChild(el(`<div class="pill">${v>=4?"💭 À recadrer":"👍 Plutôt sain"}</div>`));
+    card.appendChild(el(`<h2 class="mt">« ${esc(b.q)} »</h2>`));
+    card.appendChild(el(`<div class="card solid mt"><p>${esc(b.a)}</p></div>`));
+    const next = el(`<button class="btn primary block mt">${idx<BELIEFS.length-1?"Suivante →":"Voir mon score"}</button>`);
+    next.onclick=()=>{ idx++; show(); };
+    card.appendChild(next);
+  }
+  function showResult() {
+    const dysf = answers.filter(v=>v>=4).length;
+    state.beliefsScore = dysf; save();
+    card.innerHTML="";
+    card.appendChild(el(`<div class="center"><div class="metric-big">${dysf}<span style="font-size:1.4rem">/8</span></div>
+      <p class="mt"><strong>${dysf} croyance(s) qui travaillent contre toi.</strong></p>
+      <p class="small muted mt">Voilà comment les recadrer une par une. Relis-les quand l'anxiété revient — ce sont tes contre-arguments.</p></div>`));
+    BELIEFS.forEach((b,i)=>{ if(answers[i]>=4) card.appendChild(el(`<div class="card solid mt"><strong class="small">« ${esc(b.q)} »</strong><p class="small muted mt">${esc(b.a)}</p></div>`)); });
+    const again = el(`<button class="btn ghost block mt">Refaire le quiz</button>`); again.onclick=()=>{ idx=0; answers.length=0; show(); };
+    card.appendChild(again);
+  }
+  show();
+  return wrap;
+}
+
+/* =================================================================
+   SCREEN 5 — CE SOIR
+   ================================================================= */
+const WINDDOWN = [
+  { id:"social", time:"20h30", txt:"Plus de réseaux sociaux, plus de réponse aux messages", note:"Les gens qui t'écrivent après 20h30 : tu ne leur dois pas une réponse." },
+  { id:"lights", time:"20h30", txt:"Lumières basses dans l'appartement", note:"Une seule lumière dans un coin. Ton cerveau commence à voir la nuit tomber." },
+  { id:"screens", time:"21h30", txt:"Plus d'écrans", note:"Étirements, yoga doux, brossage de dents. Ça remplit le temps où ton cerveau se détache des écrans." },
+  { id:"shower", time:"22h00", txt:"Douche ou bain chaud", note:"Ça force ton corps à baisser sa température. Ta température descend quand tu t'endors — tu prédisposes ton corps." },
+  { id:"clocks", time:"", txt:"Retirer horloges et téléphones visibles de la chambre", note:"Regarder l'heure la nuit transforme ton cerveau en calculette. Le calcul génère du stress." },
+];
+
+function renderCeSoir() {
+  const wrap = el(`<div></div>`);
+  const today = todayISO();
+  if (state.windDownDoneToday._date !== today) { state.windDownDoneToday = { _date: today }; save(); }
+
+  // wind-down checklist
+  const card = el(`<div class="card"><div class="card-title">Routine du soir</div><p class="small muted">Coche au fur et à mesure. Demain, ça repart à zéro.</p></div>`);
+  WINDDOWN.forEach(item=>{
+    const done = !!state.windDownDoneToday[item.id];
+    const row = el(`<div class="check-item" data-done="${done?1:0}">
+      <div class="check-box">${done?"✓":""}</div>
+      <div class="grow"><div class="ci-text">${esc(item.txt)} ${item.time?`<span class="check-time">${item.time}</span>`:""}</div>
+      <div class="tiny muted" style="margin-top:.2rem">${esc(item.note)}</div></div></div>`);
+    row.onclick=()=>{
+      const nd = !state.windDownDoneToday[item.id];
+      state.windDownDoneToday[item.id]=nd; save();
+      row.dataset.done = nd?1:0; row.querySelector(".check-box").textContent = nd?"✓":"";
+    };
+    card.appendChild(row);
+  });
+  wrap.appendChild(card);
+
+  // relaxation
+  const relax = el(`<div class="card"><div class="card-title">Techniques de relaxation</div><p class="small muted">À utiliser dans la chambre, lumières éteintes.</p></div>`);
+  const techs = [
+    { t:"Respiration lente", d:"Inspire 5s · retiens 1s · expire 8s", fn:openBreathSlow },
+    { t:"Body scan", d:"Relâche chaque zone, des orteils au visage", fn:openBodyScan },
+    { t:"Visualisation de promenade", d:"Une balade que tu connais par cœur", fn:openWalk },
+    { t:"Respiration du ventre", d:"Guide visuel au diaphragme", fn:openBreathBelly },
+  ];
+  techs.forEach(x=>{
+    const b = el(`<div class="check-item" style="cursor:pointer"><div style="font-size:1.3rem">🧘</div><div class="grow"><strong class="small">${x.t}</strong><div class="tiny muted">${x.d}</div></div><span class="muted">›</span></div>`);
+    b.onclick=x.fn; relax.appendChild(b);
+  });
+  wrap.appendChild(relax);
+
+  // réglages rapides
+  const set = el(`<div class="card"><div class="card-title">Rappels & réglages</div></div>`);
+  set.appendChild(toggleRow("Mode nuit auto (21h–7h)", state.nightModeAuto, v=>{ state.nightModeAuto=v; save(); applyNightMode(); }));
+  set.appendChild(toggleRow("Rappel journal du matin (8h)", state.reminders.journal, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.journal=v; save(); Notif.reschedule(); }));
+  set.appendChild(toggleRow("Rappel Worry Time", state.reminders.worry, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.worry=v; save(); Notif.reschedule(); }));
+  set.appendChild(toggleRow("Rappel coucher (30 min avant)", state.reminders.bedtime, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.bedtime=v; save(); Notif.reschedule(); }));
+  wrap.appendChild(set);
+
+  // export / reset
+  const tools = el(`<div class="row mt"><button class="btn ghost grow">⬇️ Exporter mes données</button><button class="btn ghost grow">↺ Recommencer</button></div>`);
+  tools.children[0].onclick = exportJSON;
+  tools.children[1].onclick = ()=>{ if(confirm("Effacer toutes tes données et recommencer l'onboarding ?")){ localStorage.removeItem(LS_KEY); location.reload(); } };
+  wrap.appendChild(tools);
+
+  return wrap;
+}
+
+function toggleRow(label, val, onChange) {
+  const row = el(`<div class="row between" style="padding:.7rem 0;border-bottom:1px solid var(--color-border)"><span class="small">${esc(label)}</span></div>`);
+  const sw = el(`<button class="check-box" style="width:46px;height:26px;border-radius:13px;border:none;background:${val?"var(--color-primary)":"var(--color-surface-2)"};position:relative;transition:.2s"><span style="position:absolute;top:3px;left:${val?23:3}px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s"></span></button>`);
+  sw.setAttribute("role","switch"); sw.setAttribute("aria-checked",val); sw.setAttribute("aria-label",label);
+  sw.onclick = async ()=>{
+    const nv = sw.getAttribute("aria-checked")!=="true";
+    const res = await onChange(nv);
+    if (res===false) return;
+    sw.setAttribute("aria-checked",nv);
+    sw.style.background = nv?"var(--color-primary)":"var(--color-surface-2)";
+    sw.firstElementChild.style.left = nv?"23px":"3px";
+  };
+  row.appendChild(sw);
+  return row;
+}
+
+/* ---------- Relaxation modals ---------- */
+function openBreathSlow() {
+  const body = el(`<div class="center"><h2>Respiration lente</h2>
+    <p class="small muted">Dans une situation stressée, c'est impossible de respirer lentement. Donc quand tu respires lentement, ton système nerveux croit que tu es calme. Et du coup, tu l'es un peu plus.</p>
+    <div class="breath-stage"><div class="breath-circle">Prêt·e ?</div></div></div>`);
+  const circle = body.querySelector(".breath-circle");
+  let stop=false;
+  const phases=[["Inspire",5000,1.5],["Retiens",1000,1.5],["Expire",8000,1]];
+  async function loop(){ while(!stop){ for(const [label,dur,scale] of phases){ if(stop)return; circle.textContent=label; circle.style.transition=`transform ${dur}ms var(--ease)`; circle.style.transform=`scale(${scale})`; await wait(dur); } } }
+  const ctrl = el(`<button class="btn primary block mt">Commencer</button>`);
+  let running=false;
+  ctrl.onclick=()=>{ if(!running){ running=true; stop=false; ctrl.textContent="Arrêter"; loop(); } else { stop=true; running=false; ctrl.textContent="Commencer"; circle.style.transform="scale(1)"; circle.textContent="Prêt·e ?"; } };
+  body.appendChild(ctrl);
+  const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=()=>{stop=true;closeModal();}; body.appendChild(close);
+  openModal(body);
+}
+function openBreathBelly() {
+  const body = el(`<div class="center"><h2>Respiration du ventre</h2>
+    <p class="small muted">Une main sur le ventre. Le cercle se gonfle, ton ventre aussi. Le cercle se dégonfle, tu souffles lentement.</p>
+    <div class="breath-stage"><div class="breath-circle" style="border-radius:50%">Suis le cercle</div></div></div>`);
+  const circle=body.querySelector(".breath-circle"); let stop=false;
+  async function loop(){ while(!stop){ circle.textContent="Gonfle"; circle.style.transition="transform 4000ms var(--ease)"; circle.style.transform="scale(1.5)"; await wait(4000); if(stop)break; circle.textContent="Souffle"; circle.style.transform="scale(1)"; await wait(6000);} }
+  const ctrl=el(`<button class="btn primary block mt">Commencer</button>`); let running=false;
+  ctrl.onclick=()=>{ if(!running){running=true;stop=false;ctrl.textContent="Arrêter";loop();}else{stop=true;running=false;ctrl.textContent="Commencer";circle.style.transform="scale(1)";} };
+  body.appendChild(ctrl);
+  const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=()=>{stop=true;closeModal();}; body.appendChild(close);
+  openModal(body);
+}
+function openBodyScan() {
+  const zones=["les orteils","les pieds","les mollets","les genoux","les cuisses","les hanches","le ventre","le dos","les mains","les bras","les épaules","le cou","le visage"];
+  const body=el(`<div class="center"><h2>Body scan</h2>
+    <p class="small muted">Tu pars des orteils. Pour chaque zone : est-ce que c'est vraiment relâché ?</p>
+    <div class="card solid mt"><div class="body-zone">Prêt·e ?</div><div class="tiny muted mt" id="bsHint">10 secondes par zone</div></div></div>`);
+  const zone=body.querySelector(".body-zone"); let stop=false, i=0;
+  async function run(){ for(i=0;i<zones.length;i++){ if(stop)return; zone.style.opacity=0; await wait(300); zone.textContent="Relâche "+zones[i]; zone.style.opacity=1; await wait(9700);} zone.textContent="Tout est relâché. 🌙"; }
+  const ctrl=el(`<button class="btn primary block mt">Commencer</button>`); let running=false;
+  ctrl.onclick=()=>{ if(!running){running=true;stop=false;ctrl.textContent="Arrêter";run();}else{stop=true;running=false;ctrl.textContent="Commencer";} };
+  body.appendChild(ctrl);
+  const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=()=>{stop=true;closeModal();}; body.appendChild(close);
+  openModal(body);
+}
+function openWalk() {
+  const body=el(`<div><h2 class="center">Visualisation de promenade</h2>
+    <div class="card solid mt"><p>Choisis une promenade que tu connais par cœur.</p>
+    <p class="small muted mt">Comment tu es habillé·e. Ta façon de marcher. Les sons, les immeubles, les gens qui passent. Chaque détail.</p>
+    <p class="small mt">Effort cognitif minimal, mais tu es loin de tes pensées. C'est exactement ce qu'on cherche : occuper l'esprit sans le stimuler.</p></div></div>`);
+  const close=el(`<button class="btn primary block mt">C'est parti</button>`); close.onclick=closeModal; body.appendChild(close);
+  openModal(body);
+}
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+
+/* ---------- SOS ---------- */
+function openSOS() {
+  const body = el(`<div><h2>🌙 Tu n'arrives pas à dormir</h2>
+    <div class="card solid mt"><p><strong>Lève-toi. Maintenant.</strong></p>
+    <p class="small mt">C'est la règle la plus difficile et la plus importante. Va dans une autre pièce. Pas ton téléphone. Quelque chose de chiant.</p>
+    <p class="small muted mt">Reviens te coucher seulement quand tu tombes de sommeil — pas avant.</p></div></div>`);
+  const timerBox = el(`<div class="card center"><div class="tiny muted">SI TU AS BESOIN D'UN REPÈRE</div><div class="countdown" id="sosTimer">20:00</div></div>`);
+  const startBtn = el(`<button class="btn primary block">Lancer 20 min</button>`);
+  let interval=null;
+  startBtn.onclick=()=>{
+    if (interval){ clearInterval(interval); interval=null; startBtn.textContent="Lancer 20 min"; $("#sosTimer",timerBox).textContent="20:00"; return; }
+    let left=20*60; startBtn.textContent="Réinitialiser";
+    interval=setInterval(()=>{ left--; $("#sosTimer",timerBox).textContent=`${pad(Math.floor(left/60))}:${pad(left%60)}`;
+      if(left<=0){ clearInterval(interval); interval=null; Notif.fire("Serein Sommeil","Tu tombes de sommeil ? Retourne te coucher."); toast("Si tu tombes de sommeil, retourne au lit."); } },1000);
+  };
+  body.appendChild(timerBox); body.appendChild(startBtn);
+  const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=()=>{ if(interval)clearInterval(interval); closeModal(); }; body.appendChild(close);
+  openModal(body);
+}
+
+/* ============================ MODAL SYSTEM ============================ */
+function openModal(contentNode) {
+  closeModal();
+  const back = el(`<div class="modal-backdrop"></div>`);
+  const modal = el(`<div class="modal" role="dialog" aria-modal="true"></div>`);
+  modal.appendChild(contentNode);
+  back.appendChild(modal);
+  back.onclick = e=>{ if(e.target===back) closeModal(); };
+  $("#modalRoot").appendChild(back);
+  document.body.style.overflow="hidden";
+}
+function closeModal() { $("#modalRoot").innerHTML=""; document.body.style.overflow=""; }
+
+/* ============================ EXPORT ============================ */
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href=url; a.download=`serein-sommeil-${todayISO()}.json`;
+  a.click(); URL.revokeObjectURL(url); toast("Données exportées 📄");
+}
+
+/* =================================================================
+   ONBOARDING
+   ================================================================= */
+function startOnboarding() {
+  const data = structuredClone(state.profile);
+  let step = 0; // 0..3
+  const STEPS = 4;
+
+  function render() {
+    const body = el(`<div></div>`);
+    body.appendChild(el(`<div class="dots">${Array.from({length:STEPS},(_,i)=>`<span class="${i<=step?"on":""}"></span>`).join("")}</div>`));
+    if (step===0) body.appendChild(stepDiagnostic());
+    else if (step===1) body.appendChild(stepEfficiency());
+    else if (step===2) body.appendChild(stepWindow());
+    else body.appendChild(stepRules());
+    openModal(body);
+  }
+
+  function stepDiagnostic() {
+    const c = el(`<div></div>`);
+    c.appendChild(el(`<h2>Le diagnostic honnête</h2>
+      <p class="small muted mt">Peu importe ce qui a déclenché tes problèmes — stress, horaires décalés, écrans. Ce qui compte : ton cerveau a désappris que le lit sert à dormir. Cette méthode va lui réapprendre.</p>`));
+    c.appendChild(choiceField("Depuis combien de temps tu dors mal ?", ["< 1 mois","1-3 mois","3-6 mois","> 6 mois"], data.duration, v=>data.duration=v));
+    c.appendChild(choiceField("Ton problème principal ?", ["Mal à m'endormir","Réveils nocturnes","Réveil trop tôt","Sommeil non réparateur"], data.problem, v=>data.problem=v));
+    c.appendChild(timeField("Heure de coucher habituelle", data.usualBed, v=>data.usualBed=v));
+    c.appendChild(timeField("Heure de réveil habituelle", data.usualWake, v=>{ data.usualWake=v; data.wakeAnchor=v; }));
+    c.appendChild(sliderField("Heures dormies vraiment par nuit (moyenne)", data.sleptHours, 1, 10, 0.5, "h", v=>data.sleptHours=v));
+    c.appendChild(sliderField("Temps pour t'endormir", data.latency, 0, 120, 5, "min", v=>data.latency=v));
+    c.appendChild(choiceField("Tu restes au lit même sans dormir ?", ["Oui","Non","Parfois"], data.stayInBed, v=>data.stayInBed=v));
+    c.appendChild(choiceField("Tu utilises ton téléphone dans ton lit ?", ["Oui","Non","Parfois"], data.phoneInBed, v=>data.phoneInBed=v));
+    c.appendChild(choiceField("Tu regardes l'heure la nuit ?", ["Oui","Non","Parfois"], data.watchClock, v=>data.watchClock=v));
+    const next = el(`<button class="btn primary block mt">Continuer →</button>`);
+    next.onclick=()=>{ if(!data.duration||!data.problem){toast("Réponds aux deux premières questions");return;} data.wakeAnchor=data.usualWake; step=1; render(); };
+    c.appendChild(next);
+    return c;
+  }
+
+  function stepEfficiency() {
+    const inBed = diffMin(data.usualBed, data.usualWake) || 480;
+    const eff = Math.round((data.sleptHours*60) / inBed * 100);
+    const m = effMsg(eff);
+    const c = el(`<div class="center"><h2>Ton efficacité de sommeil</h2>
+      <p class="small muted mt">Le temps que tu dors vraiment, divisé par le temps que tu passes au lit.</p>
+      <div class="metric-big mt">${eff}%</div>
+      <div class="card solid mt"><p>${m.emoji} ${esc(m.txt)}</p></div></div>`);
+    const next = el(`<button class="btn primary block mt">C'est parti →</button>`); next.onclick=()=>{ step=2; render(); };
+    const back = el(`<button class="btn ghost block mt">← Retour</button>`); back.onclick=()=>{ step=0; render(); };
+    c.appendChild(next); c.appendChild(back);
+    return c;
+  }
+
+  function stepWindow() {
+    const presHours = Math.max(data.sleptHours, 5.5);
+    data.prescribedHours = presHours;
+    const presMin = Math.round(presHours*60);
+    const bedMin = (timeToMin(data.wakeAnchor) - presMin + 1440) % 1440;
+    const bed = minToTime(bedMin);
+    const c = el(`<div><h2 class="center">Ta fenêtre de sommeil</h2>
+      <div class="card solid center mt">
+        <div class="row between" style="align-items:flex-end">
+          <div><div class="tiny muted">COUCHER</div><div class="metric-big" style="font-size:2rem">${bed}</div></div>
+          <div class="muted">→</div>
+          <div style="text-align:right"><div class="tiny muted">RÉVEIL (ancre)</div><div class="metric-big" style="font-size:2rem">${data.wakeAnchor}</div></div>
+        </div>
+        <p class="small muted mt">${fmtHM(presMin)} au lit · ton réveil ne change JAMAIS, même le week-end.</p>
+      </div>
+      <div class="card mt"><p class="small">Au début, tu vas peut-être dormir encore moins. C'est normal et temporaire. L'objectif : créer une vraie pression de sommeil pour que ton cerveau réapprenne à s'endormir vite et à dormir profondément.</p>
+      <p class="small mt"><strong>Tu n'es pas cassé·e. Tu as juste déconditionné ton cerveau. On va le reconditionner.</strong></p></div>`);
+    const next = el(`<button class="btn primary block mt">Voir les 5 règles →</button>`); next.onclick=()=>{ step=3; render(); };
+    const back = el(`<button class="btn ghost block mt">← Retour</button>`); back.onclick=()=>{ step=1; render(); };
+    c.appendChild(next); c.appendChild(back);
+    return c;
+  }
+
+  function stepRules() {
+    const c = el(`<div><h2>Les 5 règles du contrôle du stimulus</h2><p class="small muted">Le cœur de la méthode. Lis-les, tu les retrouveras dans l'app.</p></div>`);
+    let shown = 0;
+    const list = el(`<div class="mt"></div>`); c.appendChild(list);
+    function reveal() {
+      if (shown < STIMULUS_RULES.length) {
+        const r = STIMULUS_RULES[shown];
+        const node = el(`<div class="rule" style="opacity:0;transform:translateY(8px);transition:all .3s var(--ease)"><span class="emoji">${r.emoji}</span><div><strong>${esc(r.title)}</strong><span class="small muted">${esc(r.body)}</span></div></div>`);
+        list.appendChild(node);
+        requestAnimationFrame(()=>{ node.style.opacity=1; node.style.transform="none"; });
+        shown++;
+        if (shown < STIMULUS_RULES.length) revealBtn.textContent=`Règle suivante (${shown+1}/5) →`;
+        else { revealBtn.remove(); c.appendChild(finishBtn); }
+      }
+    }
+    const revealBtn = el(`<button class="btn ghost block mt">Voir la 1ère règle →</button>`); revealBtn.onclick=reveal;
+    const finishBtn = el(`<button class="btn primary block mt">Je commence mon programme 🌙</button>`);
+    finishBtn.onclick=()=>{
+      state.profile = data;
+      state.profile.startDate = state.profile.startDate || new Date().toISOString();
+      state.onboarded = true; save();
+      closeModal(); navigate("programme");
+      toast("Bienvenue. La régularité est ta meilleure alliée.");
+    };
+    c.appendChild(revealBtn);
+    return c;
+  }
+
+  render();
+}
+
+/* ============================ DISCLAIMER ============================ */
+function showDisclaimer(then) {
+  const body = el(`<div class="center"><div style="font-size:2.5rem">🌙</div>
+    <h2 class="mt">Avant de commencer</h2>
+    <p class="mt">Cette app est basée sur une méthode <strong>scientifiquement validée</strong> (CBTI).</p>
+    <p class="small muted mt">Elle ne remplace pas un suivi médical. En cas d'insomnie sévère, consulte un médecin du sommeil.</p></div>`);
+  const ok = el(`<button class="btn primary block mt">J'ai compris</button>`);
+  ok.onclick=()=>{ state.disclaimerSeen=true; save(); closeModal(); then&&then(); };
+  body.appendChild(ok);
+  openModal(body);
+}
+
+/* ============================ THEME ============================ */
+function applyTheme() {
+  document.documentElement.dataset.theme = state.theme;
+  $("#themeToggle").textContent = state.theme==="dark" ? "☀️" : "🌙";
+  $('meta[name=theme-color]').setAttribute("content", state.theme==="dark"?"#0d1b15":"#f4f2ec");
+}
+$("#themeToggle").onclick = ()=>{ state.theme = state.theme==="dark"?"light":"dark"; save(); applyTheme(); };
+
+/* ============================ BOOT ============================ */
+function boot() {
+  applyTheme();
+  applyNightMode();
+  setInterval(applyNightMode, 60000);
+  renderTabs();
+  navigate("programme");
+  $("#sosBtn").onclick = openSOS;
+  Notif.reschedule();
+
+  if (!state.disclaimerSeen) {
+    showDisclaimer(()=>{ if(!state.onboarded) startOnboarding(); });
+  } else if (!state.onboarded) {
+    startOnboarding();
+  }
+}
+boot();
+</script>
+</body>
+</html>
