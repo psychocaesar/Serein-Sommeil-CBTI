@@ -1,0 +1,97 @@
+workflows:
+
+  # ─────────────────────────────────────────
+  # iOS — TestFlight via Codemagic mac_mini_m2
+  # ─────────────────────────────────────────
+  ios-release:
+    name: Serein Sommeil iOS Release
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    integrations:
+      app_store_connect: Serein ASC   # même intégration ASC que l'app Serein principale
+
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: fr.sereinapp.sommeil
+      vars:
+        XCODE_PROJECT: "ios/App/App.xcodeproj"
+        XCODE_SCHEME: "App"
+      node: latest
+
+    scripts:
+      - name: Install dependencies
+        script: npm install
+
+      - name: Build PWA
+        script: npm run build
+
+      - name: Capacitor sync iOS
+        script: npx cap sync ios
+
+      - name: Apply code signing
+        script: xcode-project use-profiles
+
+      - name: Build IPA
+        script: |
+          xcode-project build-ipa \
+            --project "$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false
+      email:
+        recipients:
+          - builds@sereinapp.fr
+
+  # ─────────────────────────────────────────
+  # Android — AAB signé → Play Console
+  # ─────────────────────────────────────────
+  android-release:
+    name: Serein Sommeil Android Release
+    max_build_duration: 60
+    instance_type: linux_x2
+
+    environment:
+      android_signing:
+        - serein-sommeil-keystore   # à créer dans Codemagic > Code signing > Android keystores
+      vars:
+        PACKAGE_NAME: "fr.sereinapp.sommeil"
+      node: latest
+      java: 17                      # AGP 8.x requiert JDK 17+
+
+    scripts:
+      - name: Install dependencies
+        script: npm install
+
+      - name: Build PWA
+        script: npm run build
+
+      - name: Capacitor sync Android
+        script: npx cap sync android
+
+      - name: Build Android AAB
+        script: |
+          cd android
+          ./gradlew bundleRelease
+
+    artifacts:
+      - android/app/build/outputs/bundle/release/*.aab
+      - android/app/build/outputs/mapping/release/mapping.txt
+
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
+      email:
+        recipients:
+          - builds@sereinapp.fr

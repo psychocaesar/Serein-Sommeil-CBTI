@@ -1,0 +1,29 @@
+node_modules/
+
+# Keystore local (ne JAMAIS commiter — utiliser Codemagic Code Signing à la place)
+android/release-key.keystore
+android/keystore.properties
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+*.tmp
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# iOS — dossiers dérivés, pas le projet lui-même
+ios/App/Pods/
+ios/App/App/build/
+DerivedData/
+
+# Android — build outputs, pas le projet lui-même
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+
+# Logs Codemagic
+/tmp/xcodebuild_logs/

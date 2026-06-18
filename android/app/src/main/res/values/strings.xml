@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Serein Sommeil</string>
+    <string name="title_activity_main">Serein Sommeil</string>
+    <string name="package_name">fr.sereinapp.sommeil</string>
+    <string name="custom_url_scheme">fr.sereinapp.sommeil</string>
+</resources>
