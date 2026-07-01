@@ -306,7 +306,7 @@ svg.chart { width:100%; height:auto; display:block; overflow:visible; }
         <small>Méthode CBTI</small>
       </div>
     </div>
-    <button class="icon-btn" id="themeToggle" aria-label="Changer le thème clair/sombre">🌙</button>
+    <button class="icon-btn" id="settingsBtn" aria-label="Réglages">⚙️</button>
   </header>
   <main id="view" role="main"></main>
   <button class="sos-fab" id="sosBtn" aria-label="Mode SOS - je n'arrive pas à dormir" hidden>🌙</button>
@@ -558,14 +558,16 @@ const TABS = [
   { id:"cesoir",    icon:"🌙", label:"Ce soir",   render: renderCeSoir },
 ];
 let currentTab = "programme";
+let lastTab = "programme"; // dernier onglet visité, pour le bouton retour de Réglages
 
 function navigate(id) {
   currentTab = id;
+  if (id !== "reglages") lastTab = id;
   renderTabs();
   const view = $("#view");
   view.innerHTML = "";
   const tab = TABS.find(t=>t.id===id);
-  const node = tab.render();
+  const node = id === "reglages" ? renderReglages() : tab.render();
   node.classList.add("screen");
   view.appendChild(node);
   view.scrollTop = 0; window.scrollTo(0,0);
@@ -1141,26 +1143,52 @@ function renderCeSoir() {
   });
   wrap.appendChild(relax);
 
-  // réglages rapides
-  const set = el(`<div class="card"><div class="card-title">Rappels & réglages</div></div>`);
-  set.appendChild(toggleRow("Mode nuit auto (21h–7h)", state.nightModeAuto, v=>{ state.nightModeAuto=v; save(); applyNightMode(); }));
-  set.appendChild(toggleRow("Rappel journal du matin (8h)", state.reminders.journal, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.journal=v; save(); Notif.reschedule(); }));
-  set.appendChild(toggleRow("Rappel Worry Time", state.reminders.worry, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.worry=v; save(); Notif.reschedule(); }));
-  set.appendChild(toggleRow("Rappel coucher (30 min avant)", state.reminders.bedtime, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.bedtime=v; save(); Notif.reschedule(); }));
+  return wrap;
+}
+
+/* =================================================================
+   RÉGLAGES (hors barre de nav, atteint via l'icône ⚙️ du header)
+   ================================================================= */
+function renderReglages() {
+  const wrap = el(`<div></div>`);
+  const back = el(`<button class="btn ghost" style="margin-bottom:1rem">← Retour</button>`);
+  back.onclick = ()=>navigate(lastTab);
+  wrap.appendChild(back);
+  wrap.appendChild(el(`<h2 style="margin-bottom:1rem">Réglages</h2>`));
+
+  // Apparence
+  const appearance = el(`<div class="card"><div class="card-title">Apparence</div></div>`);
+  appearance.appendChild(choiceField("Thème", ["Sombre","Clair"], state.theme==="dark"?"Sombre":"Clair", v=>{
+    state.theme = v==="Sombre"?"dark":"light"; save(); applyTheme();
+  }));
+  wrap.appendChild(appearance);
+
+  // Rappels
+  const rem = el(`<div class="card"><div class="card-title">Rappels</div></div>`);
+  rem.appendChild(toggleRow("Mode nuit auto (21h-7h)", state.nightModeAuto, v=>{ state.nightModeAuto=v; save(); applyNightMode(); }));
+  rem.appendChild(toggleRow("Rappel journal du matin (8h)", state.reminders.journal, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.journal=v; save(); Notif.reschedule(); }));
+  rem.appendChild(toggleRow("Rappel Worry Time", state.reminders.worry, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.worry=v; save(); Notif.reschedule(); }));
+  rem.appendChild(toggleRow("Rappel coucher (30 min avant)", state.reminders.bedtime, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.bedtime=v; save(); Notif.reschedule(); }));
+  wrap.appendChild(rem);
+
+  // Synchro santé (natif uniquement)
   if (HealthSync.available()) {
-    set.appendChild(toggleRow("Synchro Apple Santé / Health Connect", state.healthSync, async v=>{
+    const health = el(`<div class="card"><div class="card-title">Synchro santé</div></div>`);
+    health.appendChild(toggleRow("Apple Santé / Health Connect", state.healthSync, async v=>{
       if (v && !await HealthSync.ensure()) { toast("Autorise l'accès aux données de sommeil"); return false; }
       state.healthSync = v; save();
     }));
-    set.appendChild(el(`<p class="tiny muted" style="padding:0 0 .5rem">Pré-remplit le coucher et le lever dans ton journal. Tu gardes la main sur tout le reste.</p>`));
+    health.appendChild(el(`<p class="tiny muted" style="padding:.3rem 0 0">Pré-remplit le coucher et le lever dans ton journal. Tu gardes la main sur tout le reste.</p>`));
+    wrap.appendChild(health);
   }
-  wrap.appendChild(set);
 
-  // export / reset
-  const tools = el(`<div class="row mt"><button class="btn ghost grow">⬇️ Exporter mes données</button><button class="btn ghost grow">↺ Recommencer</button></div>`);
+  // Données
+  const data = el(`<div class="card"><div class="card-title">Données</div><p class="small muted">100% locales sur cet appareil, jamais transmises.</p></div>`);
+  const tools = el(`<div class="row mt"><button class="btn ghost grow">⬇️ Exporter</button><button class="btn ghost grow">↺ Recommencer</button></div>`);
   tools.children[0].onclick = exportJSON;
   tools.children[1].onclick = ()=>{ if(confirm("Effacer toutes tes données et recommencer l'onboarding ?")){ localStorage.removeItem(LS_KEY); location.reload(); } };
-  wrap.appendChild(tools);
+  data.appendChild(tools);
+  wrap.appendChild(data);
 
   return wrap;
 }
@@ -1413,10 +1441,9 @@ function showDisclaimer(then) {
 /* ============================ THEME ============================ */
 function applyTheme() {
   document.documentElement.dataset.theme = state.theme;
-  $("#themeToggle").textContent = state.theme==="dark" ? "☀️" : "🌙";
   $('meta[name=theme-color]').setAttribute("content", state.theme==="dark"?"#0d1b15":"#f4f2ec");
 }
-$("#themeToggle").onclick = ()=>{ state.theme = state.theme==="dark"?"light":"dark"; save(); applyTheme(); };
+$("#settingsBtn").onclick = ()=>navigate("reglages");
 
 /* ============================ BOOT ============================ */
 function boot() {
