@@ -47,5 +47,7 @@
 	<true/>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>Serein Sommeil utilise les notifications pour te rappeler de noter ta nuit, de faire ton Worry Time et de respecter ta fenêtre de coucher.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Serein Sommeil peut lire tes heures de coucher et de lever depuis Apple Santé pour pré-remplir ton journal de sommeil. Tu gardes toujours la main pour corriger ces valeurs.</string>
 </dict>
 </plist>

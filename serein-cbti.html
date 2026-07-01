@@ -345,7 +345,8 @@ const DEFAULT_STATE = {
   worryTime: "18:00",
   reminders: { journal:false, worry:false, bedtime:false },
   nightModeAuto: true,
-  weeklyAdjust: { lastWeek: null, history: [] }
+  weeklyAdjust: { lastWeek: null, history: [] },
+  healthSync: false   // synchro Apple Santé / Health Connect (pré-remplissage du journal uniquement)
 };
 
 let state = load();
@@ -499,6 +500,45 @@ const Notif = {
       const ms = target - now;
       if (ms < 86400000) this.timers.push(setTimeout(()=>this.fire(d.title, d.body), ms));
     });
+  }
+};
+
+/* ===================== SYNCHRO SANTÉ (Apple Santé / Health Connect) ===================== */
+/* Pré-remplit les heures de coucher/lever du journal depuis les données du capteur (montre,
+   téléphone). Ne touche JAMAIS aux champs subjectifs (latence, réveils, qualité, humeur) :
+   la CBTI travaille la perception du sommeil, pas sa mesure — l'utilisateur reste seul juge
+   et peut corriger ou ignorer la pré-saisie. Fonctionne via @capgo/capacitor-health, qui
+   unifie HealthKit (iOS) et Health Connect (Android, y compris les données Garmin/Wear OS
+   partagées par l'utilisateur vers ces plateformes). */
+const HealthPlugin = () => { const c = Cap(); return c && c.Plugins && c.Plugins.Health; };
+const HealthSync = {
+  available() { return isNative() && !!HealthPlugin(); },
+  async ensure() {
+    if (!this.available()) return false;
+    try {
+      const p = HealthPlugin();
+      if (p.isAvailable) { const r = await p.isAvailable(); if (r && r.available === false) return false; }
+      const auth = await p.requestAuthorization({ read: ["sleep"] });
+      return !(auth.readDenied && auth.readDenied.includes("sleep"));
+    } catch(e) { console.warn("health auth", e); return false; }
+  },
+  // renvoie {bed, wake} en HH:MM pour la dernière session de sommeil détectée, ou null
+  async fetchLastNight() {
+    if (!this.available()) return null;
+    try {
+      const p = HealthPlugin();
+      const end = new Date(), start = new Date(Date.now() - 32*3600*1000); // marge ~1.5 jour
+      const { samples } = await p.readSamples({ dataType:"sleep", startDate:start.toISOString(), endDate:end.toISOString(), limit:200, ascending:true });
+      if (!samples || !samples.length) return null;
+      const relevant = samples.filter(s => ["inBed","asleep","rem","deep","light"].includes(s.sleepState));
+      if (!relevant.length) return null;
+      const starts = relevant.map(s => new Date(s.startDate).getTime());
+      const ends = relevant.map(s => new Date(s.endDate).getTime());
+      const bedDate = new Date(Math.min(...starts)), wakeDate = new Date(Math.max(...ends));
+      const spanH = (wakeDate - bedDate) / 3600000;
+      if (spanH < 2 || spanH > 14) return null; // écarte les siestes isolées ou données aberrantes
+      return { bed: pad(bedDate.getHours())+":"+pad(bedDate.getMinutes()), wake: pad(wakeDate.getHours())+":"+pad(wakeDate.getMinutes()) };
+    } catch(e) { console.warn("health fetch", e); return null; }
   }
 };
 
@@ -688,8 +728,29 @@ function buildJournalForm(date) {
   const card = el(`<div class="card"></div>`);
   card.appendChild(el(`<h2>${existing.date?"Modifier la nuit":"Ta nuit"}</h2>`));
 
-  card.appendChild(timeField("Heure de coucher réelle", f.bed, v=>f.bed=v));
-  card.appendChild(timeField("Heure de lever réelle", f.wake, v=>f.wake=v));
+  const bedField = timeField("Heure de coucher réelle", f.bed, v=>f.bed=v);
+  const wakeField = timeField("Heure de lever réelle", f.wake, v=>f.wake=v);
+
+  if (HealthSync.available() && state.healthSync) {
+    const syncBtn = el(`<button type="button" class="btn ghost block mt">🔄 Récupérer depuis Apple Santé / Health Connect</button>`);
+    const syncLabel = syncBtn.textContent;
+    syncBtn.onclick = async ()=>{
+      syncBtn.disabled = true; syncBtn.textContent = "Récupération…";
+      const data = await HealthSync.fetchLastNight();
+      syncBtn.disabled = false; syncBtn.textContent = syncLabel;
+      if (!data) { toast("Aucune donnée de sommeil trouvée pour cette nuit"); return; }
+      f.bed = data.bed; f.wake = data.wake;
+      bedField.querySelector("input").value = data.bed;
+      wakeField.querySelector("input").value = data.wake;
+      updatePreview();
+      toast("Heures pré-remplies — vérifie et ajuste si besoin");
+    };
+    card.appendChild(syncBtn);
+    card.appendChild(el(`<p class="tiny muted mt" style="margin-bottom:1rem">Pré-remplit uniquement le coucher et le lever. Le reste reste ton évaluation.</p>`));
+  }
+
+  card.appendChild(bedField);
+  card.appendChild(wakeField);
   card.appendChild(sliderField("Temps pour t'endormir", f.latency, 0, 120, 5, "min", v=>f.latency=v));
   card.appendChild(choiceField("Réveils nocturnes", ["0","1","2","3","4+"], f.awakenings, v=>f.awakenings=v));
   card.appendChild(sliderField("Temps total éveillé la nuit", f.awakeTime, 0, 120, 5, "min", v=>f.awakeTime=v));
@@ -1086,6 +1147,13 @@ function renderCeSoir() {
   set.appendChild(toggleRow("Rappel journal du matin (8h)", state.reminders.journal, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.journal=v; save(); Notif.reschedule(); }));
   set.appendChild(toggleRow("Rappel Worry Time", state.reminders.worry, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.worry=v; save(); Notif.reschedule(); }));
   set.appendChild(toggleRow("Rappel coucher (30 min avant)", state.reminders.bedtime, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.bedtime=v; save(); Notif.reschedule(); }));
+  if (HealthSync.available()) {
+    set.appendChild(toggleRow("Synchro Apple Santé / Health Connect", state.healthSync, async v=>{
+      if (v && !await HealthSync.ensure()) { toast("Autorise l'accès aux données de sommeil"); return false; }
+      state.healthSync = v; save();
+    }));
+    set.appendChild(el(`<p class="tiny muted" style="padding:0 0 .5rem">Pré-remplit le coucher et le lever dans ton journal. Tu gardes la main sur tout le reste.</p>`));
+  }
   wrap.appendChild(set);
 
   // export / reset

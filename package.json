@@ -20,6 +20,7 @@
     "@capacitor/cli": "^8.4.0",
     "@capacitor/core": "^8.4.0",
     "@capacitor/ios": "^8.4.0",
-    "@capacitor/local-notifications": "^8.1.0"
+    "@capacitor/local-notifications": "^8.1.0",
+    "@capgo/capacitor-health": "^8.7.0"
   }
 }
