@@ -1194,6 +1194,21 @@ function toggleRow(label, val, onChange) {
 }
 
 /* ---------- Relaxation modals ---------- */
+/* Voix guidées Serein (méditation), streamées depuis le CDN public déjà utilisé par
+   l'app Serein native - trop volumineuses (6-14 Mo) pour être embarquées dans ce fichier
+   unique. Nécessite une connexion internet ; le guide visuel animé reste utilisable hors-ligne. */
+const AUDIO_CDN = "https://audio.sereinapp.fr/masculin/";
+function audioPlayerCard(file, label, minutes) {
+  const url = AUDIO_CDN + encodeURIComponent(file);
+  const card = el(`<div class="card solid mt">
+    <strong class="small">🎧 ${esc(label)} (${minutes} min)</strong>
+    <audio controls preload="none" style="width:100%;margin-top:.6rem" src="${url}"></audio>
+    <p class="tiny muted mt">Voix guidée Serein - nécessite une connexion internet</p>
+  </div>`);
+  card.querySelector("audio").onerror = ()=>toast("Audio indisponible - vérifie ta connexion");
+  return card;
+}
+
 function openBreathSlow() {
   const body = el(`<div class="center"><h2>Respiration lente</h2>
     <p class="small muted">En situation de stress, respirer lentement est difficile - et c'est précisément pour cette raison que ça fonctionne. Lorsque tu y parviens, ton système nerveux reçoit un signal de sécurité. La détente suit naturellement.</p>
@@ -1206,6 +1221,7 @@ function openBreathSlow() {
   let running=false;
   ctrl.onclick=()=>{ if(!running){ running=true; stop=false; ctrl.textContent="Arrêter"; loop(); } else { stop=true; running=false; ctrl.textContent="Commencer"; circle.style.transform="scale(1)"; circle.textContent="Prêt·e ?"; } };
   body.appendChild(ctrl);
+  body.appendChild(audioPlayerCard("Respiration 4-7-8 — Calme profond.mp3", "Version audio narrée", 6));
   const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=()=>{stop=true;closeModal();}; body.appendChild(close);
   openModal(body);
 }
@@ -1231,6 +1247,7 @@ function openBodyScan() {
   const ctrl=el(`<button class="btn primary block mt">Commencer</button>`); let running=false;
   ctrl.onclick=()=>{ if(!running){running=true;stop=false;ctrl.textContent="Arrêter";run();}else{stop=true;running=false;ctrl.textContent="Commencer";} };
   body.appendChild(ctrl);
+  body.appendChild(audioPlayerCard("Le scan corporel.mp3", "Version audio narrée", 10));
   const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=()=>{stop=true;closeModal();}; body.appendChild(close);
   openModal(body);
 }
@@ -1275,7 +1292,10 @@ function openModal(contentNode) {
   $("#modalRoot").appendChild(back);
   document.body.style.overflow="hidden";
 }
-function closeModal() { $("#modalRoot").innerHTML=""; document.body.style.overflow=""; }
+function closeModal() {
+  $("#modalRoot").querySelectorAll("audio").forEach(a=>a.pause());
+  $("#modalRoot").innerHTML=""; document.body.style.overflow="";
+}
 
 /* ============================ EXPORT ============================ */
 function exportJSON() {
