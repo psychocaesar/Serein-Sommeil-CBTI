@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<meta name="description" content="Serein Sommeil — Thérapie cognitivo-comportementale de l'insomnie (CBTI), offline, sans compte, sans pub.">
+<meta name="description" content="Serein Sommeil - Thérapie cognitivo-comportementale de l'insomnie (CBTI), offline, sans compte, sans pub.">
 <meta name="theme-color" content="#0d1b15">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Serein Sommeil">
-<title>Serein Sommeil — CBTI</title>
+<title>Serein Sommeil - CBTI</title>
 
 <style>
 @font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:400 800;font-display:swap;src:url('fonts/bricolage-grotesque-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
@@ -51,7 +51,7 @@ html[data-theme="light"] {
   --gradient: linear-gradient(120deg, #2f6b50, #c0883e);
   --shadow: 0 8px 30px rgba(0,0,0,0.10);
 }
-/* night mode overlay (21h-7h) — softens everything */
+/* night mode overlay (21h-7h) - softens everything */
 html[data-night="1"] {
   --color-bg: #060f0b;
   --color-text: #cdd8cf;
@@ -321,7 +321,7 @@ if('serviceWorker' in navigator){
     <button class="icon-btn" id="themeToggle" aria-label="Changer le thème clair/sombre">🌙</button>
   </header>
   <main id="view" role="main"></main>
-  <button class="sos-fab" id="sosBtn" aria-label="Mode SOS — je n'arrive pas à dormir" hidden>🌙</button>
+  <button class="sos-fab" id="sosBtn" aria-label="Mode SOS - je n'arrive pas à dormir" hidden>🌙</button>
   <nav class="tabbar" id="tabbar" role="tablist"></nav>
 </div>
 <div id="modalRoot"></div>
@@ -329,7 +329,7 @@ if('serviceWorker' in navigator){
 <script>
 "use strict";
 /* ===================================================================
-   SEREIN SOMMEIL — CBTI  (single-file PWA, vanilla JS)
+   SEREIN SOMMEIL - CBTI  (single-file PWA, vanilla JS)
    Méthode Matthew Walker · données 100% locales · offline-first
    =================================================================== */
 
@@ -391,7 +391,7 @@ const pad = n => String(n).padStart(2,"0");
 function timeToMin(t) { if(!t) return null; const [h,m]=t.split(":").map(Number); return h*60+m; }
 function minToTime(m) { m=((m%1440)+1440)%1440; return pad(Math.floor(m/60))+":"+pad(m%60); }
 function fmtHM(min) { // 330 -> "5h30"
-  if (min == null) return "—"; const h=Math.floor(min/60), m=Math.round(min%60);
+  if (min == null) return "-"; const h=Math.floor(min/60), m=Math.round(min%60);
   return m ? `${h}h${pad(m)}` : `${h}h`;
 }
 function diffMin(bed, wake) { // durée au lit (gère passage minuit)
@@ -469,7 +469,7 @@ const LN = () => { const c = Cap(); return c && c.Plugins && c.Plugins.LocalNoti
 const NOTIF_DEFS = [
   { key:"journal", id:101, time:()=> "08:00", title:"Serein Sommeil", body:"N'oublie pas de noter ta nuit d'hier ✏️" },
   { key:"worry",   id:102, time:()=> state.worryTime, title:"Worry Time", body:"15 minutes pour noter tes pensées. Maintenant, pas au lit." },
-  { key:"bedtime", id:103, time:()=>{ const w=prescribedWindow(); return minToTime((timeToMin(w.bed)-30+1440)%1440); }, title:"Fenêtre de sommeil", body:"Coucher dans 30 min — seulement si tu tombes de sommeil." },
+  { key:"bedtime", id:103, time:()=>{ const w=prescribedWindow(); return minToTime((timeToMin(w.bed)-30+1440)%1440); }, title:"Fenêtre de sommeil", body:"Coucher dans 30 min - seulement si tu tombes de sommeil." },
 ];
 
 const Notif = {
@@ -518,7 +518,7 @@ const Notif = {
 /* ===================== SYNCHRO SANTÉ (Apple Santé / Health Connect) ===================== */
 /* Pré-remplit les heures de coucher/lever du journal depuis les données du capteur (montre,
    téléphone). Ne touche JAMAIS aux champs subjectifs (latence, réveils, qualité, humeur) :
-   la CBTI travaille la perception du sommeil, pas sa mesure — l'utilisateur reste seul juge
+   la CBTI travaille la perception du sommeil, pas sa mesure - l'utilisateur reste seul juge
    et peut corriger ou ignorer la pré-saisie. Fonctionne via @capgo/capacitor-health, qui
    unifie HealthKit (iOS) et Health Connect (Android, y compris les données Garmin/Wear OS
    partagées par l'utilisateur vers ces plateformes). */
@@ -595,7 +595,7 @@ function renderTabs() {
 }
 
 /* =================================================================
-   SCREEN 1 — PROGRAMME
+   SCREEN 1 - PROGRAMME
    ================================================================= */
 function renderProgramme() {
   const wrap = el(`<div></div>`);
@@ -647,7 +647,7 @@ function renderProgramme() {
   wrap.appendChild(el(`<div class="card">
     <div class="row between">
       <span class="card-title">Efficacité cette semaine</span>
-      ${avgEff!=null ? `<span class="badge ${m.cls}">${avgEff}%</span>` : `<span class="badge warn">—</span>`}
+      ${avgEff!=null ? `<span class="badge ${m.cls}">${avgEff}%</span>` : `<span class="badge warn">-</span>`}
     </div>
     <p class="small muted mt">${avgEff!=null ? esc(m.txt) : "Remplis ton journal chaque matin pour suivre ta progression."}</p>
   </div>`));
@@ -681,7 +681,7 @@ const STIMULUS_RULES = [
   { emoji:"⏰", title:"Réveil à la même heure. Chaque jour. Week-end inclus.", body:"Même si tu as mal dormi. Surtout si tu as mal dormi. C'est l'ancre de tout le système." },
   { emoji:"😴", title:"Tu vas au lit SEULEMENT quand tu as vraiment sommeil.", body:"Pas quand tu es fatigué·e. Quand tu tombes de sommeil." },
   { emoji:"🚶", title:"Tu n'es pas endormi·e en 20 min ? Lève-toi.", body:"Va dans une autre pièce. Lis quelque chose de calme. Reviens seulement quand tu te sens vraiment prêt·e à dormir. C'est contre-intuitif, mais c'est l'une des règles les plus efficaces de la méthode." },
-  { emoji:"🌙", title:"Pas de sieste si tu souffres d'insomnie.", body:"La pression de sommeil est ton alliée — ne la gâche pas." },
+  { emoji:"🌙", title:"Pas de sieste si tu souffres d'insomnie.", body:"La pression de sommeil est ton alliée - ne la gâche pas." },
 ];
 
 function openRulesModal() {
@@ -693,7 +693,7 @@ function openRulesModal() {
 }
 
 /* =================================================================
-   SCREEN 2 — JOURNAL
+   SCREEN 2 - JOURNAL
    ================================================================= */
 function renderJournal() {
   const wrap = el(`<div></div>`);
@@ -755,7 +755,7 @@ function buildJournalForm(date) {
       bedField.querySelector("input").value = data.bed;
       wakeField.querySelector("input").value = data.wake;
       updatePreview();
-      toast("Heures pré-remplies — vérifie et ajuste si besoin");
+      toast("Heures pré-remplies - vérifie et ajuste si besoin");
     };
     card.appendChild(syncBtn);
     card.appendChild(el(`<p class="tiny muted mt" style="margin-bottom:1rem">Pré-remplit uniquement le coucher et le lever. Le reste reste ton évaluation.</p>`));
@@ -777,7 +777,7 @@ function buildJournalForm(date) {
   card.appendChild(notes);
 
   // live efficacité preview
-  const preview = el(`<div class="card solid center mb0"><div class="tiny muted">EFFICACITÉ ESTIMÉE</div><div class="metric-big" id="jpEff">—</div><p class="small" id="jpMsg"></p></div>`);
+  const preview = el(`<div class="card solid center mb0"><div class="tiny muted">EFFICACITÉ ESTIMÉE</div><div class="metric-big" id="jpEff">-</div><p class="small" id="jpMsg"></p></div>`);
   card.appendChild(preview);
   const updatePreview = ()=>{
     const c = computeEntry(f); const m = effMsg(c.eff);
@@ -799,7 +799,7 @@ function buildJournalForm(date) {
     state.journal.sort((a,b)=>a.date.localeCompare(b.date));
     save();
     const m = effMsg(c.eff);
-    toast(`Nuit enregistrée — ${c.eff}% ${m.emoji}`);
+    toast(`Nuit enregistrée - ${c.eff}% ${m.emoji}`);
     navigate("suivi");
   };
   card.appendChild(submit);
@@ -831,7 +831,7 @@ function choiceField(label, opts, val, onChange) {
 }
 
 /* =================================================================
-   SCREEN 3 — SUIVI (charts SVG)
+   SCREEN 3 - SUIVI (charts SVG)
    ================================================================= */
 function lastNEntries(n) { return state.journal.slice(-n); }
 
@@ -863,16 +863,16 @@ function renderSuivi() {
       <div class="metric-cell"><div class="v">${avgEff7}%</div><div class="k">Efficacité moyenne</div></div>
       <div class="metric-cell"><div class="v">±${Math.round(std)} min</div><div class="k">Régularité du réveil</div></div>
       <div class="metric-cell"><div class="v">${avgLat} min</div><div class="k">Endormissement moyen</div></div>
-      <div class="metric-cell"><div class="v">${delta!=null?(delta>=0?"▲ +":"▼ ")+delta+"%":"—"}</div><div class="k">vs semaine préc.</div></div>
+      <div class="metric-cell"><div class="v">${delta!=null?(delta>=0?"▲ +":"▼ ")+delta+"%":"-"}</div><div class="k">vs semaine préc.</div></div>
     </div>
     <div class="metric-cell mt"><div class="v">${respectedPct}%</div><div class="k">Nuits où tu as respecté la fenêtre</div></div>
   </div>`));
 
-  // chart 1 — efficacité
-  wrap.appendChild(chartCard("Efficacité du sommeil — 14 jours", lineChartEff(data)));
-  // chart 2 — durée
-  wrap.appendChild(chartCard("Durée de sommeil — 14 jours", barChartDuration(data)));
-  // chart 3 — régularité
+  // chart 1 - efficacité
+  wrap.appendChild(chartCard("Efficacité du sommeil - 14 jours", lineChartEff(data)));
+  // chart 2 - durée
+  wrap.appendChild(chartCard("Durée de sommeil - 14 jours", barChartDuration(data)));
+  // chart 3 - régularité
   wrap.appendChild(chartCard("Régularité coucher / lever", regularityChart(data)));
 
   return wrap;
@@ -952,7 +952,7 @@ function regularityChart(data) {
 }
 
 /* =================================================================
-   SCREEN 4 — RECONDITIONNEMENT COGNITIF
+   SCREEN 4 - RECONDITIONNEMENT COGNITIF
    ================================================================= */
 function renderRecond() {
   const wrap = el(`<div></div>`);
@@ -1054,7 +1054,7 @@ const BELIEFS = [
   { q:"Rester au lit va m'aider à récupérer.", a:"Non. Chaque minute au lit sans dormir apprend à ton cerveau que le lit ne sert pas à dormir. C'est l'ennemi." },
   { q:"Je dois rattraper le sommeil perdu le week-end.", a:"La grasse matinée décale ton horloge et aggrave l'insomnie la semaine suivante. Réveil fixe, même le dimanche." },
   { q:"L'alcool m'aide à dormir.", a:"L'alcool crée une sédation qui peut faciliter l'endormissement, mais fragmente le sommeil et supprime les phases REM. Au bilan, le repos est bien moins récupérateur, et la fatigue au réveil souvent plus marquée." },
-  { q:"Je ne peux rien faire contre mon insomnie.", a:"La CBTI présente un taux de succès supérieur à 80 %. L'insomnie chronique est avant tout un problème d'apprentissage — et ce qui s'apprend peut se désapprendre." },
+  { q:"Je ne peux rien faire contre mon insomnie.", a:"La CBTI présente un taux de succès supérieur à 80 %. L'insomnie chronique est avant tout un problème d'apprentissage - et ce qui s'apprend peut se désapprendre." },
   { q:"Il faut que ma tête soit vide pour m'endormir.", a:"Impossible. L'objectif n'est pas de ne pas penser, c'est d'observer les pensées sans les combattre." },
   { q:"Si je me réveille la nuit, c'est grave.", a:"4 à 6 micro-réveils par nuit sont normaux. C'est l'anxiété qu'ils génèrent qui est le problème, pas les réveils eux-mêmes." },
 ];
@@ -1097,7 +1097,7 @@ function beliefsSection() {
     card.innerHTML="";
     card.appendChild(el(`<div class="center"><div class="metric-big">${dysf}<span style="font-size:1.4rem">/8</span></div>
       <p class="mt"><strong>${dysf} croyance(s) qui travaillent contre toi.</strong></p>
-      <p class="small muted mt">Voilà comment les recadrer une par une. Relis-les quand l'anxiété revient — ce sont tes contre-arguments.</p></div>`));
+      <p class="small muted mt">Voilà comment les recadrer une par une. Relis-les quand l'anxiété revient - ce sont tes contre-arguments.</p></div>`));
     BELIEFS.forEach((b,i)=>{ if(answers[i]>=4) card.appendChild(el(`<div class="card solid mt"><strong class="small">« ${esc(b.q)} »</strong><p class="small muted mt">${esc(b.a)}</p></div>`)); });
     const again = el(`<button class="btn ghost block mt">Refaire le quiz</button>`); again.onclick=()=>{ idx=0; answers.length=0; show(); };
     card.appendChild(again);
@@ -1107,13 +1107,13 @@ function beliefsSection() {
 }
 
 /* =================================================================
-   SCREEN 5 — CE SOIR
+   SCREEN 5 - CE SOIR
    ================================================================= */
 const WINDDOWN = [
   { id:"social", time:"20h30", txt:"Plus de réseaux sociaux, plus de réponse aux messages", note:"Les messages reçus après 20h30 peuvent attendre. Ta disponibilité après cette heure n'a pas à être systématique." },
   { id:"lights", time:"20h30", txt:"Lumières basses dans l'appartement", note:"Une seule lumière dans un coin. Ton cerveau commence à voir la nuit tomber." },
   { id:"screens", time:"21h30", txt:"Plus d'écrans", note:"Étirements, yoga doux, brossage de dents. Ça remplit le temps où ton cerveau se détache des écrans." },
-  { id:"shower", time:"22h00", txt:"Douche ou bain chaud", note:"Ça force ton corps à baisser sa température. Ta température descend quand tu t'endors — tu prédisposes ton corps." },
+  { id:"shower", time:"22h00", txt:"Douche ou bain chaud", note:"Ça force ton corps à baisser sa température. Ta température descend quand tu t'endors - tu prédisposes ton corps." },
   { id:"clocks", time:"", txt:"Retirer horloges et téléphones visibles de la chambre", note:"Regarder l'heure la nuit transforme ton cerveau en calculette. Le calcul génère du stress." },
 ];
 
@@ -1196,7 +1196,7 @@ function toggleRow(label, val, onChange) {
 /* ---------- Relaxation modals ---------- */
 function openBreathSlow() {
   const body = el(`<div class="center"><h2>Respiration lente</h2>
-    <p class="small muted">En situation de stress, respirer lentement est difficile — et c'est précisément pour cette raison que ça fonctionne. Lorsque tu y parviens, ton système nerveux reçoit un signal de sécurité. La détente suit naturellement.</p>
+    <p class="small muted">En situation de stress, respirer lentement est difficile - et c'est précisément pour cette raison que ça fonctionne. Lorsque tu y parviens, ton système nerveux reçoit un signal de sécurité. La détente suit naturellement.</p>
     <div class="breath-stage"><div class="breath-circle">Prêt·e ?</div></div></div>`);
   const circle = body.querySelector(".breath-circle");
   let stop=false;
@@ -1249,7 +1249,7 @@ function openSOS() {
   const body = el(`<div><h2>🌙 Tu n'arrives pas à dormir</h2>
     <div class="card solid mt"><p><strong>Lève-toi. Maintenant.</strong></p>
     <p class="small mt">C'est la règle la plus difficile et la plus importante. Rends-toi dans une autre pièce. Laisse le téléphone de côté. Lis quelque chose de calme ou d'un peu ennuyeux.</p>
-    <p class="small muted mt">Reviens te coucher seulement quand tu tombes de sommeil — pas avant.</p></div></div>`);
+    <p class="small muted mt">Reviens te coucher seulement quand tu tombes de sommeil - pas avant.</p></div></div>`);
   const timerBox = el(`<div class="card center"><div class="tiny muted">SI TU AS BESOIN D'UN REPÈRE</div><div class="countdown" id="sosTimer">20:00</div></div>`);
   const startBtn = el(`<button class="btn primary block">Lancer 20 min</button>`);
   let interval=null;
@@ -1306,7 +1306,7 @@ function startOnboarding() {
   function stepDiagnostic() {
     const c = el(`<div></div>`);
     c.appendChild(el(`<h2>Le diagnostic honnête</h2>
-      <p class="small muted mt">Quelle qu'en soit la cause — stress, horaires décalés, écrans — l'insomnie chronique suit le même mécanisme : le cerveau a progressivement dissocié le lit du sommeil. Cette méthode va restaurer cette association.</p>`));
+      <p class="small muted mt">Quelle qu'en soit la cause - stress, horaires décalés, écrans - l'insomnie chronique suit le même mécanisme : le cerveau a progressivement dissocié le lit du sommeil. Cette méthode va restaurer cette association.</p>`));
     c.appendChild(choiceField("Depuis combien de temps tu dors mal ?", ["< 1 mois","1-3 mois","3-6 mois","> 6 mois"], data.duration, v=>data.duration=v));
     c.appendChild(choiceField("Ton problème principal ?", ["Mal à m'endormir","Réveils nocturnes","Réveil trop tôt","Sommeil non réparateur"], data.problem, v=>data.problem=v));
     c.appendChild(timeField("Heure de coucher habituelle", data.usualBed, v=>data.usualBed=v));
