@@ -1112,11 +1112,11 @@ function beliefsSection() {
    SCREEN 5 - CE SOIR
    ================================================================= */
 const WINDDOWN = [
-  { id:"social", time:"20h30", txt:"Plus de réseaux sociaux, plus de réponse aux messages", note:"Les messages reçus après 20h30 peuvent attendre. Ta disponibilité après cette heure n'a pas à être systématique." },
-  { id:"lights", time:"20h30", txt:"Lumières basses dans l'appartement", note:"Une seule lumière dans un coin. Ton cerveau commence à voir la nuit tomber." },
-  { id:"screens", time:"21h30", txt:"Plus d'écrans", note:"Étirements, yoga doux, brossage de dents. Ça remplit le temps où ton cerveau se détache des écrans." },
-  { id:"shower", time:"22h00", txt:"Douche ou bain chaud", note:"Ça force ton corps à baisser sa température. Ta température descend quand tu t'endors - tu prédisposes ton corps." },
-  { id:"clocks", time:"", txt:"Retirer horloges et téléphones visibles de la chambre", note:"Regarder l'heure la nuit transforme ton cerveau en calculette. Le calcul génère du stress." },
+  { id:"social", time:"20h30", txt:"Fin des réseaux sociaux et des messages", note:"Les messages reçus après cette heure peuvent attendre demain. Ta disponibilité n'a pas à être permanente : poser cette limite aide ton esprit à se détacher progressivement des sollicitations extérieures." },
+  { id:"lights", time:"20h30", txt:"Lumières basses dans l'appartement", note:"Garde une seule source de lumière tamisée, dans un coin de la pièce. Cette baisse progressive de luminosité signale à ton cerveau que la nuit approche." },
+  { id:"screens", time:"21h30", txt:"Plus d'écrans", note:"Profite de ce moment pour des étirements légers, du yoga doux ou le brossage des dents. Cette transition occupe l'espace laissé par les écrans et aide ton cerveau à décrocher." },
+  { id:"shower", time:"22h00", txt:"Douche ou bain chaud", note:"La chaleur suivie du refroidissement du corps imite le processus naturel qui précède l'endormissement. Ta température baisse quand tu t'endors : tu prépares ton corps à ce signal." },
+  { id:"clocks", time:"Avant le coucher", txt:"Retire horloges et téléphones de la chambre", note:"Regarder l'heure la nuit transforme ton cerveau en calculette. Ce calcul mental génère du stress et entretient l'éveil." },
 ];
 
 function renderCeSoir() {
@@ -1125,7 +1125,7 @@ function renderCeSoir() {
   if (state.windDownDoneToday._date !== today) { state.windDownDoneToday = { _date: today }; save(); }
 
   // wind-down checklist
-  const card = el(`<div class="card"><div class="card-title">Routine du soir</div><p class="small muted">Coche au fur et à mesure. Demain, ça repart à zéro.</p></div>`);
+  const card = el(`<div class="card"><div class="card-title">Routine du soir</div><p class="small muted">Coche chaque étape au fil de la soirée. La liste se réinitialise automatiquement chaque jour.</p></div>`);
   WINDDOWN.forEach(item=>{
     const done = !!state.windDownDoneToday[item.id];
     const row = el(`<div class="check-item" data-done="${done?1:0}">
