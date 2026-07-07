@@ -1,9 +1,11 @@
-const CACHE_VERSION = "serein-cbti-v1";
+// 1.0.0 est remplacé par la version de package.json au build (scripts/build.mjs)
+const CACHE_VERSION = "serein-cbti-1.0.0";
 
 const ASSETS = [
   "/",
   "/index.html",
   "/manifest.json",
+  "/privacy.html",
   "/fonts/bricolage-grotesque-latin.woff2",
   "/fonts/bricolage-grotesque-latin-ext.woff2",
   "/fonts/hanken-grotesk-latin.woff2",

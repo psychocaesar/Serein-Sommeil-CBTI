@@ -78,6 +78,17 @@ workflows:
       - name: Capacitor sync Android
         script: npx cap sync android
 
+      - name: Reconstruire keystore.properties depuis les variables Codemagic
+        # build.gradle lit keystore.properties (gitignoré) ; en CI on le reconstitue
+        # depuis les variables injectées par android_signing, sinon l'AAB sort non signé
+        script: |
+          cat > android/keystore.properties <<EOF
+          storeFile=$CM_KEYSTORE_PATH
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          keyPassword=$CM_KEY_PASSWORD
+          EOF
+
       - name: Build Android AAB
         script: |
           cd android

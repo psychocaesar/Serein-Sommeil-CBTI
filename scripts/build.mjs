@@ -62,9 +62,14 @@ for (const f of FONT_FILES) {
   else { console.warn("⚠  font absent (à ajouter manuellement) :", f); }
 }
 
-/* ---- 5. Copier manifest, sw, icônes ---- */
+/* ---- 5. Copier manifest, sw (version injectée), privacy, icônes ---- */
+const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
 copyFileSync(join(ROOT, "www-src", "manifest.json"), join(WWW, "manifest.json")); console.log("✓ manifest.json");
-copyFileSync(join(ROOT, "www-src", "sw.js"),          join(WWW, "sw.js"));          console.log("✓ sw.js");
+const sw = readFileSync(join(ROOT, "www-src", "sw.js"), "utf8").replaceAll("__VERSION__", pkg.version);
+writeFileSync(join(WWW, "sw.js"), sw, "utf8"); console.log("✓ sw.js (cache serein-cbti-" + pkg.version + ")");
+copyFileSync(join(ROOT, "www-src", "privacy.html"), join(WWW, "privacy.html")); console.log("✓ privacy.html");
+// alias exigé par Health Connect : android/app/src/main/assets/public/privacypolicy.html (via cap sync)
+copyFileSync(join(ROOT, "www-src", "privacy.html"), join(WWW, "privacypolicy.html")); console.log("✓ privacypolicy.html (Health Connect)");
 const iconsDir = join(ROOT, "www", "icons");
 ["icon-192.png","icon-512.png","icon-maskable-512.png","apple-touch-icon.png","favicon-32.png"].forEach(f=>{
   if(existsSync(join(iconsDir, f))) console.log("✓ icons/" + f);

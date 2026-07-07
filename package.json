@@ -9,6 +9,8 @@
   "scripts": {
     "build": "node scripts/gen-icons.mjs && node scripts/build.mjs",
     "icons": "node scripts/gen-icons.mjs",
+    "pretest": "npm run build",
+    "test": "node --test \"tests/*.test.js\"",
     "cap:add:android": "npx cap add android",
     "cap:add:ios": "npx cap add ios",
     "cap:sync": "npx cap sync",

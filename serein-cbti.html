@@ -294,6 +294,17 @@ svg.chart { width:100%; height:auto; display:block; overflow:visible; }
 .legend { display:flex; gap:1rem; flex-wrap:wrap; font-size:.72rem; color:var(--color-muted); margin-top:.4rem; }
 .legend i { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:.3rem; vertical-align:middle; }
 .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+
+/* Respect de la préférence système "réduire les animations" (WCAG 2.3.3).
+   Les guides de respiration deviennent des transitions instantanées : le rythme
+   reste porté par les libellés (Inspire / Retiens / Expire). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -322,6 +333,7 @@ svg.chart { width:100%; height:auto; display:block; overflow:visible; }
    =================================================================== */
 
 /* ----------------------------- STATE ----------------------------- */
+const APP_VERSION = "1.0.0"; // doit rester aligné avec package.json (vérifié par tests/versions.test.js)
 const LS_KEY = "serein_cbti_v1";
 const DEFAULT_STATE = {
   version: 1,
@@ -340,7 +352,6 @@ const DEFAULT_STATE = {
   journal: [],   // {date, bed, wake, latency, awakenings, awakeTime, watchedClock, phone, respected, quality, mood, notes, eff, sleptMin}
   worry: [],     // {date, raw, thoughts:[{text, cat}]}
   beliefsScore: null,
-  windDown: {},  // {ruleId: lastDoneDate}
   windDownDoneToday: {},
   worryTime: "18:00",
   reminders: { journal:false, worry:false, bedtime:false },
@@ -423,10 +434,12 @@ function programWeek() {
 
 /* ============ AJUSTEMENT HEBDOMADAIRE AUTOMATIQUE ============ */
 function maybeWeeklyAdjust() {
-  const wk = todayISO() + "-W" + getWeekNum();
-  // on évalue le lundi (ou au 1er lancement de la semaine) sur les 5 dernières nuits
+  // clé année-semaine : une seule évaluation par semaine, au 1er lancement de la semaine
+  const wk = new Date().getFullYear() + "-W" + getWeekNum();
   if (state.weeklyAdjust.lastWeek === wk) return null;
-  const recent = state.journal.slice(-5);
+  // seules les nuits des 8 derniers jours comptent : pas d'ajustement sur des données périmées
+  const cutoff = Date.now() - 8 * 86400000;
+  const recent = state.journal.filter(e => new Date(e.date + "T00:00").getTime() >= cutoff).slice(-5);
   if (recent.length < 5) return null;
   const avgEff = recent.reduce((s,e)=>s+(e.eff||0),0)/recent.length;
   let change = 0, msg = "";
@@ -438,6 +451,7 @@ function maybeWeeklyAdjust() {
   }
   state.weeklyAdjust.lastWeek = wk;
   state.weeklyAdjust.history.push({ wk, avgEff: Math.round(avgEff), change });
+  if (state.weeklyAdjust.history.length > 26) state.weeklyAdjust.history = state.weeklyAdjust.history.slice(-26);
   save();
   return { change, msg, avgEff: Math.round(avgEff) };
 }
@@ -560,9 +574,14 @@ const TABS = [
 let currentTab = "programme";
 let lastTab = "programme"; // dernier onglet visité, pour le bouton retour de Réglages
 
-function navigate(id) {
+function navigate(id, fromPop) {
   currentTab = id;
   if (id !== "reglages") lastTab = id;
+  // historique navigateur : donne un comportement correct au bouton retour Android
+  if (!fromPop) {
+    if (!history.state) history.replaceState({ tab: id }, "");
+    else if (history.state.tab !== id) history.pushState({ tab: id }, "");
+  }
   renderTabs();
   const view = $("#view");
   view.innerHTML = "";
@@ -573,6 +592,15 @@ function navigate(id) {
   view.scrollTop = 0; window.scrollTo(0,0);
   $("#sosBtn").hidden = false;
 }
+// Bouton retour (Android) / history back : ferme d'abord le modal ouvert, sinon remonte les onglets
+window.addEventListener("popstate", e => {
+  if ($("#modalRoot").children.length) {
+    if (modalDismissable) closeModal();
+    history.pushState({ tab: currentTab }, ""); // on reste sur l'écran courant
+    return;
+  }
+  if (e.state && e.state.tab) navigate(e.state.tab, true);
+});
 function renderTabs() {
   const bar = $("#tabbar");
   bar.innerHTML = "";
@@ -697,8 +725,22 @@ function renderJournal() {
     </div>`));
   }
 
-  const form = buildJournalForm(today);
-  wrap.appendChild(form);
+  // sélecteur de date : permet de rattraper une nuit oubliée (jusqu'à 13 jours en arrière)
+  const minDate = new Date(Date.now() - 13 * 86400000).toISOString().slice(0, 10);
+  const picker = el(`<div class="card"><label class="field mb0"><span class="lbl">Nuit à noter <span class="hint">(datée du matin au réveil)</span></span>
+    <input type="date" value="${today}" min="${minDate}" max="${today}"></label></div>`);
+  wrap.appendChild(picker);
+
+  const formHolder = el(`<div></div>`);
+  formHolder.appendChild(buildJournalForm(today));
+  wrap.appendChild(formHolder);
+
+  picker.querySelector("input").onchange = e => {
+    const d = e.target.value;
+    if (!d || d > today || d < minDate) { e.target.value = today; return; }
+    formHolder.innerHTML = "";
+    formHolder.appendChild(buildJournalForm(d));
+  };
 
   // historique récent
   if (state.journal.length) {
@@ -708,6 +750,7 @@ function renderJournal() {
       hist.appendChild(el(`<div class="list-entry">
         <div class="row between"><span class="date">${frDate(e.date)}</span><span class="badge ${m.cls}">${e.eff}% ${m.emoji}</span></div>
         <div class="small muted">${e.bed}→${e.wake} · ${fmtHM(e.sleptMin)} dormi · endormissement ${e.latency}min</div>
+        ${e.notes ? `<div class="tiny muted" style="margin-top:.2rem">📝 ${esc(e.notes)}</div>` : ""}
       </div>`));
     });
     wrap.appendChild(hist);
@@ -728,7 +771,8 @@ function buildJournalForm(date) {
               mood: existing.mood??null, notes: existing.notes||"" };
 
   const card = el(`<div class="card"></div>`);
-  card.appendChild(el(`<h2>${existing.date?"Modifier la nuit":"Ta nuit"}</h2>`));
+  const isToday = date === todayISO();
+  card.appendChild(el(`<h2>${isToday ? (existing.date?"Modifier la nuit":"Ta nuit") : "Nuit du " + frDate(date)}</h2>`));
 
   const bedField = timeField("Heure de coucher réelle", f.bed, v=>f.bed=v);
   const wakeField = timeField("Heure de lever réelle", f.wake, v=>f.wake=v);
@@ -1183,14 +1227,31 @@ function renderReglages() {
   }
 
   // Données
-  const data = el(`<div class="card"><div class="card-title">Données</div><p class="small muted">100% locales sur cet appareil, jamais transmises.</p></div>`);
+  const data = el(`<div class="card"><div class="card-title">Données</div><p class="small muted">Tout reste sur ton appareil : rien n'est transmis à nos serveurs ni à des tiers.</p></div>`);
   const tools = el(`<div class="row mt"><button class="btn ghost grow">⬇️ Exporter</button><button class="btn ghost grow">↺ Recommencer</button></div>`);
   tools.children[0].onclick = exportJSON;
   tools.children[1].onclick = ()=>{ if(confirm("Effacer toutes tes données et recommencer l'onboarding ?")){ localStorage.removeItem(LS_KEY); location.reload(); } };
   data.appendChild(tools);
+  const about = el(`<p class="tiny muted center" style="margin-top:.9rem"><button class="tiny" style="color:var(--color-primary);text-decoration:underline">Politique de confidentialité</button> · v${APP_VERSION} · AGPL-3.0</p>`);
+  about.querySelector("button").onclick = openPrivacy;
+  data.appendChild(about);
   wrap.appendChild(data);
 
   return wrap;
+}
+
+async function openPrivacy() {
+  try {
+    const res = await fetch("privacy.html");
+    if (!res.ok) throw new Error(res.status);
+    const doc = new DOMParser().parseFromString(await res.text(), "text/html");
+    const main = document.importNode(doc.querySelector("main"), true);
+    const body = el(`<div></div>`);
+    body.appendChild(main);
+    const close = el(`<button class="btn primary block mt">Fermer</button>`); close.onclick = closeModal;
+    body.appendChild(close);
+    openModal(body);
+  } catch(e) { toast("Politique de confidentialité consultable sur sereinapp.fr"); }
 }
 
 function toggleRow(label, val, onChange) {
@@ -1238,8 +1299,9 @@ function openBreathSlow() {
   ctrl.onclick=()=>{ if(!running){ running=true; stop=false; ctrl.textContent="Arrêter"; loop(); } else { stop=true; running=false; ctrl.textContent="Commencer"; circle.style.transform="scale(1)"; circle.textContent="Prêt·e ?"; } };
   body.appendChild(ctrl);
   body.appendChild(audioPlayerCard("Respiration 4-7-8 — Calme profond.mp3", "Version audio narrée", 6));
-  const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=()=>{stop=true;closeModal();}; body.appendChild(close);
+  const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=closeModal; body.appendChild(close);
   openModal(body);
+  onModalClose(()=>{ stop = true; });
 }
 function openBreathBelly() {
   const body = el(`<div class="center"><h2>Respiration du ventre</h2>
@@ -1250,8 +1312,9 @@ function openBreathBelly() {
   const ctrl=el(`<button class="btn primary block mt">Commencer</button>`); let running=false;
   ctrl.onclick=()=>{ if(!running){running=true;stop=false;ctrl.textContent="Arrêter";loop();}else{stop=true;running=false;ctrl.textContent="Commencer";circle.style.transform="scale(1)";} };
   body.appendChild(ctrl);
-  const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=()=>{stop=true;closeModal();}; body.appendChild(close);
+  const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=closeModal; body.appendChild(close);
   openModal(body);
+  onModalClose(()=>{ stop = true; });
 }
 function openBodyScan() {
   const zones=["les orteils","les pieds","les mollets","les genoux","les cuisses","les hanches","le ventre","le dos","les mains","les bras","les épaules","le cou","le visage"];
@@ -1264,8 +1327,9 @@ function openBodyScan() {
   ctrl.onclick=()=>{ if(!running){running=true;stop=false;ctrl.textContent="Arrêter";run();}else{stop=true;running=false;ctrl.textContent="Commencer";} };
   body.appendChild(ctrl);
   body.appendChild(audioPlayerCard("Le scan corporel.mp3", "Version audio narrée", 10));
-  const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=()=>{stop=true;closeModal();}; body.appendChild(close);
+  const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=closeModal; body.appendChild(close);
   openModal(body);
+  onModalClose(()=>{ stop = true; });
 }
 function openWalk() {
   const body=el(`<div><h2 class="center">Visualisation de promenade</h2>
@@ -1293,22 +1357,33 @@ function openSOS() {
       if(left<=0){ clearInterval(interval); interval=null; Notif.fire("Serein Sommeil","Tu tombes de sommeil ? Retourne te coucher."); toast("Si tu tombes de sommeil, retourne au lit."); } },1000);
   };
   body.appendChild(timerBox); body.appendChild(startBtn);
-  const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=()=>{ if(interval)clearInterval(interval); closeModal(); }; body.appendChild(close);
+  const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=closeModal; body.appendChild(close);
   openModal(body);
+  onModalClose(()=>{ if (interval) { clearInterval(interval); interval = null; } });
 }
 
 /* ============================ MODAL SYSTEM ============================ */
-function openModal(contentNode) {
+/* Registre de nettoyage : chaque modal peut enregistrer un callback exécuté à SA fermeture,
+   quel que soit le chemin (bouton, tap sur le fond, bouton retour Android). Évite les timers
+   fantômes (SOS, boucles respiration/body scan) qui continuaient sur du DOM détaché. */
+let modalCleanups = [];
+let modalDismissable = true;
+function onModalClose(fn) { modalCleanups.push(fn); }
+function openModal(contentNode, opts = {}) {
   closeModal();
+  modalDismissable = opts.dismissable !== false;
   const back = el(`<div class="modal-backdrop"></div>`);
   const modal = el(`<div class="modal" role="dialog" aria-modal="true"></div>`);
   modal.appendChild(contentNode);
   back.appendChild(modal);
-  back.onclick = e=>{ if(e.target===back) closeModal(); };
+  // dismissable:false = modals critiques (avertissement, onboarding) : pas de fermeture par le fond
+  back.onclick = e=>{ if(e.target===back && modalDismissable) closeModal(); };
   $("#modalRoot").appendChild(back);
   document.body.style.overflow="hidden";
 }
 function closeModal() {
+  modalCleanups.forEach(fn => { try { fn(); } catch(e){} });
+  modalCleanups = [];
   $("#modalRoot").querySelectorAll("audio").forEach(a=>a.pause());
   $("#modalRoot").innerHTML=""; document.body.style.overflow="";
 }
@@ -1336,7 +1411,7 @@ function startOnboarding() {
     else if (step===1) body.appendChild(stepEfficiency());
     else if (step===2) body.appendChild(stepWindow());
     else body.appendChild(stepRules());
-    openModal(body);
+    openModal(body, { dismissable: false });
   }
 
   function stepDiagnostic() {
@@ -1435,7 +1510,7 @@ function showDisclaimer(then) {
   const ok = el(`<button class="btn primary block mt">J'ai compris</button>`);
   ok.onclick=()=>{ state.disclaimerSeen=true; save(); closeModal(); then&&then(); };
   body.appendChild(ok);
-  openModal(body);
+  openModal(body, { dismissable: false });
 }
 
 /* ============================ THEME ============================ */

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d1b15">
+<title>Politique de confidentialité - Serein Sommeil</title>
+<style>
+:root {
+  --bg: #0d1b15; --surface: #1c3127; --primary: #93c9ac; --primary-2: #d8b78a;
+  --text: #f0f4f0; --muted: #93a89b; --border: rgba(255,255,255,0.08);
+}
+@media (prefers-color-scheme: light) {
+  :root { --bg: #f4f2ec; --surface: #ffffff; --primary: #2f6b50; --primary-2: #c0883e; --text: #1b2a20; --muted: #5d7066; --border: rgba(0,0,0,0.09); }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; padding: 2rem 1.25rem 4rem; }
+main { max-width: 640px; margin: 0 auto; }
+h1 { font-size: 1.6rem; margin-bottom: .4rem; }
+h2 { font-size: 1.1rem; margin: 1.8rem 0 .5rem; color: var(--primary); }
+p, li { font-size: .95rem; }
+ul { padding-left: 1.2rem; margin: .4rem 0; }
+.muted { color: var(--muted); font-size: .85rem; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.1rem 1.25rem; margin: 1rem 0; }
+a { color: var(--primary); }
+</style>
+</head>
+<body>
+<main>
+  <h1>🌙 Serein Sommeil</h1>
+  <p class="muted">Politique de confidentialité - dernière mise à jour : 1er juillet 2026</p>
+
+  <div class="card">
+    <p><strong>En bref :</strong> Serein Sommeil fonctionne sans compte, sans publicité et sans traqueur.
+    Tes données sont stockées sur ton appareil et ne sont jamais transmises à nos serveurs ni à des tiers.</p>
+  </div>
+
+  <h2>Qui sommes-nous</h2>
+  <p>Serein Sommeil est éditée par l'association loi 1901 « Sereinapp Méditation » (RNA W302023362),
+  dans le prolongement de l'application Serein (<a href="https://sereinapp.fr">sereinapp.fr</a>).
+  L'application est open source, sous licence AGPL-3.0.</p>
+
+  <h2>Données stockées</h2>
+  <p>L'application enregistre uniquement, et uniquement sur ton appareil (stockage local) :</p>
+  <ul>
+    <li>ton profil de sommeil (réponses au questionnaire initial, fenêtre de sommeil prescrite) ;</li>
+    <li>ton journal de sommeil (horaires, efficacité, qualité, humeur, notes) ;</li>
+    <li>tes sessions Worry Time et tes réponses au quiz des croyances ;</li>
+    <li>tes préférences (thème, rappels, routine du soir).</li>
+  </ul>
+  <p>Aucune de ces données n'est envoyée à nos serveurs ni à des tiers. Il n'y a ni compte, ni identifiant, ni statistique d'usage, ni outil d'analyse.</p>
+
+  <h2>Sauvegarde de l'appareil</h2>
+  <p>Comme pour toute application, les sauvegardes automatiques de ton téléphone (iCloud sur iOS,
+  Google sur Android) peuvent inclure les données de l'application. Ces sauvegardes sont gérées par
+  Apple ou Google selon leurs propres politiques, et tu peux les désactiver dans les réglages de ton appareil.</p>
+
+  <h2>Données de santé (optionnel)</h2>
+  <p>Si tu actives la synchronisation avec Apple Santé ou Health Connect, l'application lit
+  <strong>uniquement tes données de sommeil</strong> (heures de coucher et de lever) pour pré-remplir
+  ton journal. Cette lecture est locale : rien n'est transmis, rien n'est écrit dans Apple Santé ou
+  Health Connect, et tu peux révoquer cet accès à tout moment dans les réglages de ton appareil.</p>
+
+  <h2>Notifications</h2>
+  <p>Les rappels (journal du matin, Worry Time, heure de coucher) sont des notifications locales,
+  programmées et déclenchées sur ton appareil. Aucun serveur de notification n'est utilisé.</p>
+
+  <h2>Audio</h2>
+  <p>Les séances audio guidées optionnelles sont diffusées depuis notre serveur
+  <code>audio.sereinapp.fr</code>. Lors de la lecture, ton appareil effectue une requête réseau
+  standard (adresse IP, fichier demandé) nécessaire à la diffusion ; ces requêtes ne sont pas
+  utilisées pour te suivre ni croisées avec d'autres données.</p>
+
+  <h2>Exporter ou supprimer tes données</h2>
+  <p>Depuis l'écran Réglages, tu peux exporter toutes tes données (fichier JSON lisible) ou tout
+  effacer définitivement. Désinstaller l'application supprime également toutes les données locales.</p>
+
+  <h2>Contact</h2>
+  <p>Pour toute question : <a href="mailto:serein@cesarbroche.fr">serein@cesarbroche.fr</a></p>
+</main>
+</body>
+</html>
