@@ -37,19 +37,21 @@ Navigation : `navigate(id, param)` pousse dans l'historique (bouton retour Andro
 
 ## Architecture
 
-- **État** : un seul objet `state` dans `localStorage` (`serein_cbti_v1`, `version: 2`). `migrateV1` convertit l'ancien journal et refait l'accueil (la v1 ne posait aucune question de sécurité).
+- **État** : un seul objet `state`, clé `serein_cbti_v1` (`version: 2`). `localStorage` sert à la lecture synchrone ; `save()` écrit aussi dans Capacitor Preferences (copie native durable, incluse dans les sauvegardes iCloud / Google), et `boot()` restaure depuis Preferences si iOS a purgé le WebView (vérifié dans le simulateur). « Tout effacer » vide les deux (`eraseAll`). `migrateV1` convertit l'ancien journal et refait l'accueil (la v1 ne posait aucune question de sécurité).
+- **CSP** en meta tag : la version source autorise Google Fonts, `build.mjs` retire ces hôtes de la version buildée (polices locales). Seule ressource externe : les voix guidées (`media-src https://audio.sereinapp.fr`). Toute nouvelle ressource externe → mettre la CSP à jour.
 - **Dates** : toujours `ymd()` (heure locale), jamais `toISOString().slice(0,10)` (UTC → décalage d'un jour entre minuit et 2 h).
 - **`[hidden]`** : règle globale `[hidden] { display:none !important; }` en tête de feuille de style, ne pas la retirer.
-- **Pont natif Capacitor** : `window.Capacitor.Plugins.X` avec repli web. Plugins : `LocalNotifications`, `Health` (`@capgo/capacitor-health`, lecture du sommeil uniquement).
+- **Pont natif Capacitor** : `window.Capacitor.Plugins.X` avec repli web. Plugins : `LocalNotifications`, `Preferences`, `Health` (`@capgo/capacitor-health`, lecture du sommeil uniquement).
+- **Synchro santé** : `HealthSync.fetchNight(date)` lit de la veille midi au jour même 20 h, et `sleepSessionFor` regroupe les échantillons en sessions (trou > 2 h = nouvelle session) puis garde la plus longue qui finit le matin voulu. Ne pré-remplit que le coucher et le dernier réveil.
+- **iOS** : cycle de vie UIScene (`SceneDelegate.swift` + `UIApplicationSceneManifest`), obligatoire depuis le SDK iOS 27, nécessite Capacitor ≥ 8.5.1. Même migration que Serein et Serein Relais.
+- **Android** : AGP 9.2.1 / Gradle 9.4.1 (comme Relais, nécessaires avec le JDK 25 d'Android Studio), minSdk 26 (exigé par le plugin santé). Le manifest retire avec `tools:node="remove"` toutes les permissions santé du plugin sauf `READ_SLEEP` (vérifié dans le manifest fusionné) ; pas de `SCHEDULE_EXACT_ALARM` (le plugin de notifications se rabat sur des alarmes inexactes, suffisantes pour des rappels).
 
 ## Tests
 
 `tests/clinical-logic.test.js` charge le vrai `<script>` dans un sandbox `node:vm`, coupé au marqueur `/* ==== BOOT (les tests coupent le script ici) ==== */`. Couvre agenda, garde-fous, fenêtre de départ, titration, bilan, dates, partage, migration. Toute nouvelle fonction clinique pure → un test ici. `versions.test.js` et `assets.test.js` vérifient versions et assets du build.
 
-## Chantiers connus (audit du 16/10/2026)
+## Chantiers connus
 
-- **iOS** : pas de `SceneDelegate` → plantage au lancement avec le SDK iOS 27 ; passer Capacitor ≥ 8.5.1 et migrer comme Serein Relais (commit `a03bf9c` de ce repo-là).
-- **Android** : le manifest de `@capgo/capacitor-health` ajoute ~40 permissions santé (lecture/écriture) : les retirer avec `tools:node="remove"` sauf `READ_SLEEP`. `SCHEDULE_EXACT_ALARM` à justifier ou retirer.
-- **Synchro santé** : `fetchLastNight` prend toutes les données des 32 dernières heures et englobe deux nuits → renvoie presque toujours `null`. Regrouper en sessions, prendre la dernière.
-- **Persistance** : `localStorage` seul ; passer par Capacitor Preferences comme Relais. Pas d'import de sauvegarde.
-- **CSP** absente ; CI encore sur Codemagic (`node: latest`) alors que Serein et Relais sont passés à Xcode Cloud.
+- **CI** : encore sur Codemagic (`codemagic.yaml`, `node: latest`), alors que Serein et Serein Relais sont passés à Xcode Cloud (`ios/App/ci_scripts/ci_post_clone.sh` qui lance `npm test`). À aligner avant la première soumission.
+- **Sauvegarde** : export JSON seulement, pas d'import ; le téléchargement par `a.download` est à tester sur appareil.
+- **Validation sur appareil réel** : notifications, synchro Apple Santé / Health Connect, bouton retour Android.

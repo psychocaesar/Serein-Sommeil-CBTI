@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Serein Sommeil - un compagnon pour les outils de la TCC-I, entre les séances ou en autonomie. Offline, sans compte, sans pub.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data:; media-src https://audio.sereinapp.fr; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
 <meta name="theme-color" content="#0d1b15">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -83,7 +84,7 @@ a { color: var(--color-primary); }
   display: flex;
   flex-direction: column;
   position: relative;
-  padding-top: env(safe-area-inset-top);
+  /* la marge de l'encoche est portée par le header sticky (sinon elle compte deux fois) */
 }
 header.app-header {
   position: sticky; top: 0; z-index: 50;
@@ -170,6 +171,9 @@ input[type=time], input[type=text], input[type=number], input[type=date], textar
   transition: border-color .2s;
 }
 input:focus, textarea:focus, select:focus { border-color: var(--color-primary); }
+/* iOS : sans appearance:none, les champs heure/date ignorent width:100% et débordent */
+input[type=time], input[type=date] { -webkit-appearance:none; appearance:none; display:block; min-width:0; min-height:3rem; text-align:left; }
+input[type=time]::-webkit-date-and-time-value, input[type=date]::-webkit-date-and-time-value { text-align:left; }
 textarea { resize: vertical; min-height: 70px; line-height:1.5; }
 
 /* segmented choice */
@@ -417,7 +421,32 @@ function deepMerge(base, over) {
   }
   return base;
 }
-function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){ console.warn(e); } }
+/* localStorage = lecture synchrone ; Capacitor Preferences = copie native durable
+   (UserDefaults / SharedPreferences, incluse dans les sauvegardes iCloud / Google).
+   L'agenda survit ainsi à une purge du WebView par iOS. Même principe que Serein Relais. */
+const Prefs = () => (typeof window !== "undefined" && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Preferences) || null;
+function save() {
+  let raw;
+  try { raw = JSON.stringify(state); localStorage.setItem(LS_KEY, raw); } catch(e){ console.warn(e); }
+  const p = Prefs();
+  if (p && raw) p.set({ key: LS_KEY, value: raw }).catch(()=>{});
+}
+async function hydrateFromNative() {
+  const p = Prefs();
+  if (!p) return false;
+  try {
+    const { value } = await p.get({ key: LS_KEY });
+    const local = localStorage.getItem(LS_KEY);
+    if (value != null && local == null) { localStorage.setItem(LS_KEY, value); return true; } // WebView purgé → on restaure
+    if (value == null && local != null) await p.set({ key: LS_KEY, value: local });          // amorce la copie native
+  } catch(e) { console.warn("prefs", e); }
+  return false;
+}
+async function eraseAll() {
+  try { localStorage.removeItem(LS_KEY); } catch(e){}
+  const p = Prefs();
+  if (p) { try { await p.remove({ key: LS_KEY }); } catch(e){} }
+}
 
 /* Migration depuis la v1 (fenêtre « prescrite », journal simplifié). Le journal et les
    réglages sont conservés ; l'accueil est refait car la v1 ne posait aucune question de
@@ -732,24 +761,42 @@ const HealthSync = {
       return !(auth.readDenied && auth.readDenied.includes("sleep"));
     } catch(e) { console.warn("health auth", e); return false; }
   },
-  async fetchLastNight() {
+  /* nuit datée du matin `date` : on lit de la veille midi au jour même 20 h */
+  async fetchNight(date) {
     if (!this.available()) return null;
     try {
       const p = HealthPlugin();
-      const end = new Date(), start = new Date(Date.now() - 32*3600*1000);
-      const { samples } = await p.readSamples({ dataType:"sleep", startDate:start.toISOString(), endDate:end.toISOString(), limit:200, ascending:true });
-      if (!samples || !samples.length) return null;
-      const relevant = samples.filter(s => ["inBed","asleep","rem","deep","light"].includes(s.sleepState));
-      if (!relevant.length) return null;
-      const starts = relevant.map(s => new Date(s.startDate).getTime());
-      const ends = relevant.map(s => new Date(s.endDate).getTime());
-      const bedDate = new Date(Math.min(...starts)), wakeDate = new Date(Math.max(...ends));
-      const spanH = (wakeDate - bedDate) / 3600000;
-      if (spanH < 2 || spanH > 14) return null;
-      return { bed: pad(bedDate.getHours())+":"+pad(bedDate.getMinutes()), wake: pad(wakeDate.getHours())+":"+pad(wakeDate.getMinutes()) };
+      const start = parseYmd(addDays(date, -1)); // midi la veille (parseYmd renvoie midi)
+      const end = parseYmd(date); end.setHours(20, 0, 0, 0);
+      const { samples } = await p.readSamples({ dataType:"sleep", startDate:start.toISOString(), endDate:end.toISOString(), limit:1000, ascending:true });
+      return sleepSessionFor(samples || [], date);
     } catch(e) { console.warn("health fetch", e); return null; }
   }
 };
+
+/* Regroupe les échantillons de sommeil (phases, « au lit ») en sessions séparées par plus de
+   2 h sans donnée, puis garde la plus longue session qui se termine le matin `date` (heure
+   locale). Avant : min/max sur 32 h, qui englobait deux nuits et renvoyait presque toujours null. */
+function sleepSessionFor(samples, date) {
+  const GAP = 2 * 3600000;
+  const spans = samples
+    .filter(s => ["inBed","asleep","rem","deep","light"].includes(s.sleepState))
+    .map(s => ({ s: new Date(s.startDate).getTime(), e: new Date(s.endDate).getTime() }))
+    .filter(x => !isNaN(x.s) && !isNaN(x.e) && x.e > x.s)
+    .sort((a, b) => a.s - b.s);
+  const sessions = [];
+  spans.forEach(x => {
+    const last = sessions[sessions.length - 1];
+    if (last && x.s - last.e <= GAP) last.e = Math.max(last.e, x.e);
+    else sessions.push({ ...x });
+  });
+  const hm = t => { const d = new Date(t); return pad(d.getHours()) + ":" + pad(d.getMinutes()); };
+  const best = sessions
+    .filter(x => ymd(new Date(x.e)) === date)
+    .filter(x => { const h = (x.e - x.s) / 3600000; return h >= 2 && h <= 16; })
+    .sort((a, b) => (b.e - b.s) - (a.e - a.s))[0];
+  return best ? { bed: hm(best.s), wake: hm(best.e) } : null;
+}
 
 /* ===================== NIGHT MODE (21h-7h) ===================== */
 function applyNightMode() {
@@ -973,12 +1020,12 @@ function buildNightForm(date) {
   const finalWake = timeField("Heure de ton dernier réveil", f.finalWake, v => f.finalWake = v);
   const rise = timeField("Heure à laquelle tu t'es levé·e", f.rise, v => f.rise = v, "Pareil", () => f.finalWake);
 
-  if (HealthSync.available() && state.healthSync && date === ymd()) {
+  if (HealthSync.available() && state.healthSync) {
     const syncBtn = el(`<button type="button" class="btn ghost block">🔄 Récupérer depuis Apple Santé / Health Connect</button>`);
     const syncLabel = syncBtn.textContent;
     syncBtn.onclick = async ()=>{
       syncBtn.disabled = true; syncBtn.textContent = "Récupération…";
-      const data = await HealthSync.fetchLastNight();
+      const data = await HealthSync.fetchNight(date);
       syncBtn.disabled = false; syncBtn.textContent = syncLabel;
       if (!data) { toast("Aucune donnée de sommeil trouvée pour cette nuit"); return; }
       f.bed = data.bed; f.finalWake = data.wake;
@@ -1554,7 +1601,7 @@ function renderReglages() {
   const data = el(`<div class="card"><div class="card-title">Données</div><p class="small muted">Tout reste sur ton appareil : rien n'est transmis à nos serveurs ni à des tiers.</p></div>`);
   const tools = el(`<div class="row mt"><button class="btn ghost grow">⬇️ Exporter</button><button class="btn ghost grow">↺ Tout effacer</button></div>`);
   tools.children[0].onclick = exportJSON;
-  tools.children[1].onclick = ()=>{ if(confirm("Effacer toutes tes données (agenda compris) et recommencer ?")){ localStorage.removeItem(LS_KEY); location.reload(); } };
+  tools.children[1].onclick = ()=>{ if(confirm("Effacer toutes tes données (agenda compris) et recommencer ?")){ eraseAll().then(()=>location.reload()); } };
   data.appendChild(tools);
   const about = el(`<p class="tiny muted center" style="margin-top:.9rem"><button class="tiny" style="color:var(--color-primary);text-decoration:underline">Politique de confidentialité</button> · v${APP_VERSION} · AGPL-3.0</p>`);
   about.querySelector("button").onclick = openPrivacy;
@@ -1848,7 +1895,8 @@ function applyTheme() {
 }
 
 /* ==== BOOT (les tests coupent le script ici) ==== */
-function boot() {
+async function boot() {
+  if (await hydrateFromNative()) state = load();
   applyTheme();
   applyNightMode();
   setInterval(applyNightMode, 60000);

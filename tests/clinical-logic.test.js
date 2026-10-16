@@ -43,7 +43,7 @@ sandbox.window = sandbox;
 
 const SHIM = `
 ;globalThis.__c = { computeNight, validateNight, screeningOutcome, baselineSuggestion, suggestAdjustment,
-  reviewInfo, adherence, validateWindow, agendaText, migrateV1, offsetMin, ymd, addDays, daysBetween,
+  reviewInfo, adherence, validateWindow, agendaText, migrateV1, sleepSessionFor, offsetMin, ymd, addDays, daysBetween,
   SCREEN_ITEMS, WINDOW_FLOOR_MIN, DEFAULT_STATE };`;
 vm.createContext(sandbox);
 vm.runInContext(src + "\n" + SHIM, sandbox, { filename: "serein-cbti.html" });
@@ -237,4 +237,28 @@ test("migrateV1 : l'ancien journal est converti et l'accueil (avec garde-fous) e
   assert.equal(e.awakenings, 4);
   assert.equal(e.quality, 4);
   assert.equal(C.validateNight(e), null);
+});
+
+/* ---------- Synchro santé ---------- */
+
+const iso = (d, h, m = 0) => { const [y, mo, da] = d.split("-").map(Number); return new Date(y, mo - 1, da, h, m).toISOString(); };
+const sample = (d1, h1, m1, d2, h2, m2, sleepState = "asleep") => ({ startDate: iso(d1, h1, m1), endDate: iso(d2, h2, m2), sleepState });
+
+test("sleepSessionFor : isole la bonne nuit quand la plage contient aussi la nuit précédente", () => {
+  const samples = [
+    sample("2026-10-15", 0, 0, "2026-10-15", 6, 50),   // fin de l'avant-dernière nuit
+    sample("2026-10-15", 23, 40, "2026-10-16", 2, 0),
+    sample("2026-10-16", 2, 30, "2026-10-16", 6, 55),  // réveil nocturne de 30 min : même session
+  ];
+  assert.deepEqual(plain(C.sleepSessionFor(samples, "2026-10-16")), { bed:"23:40", wake:"06:55" });
+});
+
+test("sleepSessionFor : une sieste ne remplace pas la nuit, rien à la mauvaise date", () => {
+  const samples = [
+    sample("2026-10-15", 23, 0, "2026-10-16", 7, 0),
+    sample("2026-10-16", 14, 0, "2026-10-16", 14, 40),
+  ];
+  assert.deepEqual(plain(C.sleepSessionFor(samples, "2026-10-16")), { bed:"23:00", wake:"07:00" });
+  assert.equal(C.sleepSessionFor(samples, "2026-10-17"), null);
+  assert.equal(C.sleepSessionFor([sample("2026-10-16", 1, 0, "2026-10-16", 2, 0, "awake")], "2026-10-16"), null);
 });

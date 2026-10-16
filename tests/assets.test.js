@@ -44,3 +44,10 @@ test("les 4 polices woff2 sont bien dans www/fonts/", () => {
     assert.ok(existsSync(join(ROOT, "www", "fonts", f)), `police manquante : ${f}`);
   }
 });
+
+test("www/index.html buildé : CSP présente, sans Google Fonts, audio Serein autorisé", () => {
+  const m = read("www/index.html").match(/http-equiv="Content-Security-Policy" content="([^"]+)"/);
+  assert.ok(m, "CSP absente de www/index.html");
+  assert.ok(!m[1].includes("fonts.g"), "la CSP buildée autorise encore Google Fonts");
+  assert.ok(m[1].includes("media-src https://audio.sereinapp.fr"), "les voix guidées seraient bloquées par la CSP");
+});
