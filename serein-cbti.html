@@ -2,17 +2,20 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<meta name="description" content="Serein Sommeil - Thérapie cognitivo-comportementale de l'insomnie (CBTI), offline, sans compte, sans pub.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Serein Sommeil - un compagnon pour les outils de la TCC-I, entre les séances ou en autonomie. Offline, sans compte, sans pub.">
 <meta name="theme-color" content="#0d1b15">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Serein Sommeil">
-<title>Serein Sommeil - CBTI</title>
+<title>Serein Sommeil</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* Un display posé par une classe (.btn, .sos-fab…) l'emporte sur [hidden] du navigateur :
+   cette règle rend l'attribut hidden fiable partout. Ne pas la retirer. */
+[hidden] { display: none !important; }
 /* ============================ TOKENS ============================ */
 :root {
   --color-bg: #0d1b15;
@@ -158,10 +161,10 @@ main {
 .badge.warn { background:rgba(216,183,138,.18); color:var(--color-primary-2); }
 .badge.bad  { background:rgba(224,145,127,.18); color:var(--color-danger); }
 
-label.field { display:block; margin-bottom: 1rem; }
-label.field > span.lbl { display:block; font-weight:600; font-size:.9rem; margin-bottom:.45rem; }
-label.field .hint { font-weight:400; color: var(--color-muted); font-size:.78rem; }
-input[type=time], input[type=text], textarea, select {
+.field { display:block; margin-bottom: 1rem; }
+.field > span.lbl { display:block; font-weight:600; font-size:.9rem; margin-bottom:.45rem; }
+.field .hint { font-weight:400; color: var(--color-muted); font-size:.78rem; }
+input[type=time], input[type=text], input[type=number], input[type=date], textarea, select {
   width: 100%; background: var(--color-surface-2); border: 1px solid var(--color-border);
   border-radius: var(--radius-sm); padding: .8rem .9rem; font-size: 1rem; outline: none;
   transition: border-color .2s;
@@ -197,7 +200,7 @@ input[type=range]::-moz-range-thumb { width:24px; height:24px; border-radius:50%
 nav.tabbar {
   position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
   width: 100%; max-width: 480px; z-index: 60;
-  display: grid; grid-template-columns: repeat(5, 1fr);
+  display: grid; grid-template-columns: repeat(3, 1fr);
   background: var(--color-surface-2);
   border-top: 1px solid var(--color-border);
   padding: .4rem .3rem calc(.4rem + env(safe-area-inset-bottom));
@@ -209,8 +212,8 @@ nav.tabbar button {
   transition: color .2s, background .2s;
 }
 nav.tabbar button .ico { font-size:1.35rem; line-height:1; filter: grayscale(.4); transition: filter .2s, transform .2s; }
-nav.tabbar button[aria-current="true"] { color: var(--color-primary); }
-nav.tabbar button[aria-current="true"] .ico { filter:none; transform: translateY(-2px) scale(1.08); }
+nav.tabbar button[aria-current="page"] { color: var(--color-primary); }
+nav.tabbar button[aria-current="page"] .ico { filter:none; transform: translateY(-2px) scale(1.08); }
 
 /* ============================ MODAL ============================ */
 .modal-backdrop {
@@ -295,6 +298,24 @@ svg.chart { width:100%; height:auto; display:block; overflow:visible; }
 .legend i { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:.3rem; vertical-align:middle; }
 .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
 
+/* sous-écrans (retour + titre) */
+.subhead { display:flex; align-items:center; gap:.8rem; margin-bottom:1rem; }
+.subhead h2 { font-size:1.25rem; }
+.subhead .btn { padding:.55rem .9rem; font-size:.88rem; }
+.link-btn { color:var(--color-primary); text-decoration:underline; font-size:.85rem; padding:.3rem 0; }
+.choices.col button { flex:1 1 100%; text-align:left; border-radius:14px; }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; }
+.quick { font-size:.75rem; color:var(--color-primary); font-weight:700; margin-left:.4rem; }
+details.more { margin-bottom:1rem; }
+details.more summary { cursor:pointer; font-weight:600; font-size:.9rem; color:var(--color-primary); padding:.4rem 0 .8rem; }
+.night-row { cursor:pointer; }
+.tool { display:flex; gap:.9rem; align-items:center; cursor:pointer; }
+.tool .emoji { font-size:1.6rem; line-height:1; }
+.tool .grow small { display:block; color:var(--color-muted); font-size:.8rem; margin-top:.15rem; }
+.help-card a { color:var(--color-primary); font-weight:700; }
+.sos-steps { padding-left:1.1rem; }
+.sos-steps li { margin-bottom:.55rem; }
+
 /* Respect de la préférence système "réduire les animations" (WCAG 2.3.3).
    Les guides de respiration deviennent des transitions instantanées : le rythme
    reste porté par les libellés (Inspire / Retiens / Expire). */
@@ -314,52 +335,69 @@ svg.chart { width:100%; height:auto; display:block; overflow:visible; }
       <div class="logo">🌙</div>
       <div>
         <h1>Serein Sommeil</h1>
-        <small>Méthode CBTI</small>
+        <small>Entre les séances</small>
       </div>
     </div>
     <button class="icon-btn" id="settingsBtn" aria-label="Réglages">⚙️</button>
   </header>
   <main id="view" role="main"></main>
-  <button class="sos-fab" id="sosBtn" aria-label="Mode SOS - je n'arrive pas à dormir" hidden>🌙</button>
-  <nav class="tabbar" id="tabbar" role="tablist"></nav>
+  <button class="sos-fab" id="sosBtn" aria-label="Je n'arrive pas à dormir">🌙</button>
+  <nav class="tabbar" id="tabbar" aria-label="Navigation principale"></nav>
 </div>
 <div id="modalRoot"></div>
 
 <script>
 "use strict";
 /* ===================================================================
-   SEREIN SOMMEIL - CBTI  (single-file PWA, vanilla JS)
-   Méthode Matthew Walker · données 100% locales · offline-first
+   SEREIN SOMMEIL  (single-file PWA, vanilla JS)
+   Compagnon des outils de la TCC-I (thérapie cognitivo-comportementale de
+   l'insomnie), entre les séances ou en autonomie. Un compagnon, pas un
+   thérapeute : l'app PROPOSE, la personne (et son/sa psy) DÉCIDE.
+   Données 100 % locales · offline-first
+   Références : contrôle du stimulus (Bootzin), restriction du sommeil
+   (Spielman ; titration de Morin), agenda consensus (Carney 2012),
+   « constructive worry » (Carney & Waters 2006), croyances (Morin, DBAS).
    =================================================================== */
 
-/* ----------------------------- STATE ----------------------------- */
+/* ----------------------------- CONSTANTES ----------------------------- */
 const APP_VERSION = "1.0.0"; // doit rester aligné avec package.json (vérifié par tests/versions.test.js)
 const LS_KEY = "serein_cbti_v1";
+
+/* Bornes de la fenêtre de sommeil. Plancher 5h30, plus prudent que les 5 h de Morin
+   puisque l'app peut être utilisée sans professionnel. En dessous : seulement pour une
+   fenêtre fixée avec un·e psy (4 h minimum, garde-fou contre une faute de saisie). */
+const WINDOW_FLOOR_MIN = 330;
+const WINDOW_FLOOR_PRO_MIN = 240;
+const WINDOW_CAP_MIN = 540;
+const WINDOW_STEP_MIN = 15;
+const BASELINE_NIGHTS = 7;      // nuits d'observation avant de proposer une fenêtre
+const REVIEW_MIN_NIGHTS = 5;    // nuits notées nécessaires pour un bilan
+const REVIEW_EVERY_DAYS = 7;
+
 const DEFAULT_STATE = {
-  version: 1,
+  version: 2,
   onboarded: false,
-  disclaimerSeen: false,
   theme: "dark",
   profile: {
-    duration: null, problem: null,
-    usualBed: "23:30", usualWake: "07:00",
-    sleptHours: 6, latency: 30,
-    stayInBed: null, phoneInBed: null, watchClock: null,
-    wakeAnchor: "07:00",      // ancre fixe
-    prescribedHours: 5.5,     // temps au lit prescrit (h)
-    startDate: null           // ISO date début du programme
+    duration: null,       // "Moins de 3 mois" | "3 mois ou plus"
+    problem: null,
+    accompanied: null,    // true = suivi·e par un·e professionnel·le pour son sommeil
+    screening: null,      // ids de SCREEN_ITEMS cochés ([] = rien) ; null = pas encore répondu
+    wakeAnchor: "07:00",  // heure de lever fixe
+    startDate: null
   },
-  journal: [],   // {date, bed, wake, latency, awakenings, awakeTime, watchedClock, phone, respected, quality, mood, notes, eff, sleptMin}
-  worry: [],     // {date, raw, thoughts:[{text, cat}]}
-  beliefsScore: null,
-  windDownDoneToday: {},
+  window: null,           // { bed, wake, setBy: "psy"|"moi"|"agenda"|"bilan", since: "AAAA-MM-JJ" }
+  windowLog: [],          // { date, kind: "set"|"adjust"|"keep", bed, wake, setBy, se, n, sleepy }
+  journal: [],            // agenda consensus, une entrée par nuit datée du matin (cf. computeNight)
+  worry: [],              // { date, items: [{ text, cat: "act"|"no", step }] }
+  beliefs: [],            // { date, idx, before, after }
   worryTime: "18:00",
-  reminders: { journal:false, worry:false, bedtime:false },
+  reminders: { journal: false, worry: false, bedtime: false },
   nightModeAuto: true,
-  weeklyAdjust: { lastWeek: null, history: [] },
-  healthSync: false   // synchro Apple Santé / Health Connect (pré-remplissage du journal uniquement)
+  healthSync: false       // synchro Apple Santé / Health Connect (pré-remplissage du journal uniquement)
 };
 
+/* ----------------------------- STATE ----------------------------- */
 let state = load();
 
 function load() {
@@ -367,12 +405,13 @@ function load() {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return structuredClone(DEFAULT_STATE);
     const parsed = JSON.parse(raw);
+    if (parsed.version !== 2) return migrateV1(parsed);
     return deepMerge(structuredClone(DEFAULT_STATE), parsed);
   } catch(e) { console.warn("load failed", e); return structuredClone(DEFAULT_STATE); }
 }
 function deepMerge(base, over) {
   for (const k in over) {
-    if (over[k] && typeof over[k] === "object" && !Array.isArray(over[k]) && typeof base[k] === "object" && !Array.isArray(base[k])) {
+    if (over[k] && typeof over[k] === "object" && !Array.isArray(over[k]) && base[k] && typeof base[k] === "object" && !Array.isArray(base[k])) {
       deepMerge(base[k], over[k]);
     } else base[k] = over[k];
   }
@@ -380,98 +419,260 @@ function deepMerge(base, over) {
 }
 function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){ console.warn(e); } }
 
+/* Migration depuis la v1 (fenêtre « prescrite », journal simplifié). Le journal et les
+   réglages sont conservés ; l'accueil est refait car la v1 ne posait aucune question de
+   sécurité avant de restreindre le sommeil. */
+function migrateV1(old) {
+  const s = structuredClone(DEFAULT_STATE);
+  if (old.theme) s.theme = old.theme;
+  if (typeof old.nightModeAuto === "boolean") s.nightModeAuto = old.nightModeAuto;
+  if (old.reminders) s.reminders = { ...s.reminders, ...old.reminders };
+  if (old.worryTime) s.worryTime = old.worryTime;
+  if (typeof old.healthSync === "boolean") s.healthSync = old.healthSync;
+  if (old.profile && old.profile.wakeAnchor) s.profile.wakeAnchor = old.profile.wakeAnchor;
+  s.journal = (old.journal || []).filter(e => e && e.date && e.bed && e.wake).map(migrateNightV1);
+  s.worry = (old.worry || []).map(w => ({
+    date: String(w.date || "").slice(0, 10),
+    items: (w.thoughts || []).map(t => ({ text: t.text, cat: t.cat, step: "" }))
+  }));
+  s.onboarded = false;
+  return s;
+}
+function migrateNightV1(e) {
+  const q = Number(e.quality);
+  return {
+    date: e.date, bed: e.bed, lightsOff: e.bed, sol: Number(e.latency) || 0,
+    awakenings: e.awakenings === "4+" ? 4 : (Number(e.awakenings) || 0), waso: Number(e.awakeTime) || 0,
+    finalWake: e.wake, rise: e.wake,
+    quality: q ? Math.min(5, Math.max(1, Math.round(q / 2))) : null,
+    nap: null, aid: "", alcohol: null, notes: e.notes || ""
+  };
+}
+
 /* --------------------------- UTILITIES --------------------------- */
 const $ = (s, r=document) => r.querySelector(s);
 const el = (html) => { const t=document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstElementChild; };
 const esc = (s="") => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const todayISO = () => new Date().toISOString().slice(0,10);
 const pad = n => String(n).padStart(2,"0");
 
-function timeToMin(t) { if(!t) return null; const [h,m]=t.split(":").map(Number); return h*60+m; }
-function minToTime(m) { m=((m%1440)+1440)%1440; return pad(Math.floor(m/60))+":"+pad(m%60); }
-function fmtHM(min) { // 330 -> "5h30"
-  if (min == null) return "-"; const h=Math.floor(min/60), m=Math.round(min%60);
+/* Dates : toujours en heure locale (AAAA-MM-JJ). Jamais toISOString(), qui est en UTC et
+   décale d'un jour les saisies faites entre minuit et 2 h en France. */
+function ymd(d = new Date()) { return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()); }
+function parseYmd(s) { const [y,m,d] = String(s).split("-").map(Number); return new Date(y, m-1, d, 12); }
+function addDays(s, n) { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); }
+function daysBetween(a, b) { return Math.round((parseYmd(b) - parseYmd(a)) / 86400000); }
+function frDate(s) { return parseYmd(s).toLocaleDateString("fr-FR", { weekday:"short", day:"numeric", month:"short" }); }
+
+function timeToMin(t) { if (!t || !/^\d{1,2}:\d{2}/.test(t)) return null; const [h,m] = t.split(":").map(Number); return h*60 + m; }
+function minToTime(m) { m = ((m % 1440) + 1440) % 1440; return pad(Math.floor(m/60)) + ":" + pad(m % 60); }
+/* minutes écoulées de `from` à `to`, en passant minuit si besoin (0 si identiques) */
+function offsetMin(from, to) { const a = timeToMin(from), b = timeToMin(to); if (a == null || b == null) return null; return ((b - a) % 1440 + 1440) % 1440; }
+/* écart signé de `t` par rapport à `ref`, ramené dans [-12 h, +12 h] */
+function signedDiff(ref, t) { const d = offsetMin(ref, t); if (d == null) return null; return d > 720 ? d - 1440 : d; }
+function fmtHM(min) {
+  if (min == null) return "-"; const h = Math.floor(min/60), m = Math.round(min % 60);
   return m ? `${h}h${pad(m)}` : `${h}h`;
 }
-function diffMin(bed, wake) { // durée au lit (gère passage minuit)
-  let b=timeToMin(bed), w=timeToMin(wake); if(b==null||w==null) return null;
-  let d = w - b; if (d <= 0) d += 1440; return d;
-}
-function toast(msg, ms=2200) {
-  const t = el(`<div class="toast">${esc(msg)}</div>`); document.body.appendChild(t);
+function roundUp15(m) { return Math.ceil(m / 15) * 15; }
+function numOrNull(v) { return v === "" || v == null || isNaN(Number(v)) ? null : Number(v); }
+function toast(msg, ms=2400) {
+  const t = el(`<div class="toast" role="status">${esc(msg)}</div>`); document.body.appendChild(t);
   setTimeout(()=>{ t.style.opacity="0"; t.style.transition="opacity .3s"; setTimeout(()=>t.remove(),300); }, ms);
 }
 
-/* -------- efficacité / sommeil ---------- */
-function computeEntry(e) {
-  const inBed = diffMin(e.bed, e.wake);
-  const sleptMin = Math.max(0, (inBed||0) - (Number(e.latency)||0) - (Number(e.awakeTime)||0));
-  const eff = inBed ? Math.round(sleptMin / inBed * 100) : 0;
-  return { inBed, sleptMin, eff };
-}
-function effMsg(eff) {
-  if (eff >= 85) return { txt:"Pas si mal. On affine.", cls:"good", emoji:"😊" };
-  if (eff >= 75) return { txt:"Ton cerveau passe du temps au lit à ne pas dormir. On corrige.", cls:"warn", emoji:"😐" };
-  return { txt:"Tu passes plus de temps éveillé·e au lit qu'à dormir. C'est exactement ce que cette méthode traite.", cls:"bad", emoji:"😴" };
+/* =================================================================
+   LOGIQUE CLINIQUE (fonctions pures, testées dans tests/clinical-logic.test.js)
+   ================================================================= */
+
+/* ---- Agenda du sommeil (Consensus Sleep Diary, Carney et al. 2012) ----
+   Une nuit est datée du matin. Champs : bed (coucher), lightsOff (extinction = moment où
+   on essaie de dormir), sol (endormissement, min), awakenings, waso (éveil nocturne, min),
+   finalWake (dernier réveil), rise (lever), quality (1-5), et en option nap, aid, alcohol.
+   Temps au lit = coucher → lever. Sommeil estimé = extinction → dernier réveil, moins
+   l'endormissement et l'éveil nocturne. Le temps au lit après le dernier réveil compte
+   donc bien comme du temps éveillé (réveil précoce). */
+const QUALITY_LABELS = ["Très mauvaise", "Mauvaise", "Moyenne", "Bonne", "Très bonne"];
+
+function computeNight(e) {
+  const lo = offsetMin(e.bed, e.lightsOff), fw = offsetMin(e.bed, e.finalWake), tib = offsetMin(e.bed, e.rise);
+  if (lo == null || fw == null || !tib) return { tib: null, tst: null, se: null };
+  const tst = Math.max(0, fw - lo - (Number(e.sol) || 0) - (Number(e.waso) || 0));
+  return { tib, tst, se: Math.round(tst / tib * 100) };
 }
 
-/* fenêtre prescrite */
-function prescribedWindow() {
-  const p = state.profile;
-  const presMin = Math.round(p.prescribedHours * 60);
-  const wake = p.wakeAnchor;
-  const bedMin = (timeToMin(wake) - presMin + 1440) % 1440;
-  return { bed: minToTime(bedMin), wake, durMin: presMin };
+function validateNight(e) {
+  if (!e.bed) return "Indique l'heure à laquelle tu t'es couché·e.";
+  if (!e.lightsOff) return "Indique l'heure à laquelle tu as éteint pour dormir.";
+  if (numOrNull(e.sol) == null) return "Estime le temps qu'il t'a fallu pour t'endormir.";
+  if (e.awakenings == null) return "Indique combien de fois tu t'es réveillé·e.";
+  if (e.awakenings > 0 && numOrNull(e.waso) == null) return "Estime le temps passé éveillé·e pendant la nuit.";
+  if (!e.finalWake) return "Indique l'heure de ton dernier réveil.";
+  if (!e.rise) return "Indique l'heure à laquelle tu t'es levé·e.";
+  if (e.quality == null) return "Choisis la qualité de ta nuit.";
+  const lo = offsetMin(e.bed, e.lightsOff), fw = offsetMin(e.bed, e.finalWake), r = offsetMin(e.bed, e.rise);
+  if (!r || r > 16 * 60) return "Les heures de coucher et de lever ne semblent pas cohérentes.";
+  if (lo > r) return "L'extinction doit se situer entre le coucher et le lever.";
+  if (fw < lo || fw > r) return "Le dernier réveil doit se situer entre l'extinction et le lever.";
+  if ((Number(e.sol) || 0) + (Number(e.waso) || 0) > fw - lo) return "L'endormissement et l'éveil nocturne dépassent la durée de la nuit : vérifie tes estimations.";
+  return null;
 }
 
-/* semaine de programme */
-function programWeek() {
-  if (!state.profile.startDate) return 1;
-  const start = new Date(state.profile.startDate);
-  const days = Math.floor((Date.now() - start.getTime()) / 86400000);
-  return Math.min(6, Math.floor(days/7) + 1);
+/* ---- Garde-fous de la restriction du sommeil ----
+   Contre-indications ou situations où la restriction ne se fait qu'avec un·e
+   professionnel·le (Kyle et al. 2014 ; recommandations européennes 2023). La conduite
+   n'est pas une contre-indication mais déclenche l'avertissement somnolence. */
+const SCREEN_ITEMS = [
+  { id:"bipolaire",  contra:true,  label:"Un trouble bipolaire", reason:"un trouble bipolaire" },
+  { id:"epilepsie",  contra:true,  label:"Une épilepsie", reason:"une épilepsie" },
+  { id:"apnee",      contra:true,  label:"De forts ronflements, des pauses respiratoires remarquées par quelqu'un, ou une apnée du sommeil", reason:"des signes possibles d'apnée du sommeil" },
+  { id:"parasomnie", contra:true,  label:"Des comportements inhabituels pendant le sommeil (somnambulisme, gestes brusques, cris)", reason:"des comportements inhabituels pendant le sommeil" },
+  { id:"jambes",     contra:true,  label:"Un besoin irrépressible de bouger les jambes le soir", reason:"des signes possibles de jambes sans repos" },
+  { id:"horaires",   contra:true,  label:"Un travail de nuit ou en horaires alternants", reason:"des horaires de travail décalés" },
+  { id:"grossesse",  contra:true,  label:"Une grossesse en cours", reason:"une grossesse" },
+  { id:"conduite",   contra:false, label:"Tu conduis beaucoup, ou ton travail rend la somnolence dangereuse", reason:"" },
+];
+
+function screeningOutcome(profile) {
+  if (!profile || !Array.isArray(profile.screening))
+    return { restriction:"pro", reasons:["le questionnaire de départ n'est pas rempli"], drowsy:false, recent:false };
+  const ids = profile.screening;
+  const reasons = SCREEN_ITEMS.filter(i => i.contra && ids.includes(i.id)).map(i => i.reason);
+  const recent = profile.duration === "Moins de 3 mois";
+  if (recent) reasons.unshift("des difficultés de sommeil depuis moins de 3 mois");
+  return { restriction: reasons.length ? "pro" : "ok", reasons, drowsy: ids.includes("conduite"), recent };
 }
 
-/* ============ AJUSTEMENT HEBDOMADAIRE AUTOMATIQUE ============ */
-function maybeWeeklyAdjust() {
-  // clé année-semaine : une seule évaluation par semaine, au 1er lancement de la semaine
-  const wk = new Date().getFullYear() + "-W" + getWeekNum();
-  if (state.weeklyAdjust.lastWeek === wk) return null;
-  // seules les nuits des 8 derniers jours comptent : pas d'ajustement sur des données périmées
-  const cutoff = Date.now() - 8 * 86400000;
-  const recent = state.journal.filter(e => new Date(e.date + "T00:00").getTime() >= cutoff).slice(-5);
-  if (recent.length < 5) return null;
-  const avgEff = recent.reduce((s,e)=>s+(e.eff||0),0)/recent.length;
-  let change = 0, msg = "";
-  if (avgEff > 90) { change = 15; msg = "+15 min au lit. Tu progresses."; }
-  else if (avgEff >= 85) { change = 0; msg = "On maintient ta fenêtre. C'est solide."; }
-  else { change = 0; msg = "On maintient. Encore un peu de pression de sommeil à construire."; }
-  if (change) {
-    state.profile.prescribedHours = Math.min(8.5, state.profile.prescribedHours + change/60);
-  }
-  state.weeklyAdjust.lastWeek = wk;
-  state.weeklyAdjust.history.push({ wk, avgEff: Math.round(avgEff), change });
-  if (state.weeklyAdjust.history.length > 26) state.weeklyAdjust.history = state.weeklyAdjust.history.slice(-26);
-  save();
-  return { change, msg, avgEff: Math.round(avgEff) };
+/* ---- Fenêtre de départ, après la semaine d'observation ----
+   Temps au lit = sommeil moyen estimé (arrondi au quart d'heure supérieur), borné
+   [5h30, 9h]. Le lever reste l'heure fixe choisie ; le coucher en découle. */
+function baselineSuggestion(journal, wakeAnchor, today) {
+  const nights = journal
+    .filter(e => e.date > addDays(today, -14) && e.date <= today)
+    .map(computeNight).filter(c => c.tst != null);
+  const n = nights.length;
+  if (n < BASELINE_NIGHTS) return { ready:false, n, needed:BASELINE_NIGHTS };
+  const meanTst = Math.round(nights.reduce((s,c) => s + c.tst, 0) / n);
+  const meanTib = Math.round(nights.reduce((s,c) => s + c.tib, 0) / n);
+  const tib = Math.min(WINDOW_CAP_MIN, Math.max(WINDOW_FLOOR_MIN, roundUp15(meanTst)));
+  return { ready:true, n, meanTst, meanTib, tib, bed: minToTime(timeToMin(wakeAnchor) - tib), wake: wakeAnchor, restricts: tib < meanTib };
 }
-function getWeekNum() {
-  const d = new Date(); const onejan = new Date(d.getFullYear(),0,1);
-  return Math.ceil((((d - onejan) / 86400000) + onejan.getDay()+1)/7);
+
+/* ---- Bilan hebdomadaire ---- */
+function lastDecisionDate(s) {
+  return s.windowLog.length ? s.windowLog[s.windowLog.length - 1].date : (s.window && s.window.since);
 }
+function reviewInfo(s, today) {
+  if (!s.window) return null;
+  const last = lastDecisionDate(s) || today;
+  const nights = s.journal.filter(e => e.date > last && e.date <= today).slice(-7);
+  const days = daysBetween(last, today);
+  return { last, days, nights, due: days >= REVIEW_EVERY_DAYS && nights.length >= REVIEW_MIN_NIGHTS, inDays: Math.max(0, REVIEW_EVERY_DAYS - days) };
+}
+
+/* Titration de Morin : efficacité ≥ 85 % → +15 min ; 80-84 % → on garde ; < 80 % → -15 min.
+   Jamais sous le plancher, jamais au-dessus de 9 h. Somnolence signalée → on ne resserre
+   jamais, et on élargit si l'efficacité est correcte (≥ 80 %). C'est une PROPOSITION :
+   rien ne change sans validation. */
+function suggestAdjustment(nights, win, opts = {}) {
+  const vals = nights.map(computeNight).filter(c => c.se != null);
+  const n = vals.length;
+  const tib = offsetMin(win.bed, win.wake);
+  if (n < REVIEW_MIN_NIGHTS) return { status:"insufficient", n, tib };
+  const meanSE = Math.round(vals.reduce((s,c) => s + c.se, 0) / n);
+  let status = meanSE >= 85 ? "up" : meanSE >= 80 ? "keep" : "down";
+  if (opts.sleepy) { if (status === "down") status = "keep"; else if (status === "keep") status = "up"; }
+  if (status === "up" && tib + WINDOW_STEP_MIN > WINDOW_CAP_MIN) status = "cap";
+  if (status === "down" && tib - WINDOW_STEP_MIN < WINDOW_FLOOR_MIN) status = "floor";
+  const newTib = status === "up" ? tib + WINDOW_STEP_MIN : status === "down" ? tib - WINDOW_STEP_MIN : tib;
+  return { status, n, meanSE, tib, newTib, newBed: minToTime(timeToMin(win.wake) - newTib), wake: win.wake, sleepy: !!opts.sleepy };
+}
+
+/* Respect de la fenêtre, recalculé depuis l'agenda (pas besoin de le demander) :
+   extinction pas plus de 15 min avant l'heure de coucher, lever à ±30 min. */
+function adherence(nights, win) {
+  let bedOk = 0, riseOk = 0;
+  nights.forEach(e => {
+    const d1 = signedDiff(win.bed, e.lightsOff); if (d1 != null && d1 >= -15) bedOk++;
+    const d2 = signedDiff(win.wake, e.rise); if (d2 != null && Math.abs(d2) <= 30) riseOk++;
+  });
+  return { n: nights.length, bedOk, riseOk };
+}
+
+/* Fenêtre saisie à la main : bornes selon qui l'a décidée */
+function validateWindow(bed, wake, setBy) {
+  const tib = offsetMin(bed, wake);
+  if (tib == null) return "Indique une heure de coucher et une heure de lever.";
+  const floor = setBy === "psy" ? WINDOW_FLOOR_PRO_MIN : WINDOW_FLOOR_MIN;
+  if (tib < floor) return setBy === "psy"
+    ? "Une fenêtre de moins de 4 h semble être une erreur de saisie."
+    : "En dessous de 5h30 au lit, une fenêtre se décide seulement avec un·e professionnel·le.";
+  if (tib > 600) return "Une fenêtre de plus de 10 h semble être une erreur de saisie.";
+  return null;
+}
+
+/* Récap texte de l'agenda, à partager avec son/sa psy */
+function agendaText(journal, win, today, days = 14) {
+  const from = addDays(today, -days);
+  const nights = journal.filter(e => e.date > from && e.date <= today);
+  const lines = ["Mon agenda du sommeil (Serein Sommeil)"];
+  if (win) lines.push(`Fenêtre actuelle : ${win.bed} → ${win.wake} (${fmtHM(offsetMin(win.bed, win.wake))} au lit)`);
+  lines.push("");
+  if (!nights.length) { lines.push("Aucune nuit notée sur cette période."); return lines.join("\n"); }
+  nights.forEach(e => {
+    const c = computeNight(e);
+    lines.push(`${frDate(e.date)} : couché·e ${e.bed}, extinction ${e.lightsOff}, endormissement ~${e.sol} min, ` +
+      `${e.awakenings} réveil(s)${e.awakenings ? ` (~${e.waso} min)` : ""}, dernier réveil ${e.finalWake}, levé·e ${e.rise}, ` +
+      `qualité ${e.quality}/5 - sommeil ~${fmtHM(c.tst)} sur ${fmtHM(c.tib)} au lit (${c.se} %)`);
+    const extra = [];
+    if (e.nap) extra.push(`sieste ${e.nap} min`);
+    if (e.aid) extra.push(`aide au sommeil : ${e.aid}`);
+    if (e.alcohol) extra.push(`alcool : ${e.alcohol} verre(s)`);
+    if (e.notes) extra.push(`note : ${e.notes}`);
+    if (extra.length) lines.push("   " + extra.join(" · "));
+  });
+  const cs = nights.map(computeNight);
+  const mean = k => Math.round(cs.reduce((s,c) => s + c[k], 0) / cs.length);
+  lines.push("", `Moyenne sur ${cs.length} nuit(s) : sommeil ~${fmtHM(mean("tst"))}, au lit ${fmtHM(mean("tib"))}, efficacité ${mean("se")} %`);
+  return lines.join("\n");
+}
+
+/* =================================================================
+   CONTENUS
+   ================================================================= */
+const STIMULUS_RULES = [
+  { emoji:"🛏️", title:"Le lit, c'est pour dormir", body:"Pas d'écran, de repas ni de travail au lit (la sexualité fait exception). Ton cerveau réapprend que le lit va avec le sommeil." },
+  { emoji:"⏰", title:"Même heure de lever, tous les jours", body:"Week-end compris, même après une mauvaise nuit. C'est le point d'appui de tout le reste." },
+  { emoji:"😴", title:"Au lit seulement quand tu as sommeil", body:"Les paupières lourdes, la tête qui tombe : pas seulement la fatigue. Et pas avant l'heure de ta fenêtre." },
+  { emoji:"🚶", title:"Ça ne vient pas ? Lève-toi", body:"Si tu sens que le sommeil ne vient pas (à l'estime, une vingtaine de minutes, sans regarder l'heure), va dans une autre pièce faire quelque chose de calme, lumière douce. Reviens quand le sommeil revient. Pareil lors d'un réveil la nuit." },
+  { emoji:"🌙", title:"Évite les siestes", body:"Elles puisent dans le sommeil de la nuit suivante. Si la somnolence devient dangereuse (route, travail), une sieste courte, moins de 30 minutes en début d'après-midi, reste préférable. Parles-en avec ton/ta psy." },
+];
+
+/* Croyances sur le sommeil (thèmes de la DBAS de Morin). Pas de score : on examine une
+   croyance à la fois (pour / contre), puis on la recote. */
+const BELIEFS = [
+  { q:"Il me faut 8 heures de sommeil, sinon je ne tiens pas.", a:"Les besoins varient d'une personne à l'autre et d'une période de la vie à l'autre. Beaucoup de gens fonctionnent bien avec moins de 8 h. Se fixer un chiffre ajoute souvent de la pression au moment de dormir." },
+  { q:"Après une mauvaise nuit, ma journée est fichue.", a:"Une mauvaise nuit se ressent, mais souvent moins que ce qu'on prévoit la veille au soir. Repère les journées après une mauvaise nuit qui se sont mieux passées que prévu." },
+  { q:"Rester au lit plus longtemps m'aide à récupérer.", a:"Le temps passé éveillé au lit entretient le lien entre le lit et l'éveil, et étale le sommeil sur une plus longue période. C'est pour ça qu'on resserre le temps au lit au début." },
+  { q:"Je dois rattraper le sommeil perdu le week-end.", a:"Les grasses matinées décalent l'horloge interne et diminuent l'envie de dormir le soir suivant. Garder la même heure de lever aide davantage." },
+  { q:"Un verre d'alcool m'aide à dormir.", a:"L'alcool peut faciliter l'endormissement, mais il rend la seconde partie de la nuit plus agitée et plus morcelée." },
+  { q:"Je ne peux rien faire contre mon insomnie.", a:"L'insomnie qui dure est en grande partie entretenue par des habitudes et des pensées, et celles-ci peuvent changer. Ce qui s'est appris peut se modifier, à ton rythme." },
+  { q:"Il faut que je fasse le vide dans ma tête pour m'endormir.", a:"Personne n'a la tête vide. Chercher à chasser les pensées les rend souvent plus présentes ; les laisser passer sans les suivre est plus réaliste." },
+  { q:"Si je me réveille la nuit, c'est que quelque chose ne va pas.", a:"Se réveiller plusieurs fois par nuit fait partie du sommeil normal, et la plupart de ces réveils ne laissent aucun souvenir. C'est surtout l'inquiétude autour du réveil qui empêche de se rendormir." },
+];
+
+const SETBY_LABEL = { psy:"avec ton/ta psy", moi:"par toi", agenda:"à partir de ton agenda", bilan:"au bilan de la semaine" };
 
 /* ===================== NOTIFICATIONS ===================== */
-/* Détection de l'environnement Capacitor (app native iOS/Android).
-   En natif → plugin LocalNotifications (planification quotidienne fiable, app fermée).
+/* En natif → plugin LocalNotifications (planification quotidienne fiable, app fermée).
    Sur le web / file:// → repli "best effort" via setTimeout tant que l'app est ouverte. */
 const Cap = () => (typeof window !== "undefined" && window.Capacitor) || null;
 const isNative = () => { const c = Cap(); return !!(c && c.isNativePlatform && c.isNativePlatform()); };
 const LN = () => { const c = Cap(); return c && c.Plugins && c.Plugins.LocalNotifications; };
 
 const NOTIF_DEFS = [
-  { key:"journal", id:101, time:()=> "08:00", title:"Serein Sommeil", body:"N'oublie pas de noter ta nuit d'hier ✏️" },
-  { key:"worry",   id:102, time:()=> state.worryTime, title:"Worry Time", body:"15 minutes pour noter tes pensées. Maintenant, pas au lit." },
-  { key:"bedtime", id:103, time:()=>{ const w=prescribedWindow(); return minToTime((timeToMin(w.bed)-30+1440)%1440); }, title:"Fenêtre de sommeil", body:"Coucher dans 30 min - seulement si tu tombes de sommeil." },
+  { key:"journal", id:101, time:()=> minToTime(timeToMin(state.profile.wakeAnchor) + 30), title:"Serein Sommeil", body:"Ta nuit en quelques secondes, de mémoire, quand tu veux ce matin." },
+  { key:"worry",   id:102, time:()=> state.worryTime, title:"Le moment des soucis", body:"15 minutes pour poser ce qui te préoccupe, loin du lit." },
+  { key:"bedtime", id:103, time:()=> state.window ? minToTime(timeToMin(state.window.bed) - 30) : null, title:"Ta fenêtre de sommeil", body:"Elle commence dans 30 min. Au lit seulement si tu as sommeil." },
 ];
 
 const Notif = {
@@ -488,14 +689,14 @@ const Notif = {
     if (!("Notification" in window) || Notification.permission !== "granted") return;
     try { new Notification(title, { body }); } catch(e){}
   },
+  active() { return NOTIF_DEFS.filter(d => state.reminders[d.key] && timeToMin(d.time()) != null); },
   async reschedule() {
     if (isNative() && LN()) {
-      // NATIF : on annule les rappels en attente puis on reprogramme ceux activés, répétés chaque jour
       try {
         const pending = await LN().getPending();
         if (pending && pending.notifications && pending.notifications.length)
           await LN().cancel({ notifications: pending.notifications.map(n=>({ id:n.id })) });
-        const notifs = NOTIF_DEFS.filter(d=>state.reminders[d.key]).map(d=>{
+        const notifs = this.active().map(d=>{
           const m = timeToMin(d.time());
           return { id:d.id, title:d.title, body:d.body,
                    schedule:{ on:{ hour:Math.floor(m/60), minute:m%60 }, repeats:true, allowWhileIdle:true } };
@@ -504,26 +705,21 @@ const Notif = {
       } catch(e){ console.warn("native notif", e); }
       return;
     }
-    // WEB / file:// : best effort tant que l'app reste ouverte
     this.timers.forEach(clearTimeout); this.timers = [];
     const now = new Date();
-    NOTIF_DEFS.filter(d=>state.reminders[d.key]).forEach(d=>{
-      const m = timeToMin(d.time()); if (m==null) return;
+    this.active().forEach(d=>{
+      const m = timeToMin(d.time());
       const target = new Date(); target.setHours(Math.floor(m/60), m%60, 0, 0);
-      if (target <= now) return; // déjà passé aujourd'hui
-      const ms = target - now;
-      if (ms < 86400000) this.timers.push(setTimeout(()=>this.fire(d.title, d.body), ms));
+      if (target <= now) return;
+      this.timers.push(setTimeout(()=>this.fire(d.title, d.body), target - now));
     });
   }
 };
 
 /* ===================== SYNCHRO SANTÉ (Apple Santé / Health Connect) ===================== */
-/* Pré-remplit les heures de coucher/lever du journal depuis les données du capteur (montre,
-   téléphone). Ne touche JAMAIS aux champs subjectifs (latence, réveils, qualité, humeur) :
-   la CBTI travaille la perception du sommeil, pas sa mesure - l'utilisateur reste seul juge
-   et peut corriger ou ignorer la pré-saisie. Fonctionne via @capgo/capacitor-health, qui
-   unifie HealthKit (iOS) et Health Connect (Android, y compris les données Garmin/Wear OS
-   partagées par l'utilisateur vers ces plateformes). */
+/* Pré-remplit l'heure de coucher et de dernier réveil depuis le capteur (montre, téléphone).
+   Ne touche JAMAIS aux champs subjectifs (endormissement, éveil, qualité) : la TCC-I
+   travaille la perception du sommeil, pas sa mesure. Via @capgo/capacitor-health. */
 const HealthPlugin = () => { const c = Cap(); return c && c.Plugins && c.Plugins.Health; };
 const HealthSync = {
   available() { return isNative() && !!HealthPlugin(); },
@@ -536,12 +732,11 @@ const HealthSync = {
       return !(auth.readDenied && auth.readDenied.includes("sleep"));
     } catch(e) { console.warn("health auth", e); return false; }
   },
-  // renvoie {bed, wake} en HH:MM pour la dernière session de sommeil détectée, ou null
   async fetchLastNight() {
     if (!this.available()) return null;
     try {
       const p = HealthPlugin();
-      const end = new Date(), start = new Date(Date.now() - 32*3600*1000); // marge ~1.5 jour
+      const end = new Date(), start = new Date(Date.now() - 32*3600*1000);
       const { samples } = await p.readSamples({ dataType:"sleep", startDate:start.toISOString(), endDate:end.toISOString(), limit:200, ascending:true });
       if (!samples || !samples.length) return null;
       const relevant = samples.filter(s => ["inBed","asleep","rem","deep","light"].includes(s.sleepState));
@@ -550,7 +745,7 @@ const HealthSync = {
       const ends = relevant.map(s => new Date(s.endDate).getTime());
       const bedDate = new Date(Math.min(...starts)), wakeDate = new Date(Math.max(...ends));
       const spanH = (wakeDate - bedDate) / 3600000;
-      if (spanH < 2 || spanH > 14) return null; // écarte les siestes isolées ou données aberrantes
+      if (spanH < 2 || spanH > 14) return null;
       return { bed: pad(bedDate.getHours())+":"+pad(bedDate.getMinutes()), wake: pad(wakeDate.getHours())+":"+pad(wakeDate.getMinutes()) };
     } catch(e) { console.warn("health fetch", e); return null; }
   }
@@ -564,297 +759,317 @@ function applyNightMode() {
 }
 
 /* ============================ ROUTER ============================ */
+/* 3 onglets + des sous-écrans (avec bouton retour) + SOS nuit en bouton flottant. */
 const TABS = [
-  { id:"programme", icon:"📋", label:"Programme", render: renderProgramme },
-  { id:"journal",   icon:"😴", label:"Journal",   render: renderJournal },
-  { id:"suivi",     icon:"📊", label:"Suivi",     render: renderSuivi },
-  { id:"recond",    icon:"🧠", label:"Recond.",   render: renderRecond },
-  { id:"cesoir",    icon:"🌙", label:"Ce soir",   render: renderCeSoir },
+  { id:"aujourdhui", icon:"🌅", label:"Aujourd'hui", render: () => renderAujourdhui() },
+  { id:"fenetre",    icon:"🛏️", label:"Ma fenêtre",  render: () => renderFenetre() },
+  { id:"outils",     icon:"🧰", label:"Outils",      render: () => renderOutils() },
 ];
-let currentTab = "programme";
-let lastTab = "programme"; // dernier onglet visité, pour le bouton retour de Réglages
+const SUBSCREENS = {
+  nuit:       { parent:null,     render: () => renderNuit(navParam) },
+  reglages:   { parent:null,     render: () => renderReglages() },
+  regles:     { parent:"outils", render: () => renderRegles() },
+  soucis:     { parent:"outils", render: () => renderSoucis() },
+  croyances:  { parent:"outils", render: () => renderCroyances() },
+  detente:    { parent:"outils", render: () => renderDetente() },
+  transition: { parent:"outils", render: () => renderTransition() },
+};
+let currentScreen = "aujourdhui", lastTab = "aujourdhui", navParam = null;
 
-function navigate(id, fromPop) {
-  currentTab = id;
-  if (id !== "reglages") lastTab = id;
+function activeTab() { return SUBSCREENS[currentScreen] ? (SUBSCREENS[currentScreen].parent || lastTab) : currentScreen; }
+
+function navigate(id, param = null, fromPop = false) {
+  currentScreen = id; navParam = param;
+  if (!SUBSCREENS[id]) lastTab = id;
   // historique navigateur : donne un comportement correct au bouton retour Android
   if (!fromPop) {
-    if (!history.state) history.replaceState({ tab: id }, "");
-    else if (history.state.tab !== id) history.pushState({ tab: id }, "");
+    const st = { screen:id, param };
+    if (!history.state) history.replaceState(st, "");
+    else if (history.state.screen !== id || history.state.param !== param) history.pushState(st, "");
   }
   renderTabs();
   const view = $("#view");
   view.innerHTML = "";
-  const tab = TABS.find(t=>t.id===id);
-  const node = id === "reglages" ? renderReglages() : tab.render();
+  const node = SUBSCREENS[id] ? SUBSCREENS[id].render() : TABS.find(t=>t.id===id).render();
   node.classList.add("screen");
   view.appendChild(node);
-  view.scrollTop = 0; window.scrollTo(0,0);
-  $("#sosBtn").hidden = false;
+  window.scrollTo(0,0);
 }
-// Bouton retour (Android) / history back : ferme d'abord le modal ouvert, sinon remonte les onglets
+function goBack() {
+  if (history.state && history.length > 1) history.back();
+  else navigate(SUBSCREENS[currentScreen] ? (SUBSCREENS[currentScreen].parent || lastTab) : "aujourdhui");
+}
+function rerender() { navigate(currentScreen, navParam, true); }
+
+// Bouton retour (Android) / history back : ferme d'abord le modal ouvert, sinon remonte l'historique
 window.addEventListener("popstate", e => {
   if ($("#modalRoot").children.length) {
     if (modalDismissable) closeModal();
-    history.pushState({ tab: currentTab }, ""); // on reste sur l'écran courant
+    history.pushState({ screen: currentScreen, param: navParam }, "");
     return;
   }
-  if (e.state && e.state.tab) navigate(e.state.tab, true);
+  if (e.state && e.state.screen) navigate(e.state.screen, e.state.param, true);
 });
 function renderTabs() {
   const bar = $("#tabbar");
   bar.innerHTML = "";
+  const act = activeTab();
   TABS.forEach(t => {
-    const b = el(`<button role="tab" aria-current="${t.id===currentTab}" aria-label="${t.label}">
-      <span class="ico">${t.icon}</span><span>${t.label}</span></button>`);
+    const b = el(`<button aria-current="${t.id===act ? "page" : "false"}">
+      <span class="ico" aria-hidden="true">${t.icon}</span><span>${t.label}</span></button>`);
     b.onclick = () => navigate(t.id);
     bar.appendChild(b);
   });
 }
+function subhead(title) {
+  const h = el(`<div class="subhead"><button class="btn ghost">← Retour</button><h2>${esc(title)}</h2></div>`);
+  h.querySelector("button").onclick = goBack;
+  return h;
+}
 
 /* =================================================================
-   SCREEN 1 - PROGRAMME
+   AUJOURD'HUI
    ================================================================= */
-function renderProgramme() {
+function renderAujourdhui() {
   const wrap = el(`<div></div>`);
-  const w = prescribedWindow();
-  const week = programWeek();
-  const adj = maybeWeeklyAdjust();
+  const today = ymd();
+  const out = screeningOutcome(state.profile);
+  const h = new Date().getHours();
+  const evening = h >= 17 || h < 4;
+  const nightCard = buildLastNightCard(today);
+  const tonightCard = buildTonightCard(today, out);
 
-  // ajustement banner (lundi)
-  if (adj && (adj.change || adj.avgEff)) {
-    const b = el(`<div class="card solid" style="border-left:4px solid var(--color-primary)">
-      <div class="pill">📈 Ajustement hebdo</div>
-      <p class="mt small">Efficacité moyenne : <strong>${adj.avgEff}%</strong>.<br>${esc(adj.msg)}
-      ${adj.change ? `<br>Nouvelle fenêtre : coucher à <strong>${prescribedWindow().bed}</strong>.` : ""}</p>
-    </div>`);
-    wrap.appendChild(b);
+  // le soir, « Ce soir » passe en premier ; le matin, la nuit à noter
+  if (evening) { wrap.appendChild(tonightCard); wrap.appendChild(nightCard); }
+  else { wrap.appendChild(nightCard); wrap.appendChild(tonightCard); }
+
+  const info = reviewInfo(state, today);
+  if (info && info.due) {
+    const c = el(`<div class="card solid" style="border-left:4px solid var(--color-primary)">
+      <strong>Ton bilan de la semaine est prêt</strong>
+      <p class="small muted mt">${info.nights.length} nuits notées depuis le dernier point. On regarde ensemble s'il faut ajuster ta fenêtre.</p>
+      <button class="btn primary block mt">Voir mon bilan</button></div>`);
+    c.querySelector("button").onclick = () => navigate("fenetre");
+    wrap.appendChild(c);
   }
 
-  // compte à rebours coucher
-  const bedMin = timeToMin(w.bed);
-  const nowMin = new Date().getHours()*60 + new Date().getMinutes();
-  let toBed = bedMin - nowMin; if (toBed < 0) toBed += 1440;
-  const countdown = toBed < 720 ? `dans ${fmtHM(toBed)}` : "ce soir";
+  if (state.window && (out.drowsy || restrictionStartedRecently(today))) wrap.appendChild(drowsyCard());
 
-  wrap.appendChild(el(`<div class="card">
-    <div class="row between">
-      <span class="pill">Semaine ${week} sur 6</span>
-      <span class="tiny muted">Méthode Walker · CBTI</span>
-    </div>
-    <h2 class="mt">Ta fenêtre de sommeil</h2>
-    <div class="row between mt" style="align-items:flex-end">
-      <div>
-        <div class="tiny muted">COUCHER</div>
-        <div class="metric-big" style="font-size:2.2rem">${w.bed}</div>
-        <div class="tiny" style="color:var(--color-primary-2)">${countdown}</div>
-      </div>
-      <div class="muted" style="font-size:1.4rem">→</div>
-      <div style="text-align:right">
-        <div class="tiny muted">RÉVEIL (ancre)</div>
-        <div class="metric-big" style="font-size:2.2rem">${w.wake}</div>
-        <div class="tiny muted">${fmtHM(w.durMin)} au lit</div>
-      </div>
-    </div>
-  </div>`));
-
-  // efficacité semaine
-  const wk = lastNEntries(7);
-  const avgEff = wk.length ? Math.round(wk.reduce((s,e)=>s+(e.eff||0),0)/wk.length) : null;
-  const m = avgEff!=null ? effMsg(avgEff) : null;
-  wrap.appendChild(el(`<div class="card">
-    <div class="row between">
-      <span class="card-title">Efficacité cette semaine</span>
-      ${avgEff!=null ? `<span class="badge ${m.cls}">${avgEff}%</span>` : `<span class="badge warn">-</span>`}
-    </div>
-    <p class="small muted mt">${avgEff!=null ? esc(m.txt) : "Remplis ton journal chaque matin pour suivre ta progression."}</p>
-  </div>`));
-
-  // règle du jour (rotation)
-  const ruleIdx = (new Date().getDate()) % STIMULUS_RULES.length;
-  const r = STIMULUS_RULES[ruleIdx];
-  wrap.appendChild(el(`<div class="card solid">
-    <div class="pill">${r.emoji} Règle du jour</div>
+  const r = STIMULUS_RULES[parseYmd(today).getDate() % STIMULUS_RULES.length];
+  const rule = el(`<div class="card">
+    <div class="pill">${r.emoji} Un repère pour aujourd'hui</div>
     <p class="mt"><strong>${esc(r.title)}</strong></p>
     <p class="small muted mt">${esc(r.body)}</p>
-  </div>`));
-
-  // accès rapide
-  const quick = el(`<div class="row mt"><button class="btn primary grow">✏️ Noter ma nuit</button><button class="btn ghost grow">📊 Mon suivi</button></div>`);
-  quick.children[0].onclick = ()=>navigate("journal");
-  quick.children[1].onclick = ()=>navigate("suivi");
-  wrap.appendChild(quick);
-
-  // rappel des 5 règles
-  const det = el(`<div class="card"><div class="row between"><span class="card-title">Les 5 règles du contrôle du stimulus</span><span class="muted">›</span></div></div>`);
-  det.style.cursor="pointer";
-  det.onclick = ()=>openRulesModal();
-  wrap.appendChild(det);
-
+    <button class="link-btn mt">Les 5 règles</button></div>`);
+  rule.querySelector("button").onclick = () => navigate("regles");
+  wrap.appendChild(rule);
   return wrap;
 }
 
-const STIMULUS_RULES = [
-  { emoji:"🛏️", title:"Ton lit sert à dormir. C'est tout.", body:"Pas à scroller, pas à manger, pas à regarder Netflix. Si ton cerveau apprend que le lit = dormir + scroller + séries, il ne sait plus quelle est la priorité." },
-  { emoji:"⏰", title:"Réveil à la même heure. Chaque jour. Week-end inclus.", body:"Même si tu as mal dormi. Surtout si tu as mal dormi. C'est l'ancre de tout le système." },
-  { emoji:"😴", title:"Tu vas au lit SEULEMENT quand tu as vraiment sommeil.", body:"Pas quand tu es fatigué·e. Quand tu tombes de sommeil." },
-  { emoji:"🚶", title:"Tu n'es pas endormi·e en 20 min ? Lève-toi.", body:"Va dans une autre pièce. Lis quelque chose de calme. Reviens seulement quand tu te sens vraiment prêt·e à dormir. C'est contre-intuitif, mais c'est l'une des règles les plus efficaces de la méthode." },
-  { emoji:"🌙", title:"Pas de sieste si tu souffres d'insomnie.", body:"La pression de sommeil est ton alliée - ne la gâche pas." },
-];
+function buildLastNightCard(today) {
+  const entry = state.journal.find(e => e.date === today);
+  const card = el(`<div class="card"><div class="card-title">Ta nuit dernière</div></div>`);
+  if (!entry) {
+    card.appendChild(el(`<p class="small muted">À noter de mémoire, à l'estime. Pas besoin de regarder l'heure pendant la nuit pour ça.</p>`));
+    const b = el(`<button class="btn primary block mt">Noter ma nuit</button>`);
+    b.onclick = () => navigate("nuit", today);
+    card.appendChild(b);
+  } else {
+    const c = computeNight(entry);
+    card.appendChild(el(`<p class="small">Au lit ${fmtHM(c.tib)} · sommeil estimé ${fmtHM(c.tst)}</p>`));
+    const b = el(`<button class="btn ghost block mt">Revoir ou corriger</button>`);
+    b.onclick = () => navigate("nuit", today);
+    card.appendChild(b);
+  }
+  const other = el(`<button class="link-btn mt">Noter une autre nuit</button>`);
+  other.onclick = () => navigate("nuit", addDays(today, -1));
+  card.appendChild(other);
+  return card;
+}
 
-function openRulesModal() {
-  const body = el(`<div><h2>Les 5 règles du contrôle du stimulus</h2></div>`);
-  STIMULUS_RULES.forEach(r => body.appendChild(el(`<div class="rule"><span class="emoji">${r.emoji}</span><div><strong>${esc(r.title)}</strong><span class="small muted">${esc(r.body)}</span></div></div>`)));
-  const close = el(`<button class="btn block primary mt">Compris</button>`);
-  close.onclick = closeModal; body.appendChild(close);
-  openModal(body);
+function buildTonightCard(today, out) {
+  const wake = state.profile.wakeAnchor;
+  if (state.window) {
+    const w = state.window;
+    return el(`<div class="card">
+      <div class="card-title">Ce soir</div>
+      <div class="row between mt" style="align-items:flex-end">
+        <div><div class="tiny muted">COUCHER, PAS AVANT</div><div class="metric-big" style="font-size:2.2rem">${w.bed}</div></div>
+        <div class="muted" style="font-size:1.4rem" aria-hidden="true">→</div>
+        <div style="text-align:right"><div class="tiny muted">LEVER</div><div class="metric-big" style="font-size:2.2rem">${w.wake}</div></div>
+      </div>
+      <p class="small muted mt">Au lit seulement quand tu as sommeil. Lever à ${w.wake}, comme chaque jour.</p></div>`);
+  }
+  if (out.restriction === "pro") {
+    const c = el(`<div class="card">
+      <div class="card-title">Ce soir</div>
+      <p class="small mt">Avec ce que tu as indiqué au départ, ta fenêtre de sommeil se décide avec un·e professionnel·le. En attendant : lever à <strong>${wake}</strong> chaque jour, et les 5 règles.</p>
+      <p class="small muted mt">Note tes nuits : ton agenda sera précieux en consultation.</p>
+      <button class="link-btn mt">Noter une fenêtre fixée avec mon/ma psy</button></div>`);
+    c.querySelector("button").onclick = () => openWindowEditor("psy");
+    return c;
+  }
+  const sug = baselineSuggestion(state.journal, wake, today);
+  if (sug.ready) {
+    const c = el(`<div class="card solid" style="border-left:4px solid var(--color-primary)">
+      <strong>Ta fenêtre de départ est prête</strong>
+      <p class="small muted mt">Tes ${sug.n} nuits notées permettent de te proposer une fenêtre de sommeil.</p>
+      <button class="btn primary block mt">La découvrir</button></div>`);
+    c.querySelector("button").onclick = () => navigate("fenetre");
+    return c;
+  }
+  return el(`<div class="card">
+    <div class="card-title">Semaine d'observation</div>
+    <p class="small mt">Garde tes habitudes pour l'instant et note tes nuits chaque matin : c'est ce qui permettra de te proposer une fenêtre adaptée.</p>
+    <div class="dots" aria-label="${sug.n} nuits notées sur ${sug.needed}">${Array.from({length:sug.needed},(_,i)=>`<span class="${i<sug.n?"on":""}"></span>`).join("")}</div>
+    <p class="tiny muted center">${sug.n} / ${sug.needed} nuits notées</p></div>`);
+}
+
+function restrictionStartedRecently(today) {
+  const firstSet = state.windowLog.find(l => l.kind === "set");
+  return !!firstSet && daysBetween(firstSet.date, today) <= 21;
+}
+function drowsyCard() {
+  return el(`<div class="card solid">
+    <div class="pill">⚠️ Somnolence</div>
+    <p class="small mt">Les premières semaines avec une fenêtre resserrée, la somnolence dans la journée peut augmenter. Si tu te sens somnolent·e, ne prends pas le volant et évite les activités dangereuses. Si ça dure, parles-en avec ton/ta psy ou ton médecin.</p></div>`);
 }
 
 /* =================================================================
-   SCREEN 2 - JOURNAL
+   NOTER UNE NUIT (agenda consensus)
    ================================================================= */
-function renderJournal() {
+function renderNuit(dateParam) {
+  const today = ymd();
+  const minDate = addDays(today, -13);
+  const date = dateParam && dateParam >= minDate && dateParam <= today ? dateParam : today;
   const wrap = el(`<div></div>`);
-  const today = todayISO();
-  const filled = state.journal.some(e=>e.date===today);
-
-  if (!filled) {
-    wrap.appendChild(el(`<div class="card solid" style="border-left:4px solid var(--color-primary-2)">
-      <strong>Ta nuit d'hier n'est pas encore notée ✏️</strong>
-      <p class="small muted mt">Remplis-le idéalement le matin, de mémoire. Pas besoin d'être précis à la minute.</p>
-    </div>`));
-  }
-
-  // sélecteur de date : permet de rattraper une nuit oubliée (jusqu'à 13 jours en arrière)
-  const minDate = new Date(Date.now() - 13 * 86400000).toISOString().slice(0, 10);
+  wrap.appendChild(subhead("Noter une nuit"));
   const picker = el(`<div class="card"><label class="field mb0"><span class="lbl">Nuit à noter <span class="hint">(datée du matin au réveil)</span></span>
-    <input type="date" value="${today}" min="${minDate}" max="${today}"></label></div>`);
-  wrap.appendChild(picker);
-
-  const formHolder = el(`<div></div>`);
-  formHolder.appendChild(buildJournalForm(today));
-  wrap.appendChild(formHolder);
-
+    <input type="date" value="${date}" min="${minDate}" max="${today}"></label></div>`);
   picker.querySelector("input").onchange = e => {
     const d = e.target.value;
-    if (!d || d > today || d < minDate) { e.target.value = today; return; }
-    formHolder.innerHTML = "";
-    formHolder.appendChild(buildJournalForm(d));
+    navigate("nuit", d && d >= minDate && d <= today ? d : today, true);
+    history.replaceState({ screen:"nuit", param: navParam }, "");
   };
-
-  // historique récent
-  if (state.journal.length) {
-    const hist = el(`<div class="card"><div class="card-title">Dernières nuits</div></div>`);
-    [...state.journal].slice(-5).reverse().forEach(e=>{
-      const m = effMsg(e.eff);
-      hist.appendChild(el(`<div class="list-entry">
-        <div class="row between"><span class="date">${frDate(e.date)}</span><span class="badge ${m.cls}">${e.eff}% ${m.emoji}</span></div>
-        <div class="small muted">${e.bed}→${e.wake} · ${fmtHM(e.sleptMin)} dormi · endormissement ${e.latency}min</div>
-        ${e.notes ? `<div class="tiny muted" style="margin-top:.2rem">📝 ${esc(e.notes)}</div>` : ""}
-      </div>`));
-    });
-    wrap.appendChild(hist);
-  }
+  wrap.appendChild(picker);
+  wrap.appendChild(buildNightForm(date));
   return wrap;
 }
 
-function frDate(iso) {
-  const d = new Date(iso+"T00:00");
-  return d.toLocaleDateString("fr-FR",{ weekday:"short", day:"numeric", month:"short" });
-}
-
-function buildJournalForm(date) {
-  const existing = state.journal.find(e=>e.date===date) || {};
-  const f = { bed: existing.bed||"23:30", wake: existing.wake||state.profile.wakeAnchor, latency: existing.latency??20,
-              awakenings: existing.awakenings??"0", awakeTime: existing.awakeTime??0, watchedClock: existing.watchedClock??null,
-              phone: existing.phone??null, respected: existing.respected??null, quality: existing.quality??6,
-              mood: existing.mood??null, notes: existing.notes||"" };
-
+function buildNightForm(date) {
+  const ex = state.journal.find(e => e.date === date) || {};
+  // Aucune valeur par défaut sur ce qui est une estimation : la personne remplit elle-même.
+  const f = {
+    bed: ex.bed || "", lightsOff: ex.lightsOff || "", sol: ex.sol ?? "", awakenings: ex.awakenings ?? null,
+    waso: ex.waso ?? "", finalWake: ex.finalWake || "", rise: ex.rise || "", quality: ex.quality ?? null,
+    nap: ex.nap ?? "", aid: ex.aid || "", alcohol: ex.alcohol ?? "", notes: ex.notes || ""
+  };
   const card = el(`<div class="card"></div>`);
-  const isToday = date === todayISO();
-  card.appendChild(el(`<h2>${isToday ? (existing.date?"Modifier la nuit":"Ta nuit") : "Nuit du " + frDate(date)}</h2>`));
+  card.appendChild(el(`<h2>${date === ymd() ? "Ta nuit dernière" : "Nuit du " + frDate(date)}</h2>`));
+  card.appendChild(el(`<p class="small muted mt" style="margin-bottom:1rem">Tes estimations du matin suffisent : pas besoin d'être précis·e à la minute.</p>`));
 
-  const bedField = timeField("Heure de coucher réelle", f.bed, v=>f.bed=v);
-  const wakeField = timeField("Heure de lever réelle", f.wake, v=>f.wake=v);
+  const bed = timeField("Heure à laquelle tu t'es couché·e", f.bed, v => f.bed = v);
+  const lightsOff = timeField("Heure à laquelle tu as éteint pour dormir", f.lightsOff, v => f.lightsOff = v, "Pareil", () => f.bed);
+  const finalWake = timeField("Heure de ton dernier réveil", f.finalWake, v => f.finalWake = v);
+  const rise = timeField("Heure à laquelle tu t'es levé·e", f.rise, v => f.rise = v, "Pareil", () => f.finalWake);
 
-  if (HealthSync.available() && state.healthSync) {
-    const syncBtn = el(`<button type="button" class="btn ghost block mt">🔄 Récupérer depuis Apple Santé / Health Connect</button>`);
+  if (HealthSync.available() && state.healthSync && date === ymd()) {
+    const syncBtn = el(`<button type="button" class="btn ghost block">🔄 Récupérer depuis Apple Santé / Health Connect</button>`);
     const syncLabel = syncBtn.textContent;
     syncBtn.onclick = async ()=>{
       syncBtn.disabled = true; syncBtn.textContent = "Récupération…";
       const data = await HealthSync.fetchLastNight();
       syncBtn.disabled = false; syncBtn.textContent = syncLabel;
       if (!data) { toast("Aucune donnée de sommeil trouvée pour cette nuit"); return; }
-      f.bed = data.bed; f.wake = data.wake;
-      bedField.querySelector("input").value = data.bed;
-      wakeField.querySelector("input").value = data.wake;
+      f.bed = data.bed; f.finalWake = data.wake;
+      bed.querySelector("input").value = data.bed;
+      finalWake.querySelector("input").value = data.wake;
       updatePreview();
-      toast("Heures pré-remplies - vérifie et ajuste si besoin");
+      toast("Coucher et dernier réveil pré-remplis : vérifie et ajuste si besoin");
     };
     card.appendChild(syncBtn);
-    card.appendChild(el(`<p class="tiny muted mt" style="margin-bottom:1rem">Pré-remplit uniquement le coucher et le lever. Le reste reste ton évaluation.</p>`));
+    card.appendChild(el(`<p class="tiny muted mt" style="margin-bottom:1rem">Pré-remplit seulement le coucher et le dernier réveil. Le reste, c'est ton estimation.</p>`));
   }
 
-  card.appendChild(bedField);
-  card.appendChild(wakeField);
-  card.appendChild(sliderField("Temps pour t'endormir", f.latency, 0, 120, 5, "min", v=>f.latency=v));
-  card.appendChild(choiceField("Réveils nocturnes", ["0","1","2","3","4+"], f.awakenings, v=>f.awakenings=v));
-  card.appendChild(sliderField("Temps total éveillé la nuit", f.awakeTime, 0, 120, 5, "min", v=>f.awakeTime=v));
-  card.appendChild(choiceField("As-tu regardé l'heure cette nuit ?", ["Oui","Non"], f.watchedClock, v=>f.watchedClock=v));
-  card.appendChild(choiceField("As-tu utilisé ton téléphone au lit ?", ["Oui","Non"], f.phone, v=>f.phone=v));
-  card.appendChild(choiceField("As-tu respecté la fenêtre prescrite ?", ["Oui","Non","Partiellement"], f.respected, v=>f.respected=v));
-  card.appendChild(sliderField("Qualité subjective", f.quality, 1, 10, 1, "/10", v=>f.quality=v));
-  card.appendChild(choiceField("Humeur au réveil", ["😵 Épuisé·e","😔 Fatigué·e","😐 Correct","😊 Reposé·e","⚡ En forme"], f.mood, v=>f.mood=v));
+  card.appendChild(bed);
+  card.appendChild(lightsOff);
+  card.appendChild(numberField("Temps pour t'endormir, à peu près", f.sol, "minutes", v => f.sol = v));
+  const wasoField = numberField("Temps éveillé·e au total pendant la nuit, à peu près", f.waso, "minutes", v => f.waso = v);
+  const awk = choiceField("Combien de fois t'es-tu réveillé·e ?", ["0","1","2","3","4","5+"],
+    f.awakenings == null ? null : (f.awakenings >= 5 ? "5+" : String(f.awakenings)),
+    v => { f.awakenings = v === "5+" ? 5 : Number(v); syncWaso(); });
+  card.appendChild(awk);
+  card.appendChild(wasoField);
+  const syncWaso = () => { const none = f.awakenings === 0; wasoField.hidden = none; f.waso = none ? 0 : wasoField.querySelector("input").value; };
+  syncWaso();
+  card.appendChild(finalWake);
+  card.appendChild(rise);
+  card.appendChild(choiceField("Qualité de ta nuit", QUALITY_LABELS, f.quality ? QUALITY_LABELS[f.quality-1] : null, v => f.quality = QUALITY_LABELS.indexOf(v) + 1));
 
-  const notes = el(`<label class="field"><span class="lbl">Notes libres <span class="hint">(200 car.)</span></span><textarea maxlength="200" placeholder="Optionnel">${esc(f.notes)}</textarea></label>`);
-  notes.querySelector("textarea").oninput = e=>f.notes=e.target.value;
-  card.appendChild(notes);
+  const more = el(`<details class="more"${(f.nap || f.aid || f.alcohol || f.notes) ? " open" : ""}><summary>Plus de détails (facultatif)</summary></details>`);
+  more.appendChild(numberField("Sieste ou assoupissement hier", f.nap, "minutes", v => f.nap = v));
+  const aid = el(`<label class="field"><span class="lbl">Médicament ou aide pour dormir <span class="hint">(lequel, quelle dose)</span></span><input type="text" maxlength="80" value="${esc(f.aid)}"></label>`);
+  aid.querySelector("input").oninput = e => f.aid = e.target.value;
+  more.appendChild(aid);
+  more.appendChild(numberField("Alcool hier soir", f.alcohol, "verres", v => f.alcohol = v));
+  const notes = el(`<label class="field"><span class="lbl">Notes <span class="hint">(200 caractères)</span></span><textarea maxlength="200">${esc(f.notes)}</textarea></label>`);
+  notes.querySelector("textarea").oninput = e => f.notes = e.target.value;
+  more.appendChild(notes);
+  card.appendChild(more);
 
-  // live efficacité preview
-  const preview = el(`<div class="card solid center mb0"><div class="tiny muted">EFFICACITÉ ESTIMÉE</div><div class="metric-big" id="jpEff">-</div><p class="small" id="jpMsg"></p></div>`);
+  // aperçu neutre : des durées, pas de jugement
+  const preview = el(`<div class="card solid center mb0"><p class="small" aria-live="polite">-</p></div>`);
   card.appendChild(preview);
-  const updatePreview = ()=>{
-    const c = computeEntry(f); const m = effMsg(c.eff);
-    $("#jpEff", preview).textContent = c.eff + "%";
-    $("#jpMsg", preview).innerHTML = `${m.emoji} ${esc(m.txt)}<br><span class="muted">${fmtHM(c.sleptMin)} de sommeil sur ${fmtHM(c.inBed)} au lit</span>`;
+  const updatePreview = () => {
+    const c = computeNight(f);
+    preview.firstElementChild.textContent = c.tib && !validateNight(f)
+      ? `Au lit ${fmtHM(c.tib)} · sommeil estimé ${fmtHM(c.tst)}`
+      : "L'estimation apparaîtra une fois tout rempli.";
   };
-  // recompute on any change → re-bind via observer-ish: simplest is to update on input events of the whole card
   card.addEventListener("input", updatePreview);
-  card.addEventListener("click", ()=>setTimeout(updatePreview,0));
-  setTimeout(updatePreview,0);
+  card.addEventListener("click", () => setTimeout(updatePreview, 0));
+  setTimeout(updatePreview, 0);
 
-  const submit = el(`<button class="btn primary block mt">Enregistrer ma nuit</button>`);
-  submit.onclick = ()=>{
-    if (f.mood===null) { toast("Indique ton humeur au réveil 🙂"); return; }
-    const c = computeEntry(f);
-    const entry = { date, ...f, ...c };
-    const idx = state.journal.findIndex(e=>e.date===date);
-    if (idx>=0) state.journal[idx]=entry; else state.journal.push(entry);
-    state.journal.sort((a,b)=>a.date.localeCompare(b.date));
+  const submit = el(`<button class="btn primary block mt">Enregistrer</button>`);
+  submit.onclick = () => {
+    const err = validateNight(f);
+    if (err) { toast(err, 3200); return; }
+    const entry = {
+      date, bed: f.bed, lightsOff: f.lightsOff, sol: Number(f.sol), awakenings: f.awakenings,
+      waso: f.awakenings === 0 ? 0 : Number(f.waso), finalWake: f.finalWake, rise: f.rise, quality: f.quality,
+      nap: numOrNull(f.nap), aid: f.aid.trim(), alcohol: numOrNull(f.alcohol), notes: f.notes.trim()
+    };
+    const idx = state.journal.findIndex(e => e.date === date);
+    if (idx >= 0) state.journal[idx] = entry; else state.journal.push(entry);
+    state.journal.sort((a,b) => a.date.localeCompare(b.date));
     save();
-    const m = effMsg(c.eff);
-    toast(`Nuit enregistrée - ${c.eff}% ${m.emoji}`);
-    navigate("suivi");
+    toast("Nuit notée");
+    goBack();
   };
   card.appendChild(submit);
   return card;
 }
 
 /* field builders */
-function timeField(label, val, onChange) {
-  const f = el(`<label class="field"><span class="lbl">${esc(label)}</span><input type="time" value="${val}"></label>`);
-  f.querySelector("input").onchange = e=>onChange(e.target.value);
+function timeField(label, val, onChange, quickLabel, quickValue) {
+  const f = el(`<label class="field"><span class="lbl">${esc(label)}${quickLabel ? ` <button type="button" class="quick">${esc(quickLabel)}</button>` : ""}</span><input type="time" value="${esc(val)}"></label>`);
+  const inp = f.querySelector("input");
+  inp.onchange = e => onChange(e.target.value);
+  inp.oninput = e => onChange(e.target.value);
+  if (quickLabel) f.querySelector(".quick").onclick = ev => {
+    ev.preventDefault();
+    const v = quickValue(); if (!v) return;
+    inp.value = v; onChange(v); inp.dispatchEvent(new Event("input", { bubbles:true }));
+  };
   return f;
 }
-function sliderField(label, val, min, max, step, unit, onChange) {
-  const f = el(`<label class="field"><span class="lbl">${esc(label)}</span>
-    <div class="slider-wrap"><input type="range" min="${min}" max="${max}" step="${step}" value="${val}"><span class="slider-val">${val}${unit}</span></div></label>`);
-  const inp = f.querySelector("input"), out = f.querySelector(".slider-val");
-  inp.oninput = e=>{ const v=Number(e.target.value); out.textContent=v+unit; onChange(v); };
+function numberField(label, val, unit, onChange) {
+  const f = el(`<label class="field"><span class="lbl">${esc(label)} <span class="hint">(${esc(unit)})</span></span><input type="number" inputmode="numeric" min="0" max="900" step="1" value="${esc(val)}"></label>`);
+  f.querySelector("input").oninput = e => onChange(e.target.value);
   return f;
 }
-function choiceField(label, opts, val, onChange) {
-  const f = el(`<div class="field"><span class="lbl">${esc(label)}</span><div class="choices"></div></div>`);
+function choiceField(label, opts, val, onChange, col) {
+  const f = el(`<div class="field" role="group"><span class="lbl">${esc(label)}</span><div class="choices${col ? " col" : ""}"></div></div>`);
   const box = f.querySelector(".choices");
   opts.forEach(o=>{
     const b = el(`<button type="button" aria-pressed="${o===val}">${esc(o)}</button>`);
@@ -865,379 +1080,494 @@ function choiceField(label, opts, val, onChange) {
 }
 
 /* =================================================================
-   SCREEN 3 - SUIVI (charts SVG)
+   MA FENÊTRE (fenêtre de sommeil + bilan hebdomadaire + agenda)
    ================================================================= */
-function lastNEntries(n) { return state.journal.slice(-n); }
-
-function renderSuivi() {
+function renderFenetre() {
   const wrap = el(`<div></div>`);
-  const data = lastNEntries(14);
+  const today = ymd();
+  const out = screeningOutcome(state.profile);
 
-  if (data.length < 2) {
-    wrap.appendChild(el(`<div class="empty"><div class="big">📊</div><p>Note au moins 2 nuits dans ton journal pour voir tes courbes apparaître.</p></div>`));
-    const go = el(`<button class="btn primary block">✏️ Aller au journal</button>`); go.onclick=()=>navigate("journal");
-    wrap.appendChild(go);
-    return wrap;
+  if (state.window) {
+    const w = state.window, tib = offsetMin(w.bed, w.wake);
+    const c = el(`<div class="card">
+      <div class="card-title">Ma fenêtre de sommeil</div>
+      <div class="row between mt" style="align-items:flex-end">
+        <div><div class="tiny muted">COUCHER, PAS AVANT</div><div class="metric-big" style="font-size:2.2rem">${w.bed}</div></div>
+        <div class="muted" style="font-size:1.4rem" aria-hidden="true">→</div>
+        <div style="text-align:right"><div class="tiny muted">LEVER</div><div class="metric-big" style="font-size:2.2rem">${w.wake}</div></div>
+      </div>
+      <p class="small muted mt">${fmtHM(tib)} au lit · fixée ${SETBY_LABEL[w.setBy] || ""} le ${frDate(w.since)}</p>
+      <button class="link-btn mt">Modifier ma fenêtre</button></div>`);
+    c.querySelector("button").onclick = () => openWindowEditor();
+    if (out.restriction === "pro" && w.setBy !== "psy")
+      c.insertBefore(el(`<div class="card solid mt"><p class="small">Avec ce que tu as indiqué au départ (${esc(out.reasons.join(", "))}), cette fenêtre est à revoir avec un·e professionnel·le avant d'aller plus loin. L'app ne proposera plus de la resserrer.</p></div>`), c.lastElementChild);
+    wrap.appendChild(c);
+    wrap.appendChild(buildReviewCard(today, out));
+  } else {
+    wrap.appendChild(buildStartCard(today, out));
   }
 
-  // métriques
-  const last7 = lastNEntries(7);
-  const avgEff7 = Math.round(last7.reduce((s,e)=>s+e.eff,0)/last7.length);
-  const wakeMins = last7.map(e=>timeToMin(e.wake));
-  const std = stdDev(wakeMins);
-  const avgLat = Math.round(last7.reduce((s,e)=>s+Number(e.latency),0)/last7.length);
-  const prev7 = state.journal.slice(-14,-7);
-  const prevEff = prev7.length ? Math.round(prev7.reduce((s,e)=>s+e.eff,0)/prev7.length) : null;
-  const delta = prevEff!=null ? avgEff7 - prevEff : null;
-  const respectedPct = Math.round(last7.filter(e=>e.respected==="Oui").length/last7.length*100);
+  wrap.appendChild(buildAgendaCard(today));
 
-  wrap.appendChild(el(`<div class="card">
-    <div class="card-title">Tes chiffres (7 derniers jours)</div>
-    <div class="metric-row mt">
-      <div class="metric-cell"><div class="v">${avgEff7}%</div><div class="k">Efficacité moyenne</div></div>
-      <div class="metric-cell"><div class="v">±${Math.round(std)} min</div><div class="k">Régularité du réveil</div></div>
-      <div class="metric-cell"><div class="v">${avgLat} min</div><div class="k">Endormissement moyen</div></div>
-      <div class="metric-cell"><div class="v">${delta!=null?(delta>=0?"▲ +":"▼ ")+delta+"%":"-"}</div><div class="k">vs semaine préc.</div></div>
-    </div>
-    <div class="metric-cell mt"><div class="v">${respectedPct}%</div><div class="k">Nuits où tu as respecté la fenêtre</div></div>
-  </div>`));
-
-  // chart 1 - efficacité
-  wrap.appendChild(chartCard("Efficacité du sommeil - 14 jours", lineChartEff(data)));
-  // chart 2 - durée
-  wrap.appendChild(chartCard("Durée de sommeil - 14 jours", barChartDuration(data)));
-  // chart 3 - régularité
-  wrap.appendChild(chartCard("Régularité coucher / lever", regularityChart(data)));
-
-  return wrap;
-}
-
-function chartCard(title, node) {
-  const c = el(`<div class="card"><div class="card-title">${esc(title)}</div></div>`);
-  c.appendChild(node);
-  return c;
-}
-function stdDev(arr) {
-  if (arr.length<2) return 0;
-  const m = arr.reduce((a,b)=>a+b,0)/arr.length;
-  return Math.sqrt(arr.reduce((s,x)=>s+(x-m)**2,0)/arr.length);
-}
-
-const CH = { w: 320, h: 150, pad: 24 };
-function xPos(i, n) { return CH.pad + (CH.w - CH.pad*2) * (n<=1?0.5:i/(n-1)); }
-
-function lineChartEff(data) {
-  const n = data.length;
-  const yMin=40, yMax=100;
-  const yPos = v => CH.h - CH.pad - (CH.h - CH.pad*2) * ((Math.max(yMin,Math.min(yMax,v))-yMin)/(yMax-yMin));
-  const pts = data.map((e,i)=>`${xPos(i,n).toFixed(1)},${yPos(e.eff).toFixed(1)}`);
-  const target = yPos(85);
-  const lastEff = data[n-1].eff;
-  const stroke = lastEff>=85?"var(--color-primary)":(lastEff>=75?"var(--color-primary-2)":"var(--color-danger)");
-  const area = `M${xPos(0,n)},${CH.h-CH.pad} L${pts.join(" L")} L${xPos(n-1,n)},${CH.h-CH.pad} Z`;
-  return el(`<svg class="chart" viewBox="0 0 ${CH.w} ${CH.h}" role="img" aria-label="Efficacité sur 14 jours">
-    <defs><linearGradient id="effFill" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="${stroke}" stop-opacity="0.25"/><stop offset="100%" stop-color="${stroke}" stop-opacity="0"/></linearGradient></defs>
-    <line x1="${CH.pad}" y1="${target}" x2="${CH.w-CH.pad}" y2="${target}" stroke="var(--color-muted)" stroke-dasharray="4 4" stroke-width="1" opacity="0.6"/>
-    <text x="${CH.w-CH.pad}" y="${target-5}" fill="var(--color-muted)" font-size="9" text-anchor="end">objectif 85%</text>
-    <path d="${area}" fill="url(#effFill)"/>
-    <polyline points="${pts.join(" ")}" fill="none" stroke="${stroke}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-    ${data.map((e,i)=>`<circle cx="${xPos(i,n).toFixed(1)}" cy="${yPos(e.eff).toFixed(1)}" r="3" fill="${stroke}"/>`).join("")}
-  </svg>`);
-}
-
-function barChartDuration(data) {
-  const n = data.length;
-  const yMax = 600; // 10h en min
-  const goal = state.profile.prescribedHours*60;
-  const yPos = v => CH.h - CH.pad - (CH.h - CH.pad*2)*(Math.min(yMax,v)/yMax);
-  const bw = Math.max(6, (CH.w-CH.pad*2)/n - 4);
-  const goalY = yPos(goal);
-  const bars = data.map((e,i)=>{
-    const x = xPos(i,n)-bw/2, y=yPos(e.sleptMin), h=CH.h-CH.pad-y;
-    const col = e.sleptMin>=goal?"var(--color-primary)":"var(--color-primary-2)";
-    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0,h).toFixed(1)}" rx="3" fill="${col}" opacity="0.85"/>`;
-  }).join("");
-  return el(`<svg class="chart" viewBox="0 0 ${CH.w} ${CH.h}" role="img" aria-label="Durée de sommeil sur 14 jours">
-    ${bars}
-    <line x1="${CH.pad}" y1="${goalY}" x2="${CH.w-CH.pad}" y2="${goalY}" stroke="var(--color-primary)" stroke-dasharray="4 4" stroke-width="1"/>
-    <text x="${CH.w-CH.pad}" y="${goalY-4}" fill="var(--color-primary)" font-size="9" text-anchor="end">fenêtre ${fmtHM(goal)}</text>
-  </svg>`);
-}
-
-function regularityChart(data) {
-  const n = data.length;
-  // normalise les heures autour d'un axe nuit (18h -> 12h le lendemain)
-  const norm = m => { let v=m; if (v<720) v+=1440; return v; }; // <12h => lendemain
-  const all = data.flatMap(e=>[norm(timeToMin(e.bed)), norm(timeToMin(e.wake))]);
-  const lo = Math.min(...all)-30, hi = Math.max(...all)+30;
-  const yPos = v => CH.pad + (CH.h-CH.pad*2)*((v-lo)/(hi-lo));
-  const bed = data.map((e,i)=>`${xPos(i,n).toFixed(1)},${yPos(norm(timeToMin(e.bed))).toFixed(1)}`);
-  const wake = data.map((e,i)=>`${xPos(i,n).toFixed(1)},${yPos(norm(timeToMin(e.wake))).toFixed(1)}`);
-  const svg = el(`<svg class="chart" viewBox="0 0 ${CH.w} ${CH.h}" role="img" aria-label="Régularité coucher et lever">
-    <polyline points="${bed.join(" ")}" fill="none" stroke="var(--color-primary-2)" stroke-width="2.5" stroke-linejoin="round"/>
-    <polyline points="${wake.join(" ")}" fill="none" stroke="var(--color-primary)" stroke-width="2.5" stroke-linejoin="round"/>
-    ${data.map((e,i)=>`<circle cx="${xPos(i,n).toFixed(1)}" cy="${yPos(norm(timeToMin(e.bed))).toFixed(1)}" r="2.5" fill="var(--color-primary-2)"/>`).join("")}
-    ${data.map((e,i)=>`<circle cx="${xPos(i,n).toFixed(1)}" cy="${yPos(norm(timeToMin(e.wake))).toFixed(1)}" r="2.5" fill="var(--color-primary)"/>`).join("")}
-  </svg>`);
-  const card = el(`<div></div>`); card.appendChild(svg);
-  card.appendChild(el(`<div class="legend"><span><i style="background:var(--color-primary-2)"></i>Coucher</span><span><i style="background:var(--color-primary)"></i>Lever</span></div>`));
-  return card;
-}
-
-/* =================================================================
-   SCREEN 4 - RECONDITIONNEMENT COGNITIF
-   ================================================================= */
-function renderRecond() {
-  const wrap = el(`<div></div>`);
-
-  // tabs internes
-  const seg = el(`<div class="choices mb0" style="margin-bottom:1rem"></div>`);
-  ["Worry Time","Quiz croyances"].forEach((t,i)=>{
-    const b = el(`<button aria-pressed="${i===0}">${t}</button>`);
-    b.onclick=()=>{ seg.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed","false")); b.setAttribute("aria-pressed","true"); body.innerHTML=""; body.appendChild(i===0?worrySection():beliefsSection()); };
-    seg.appendChild(b);
-  });
-  wrap.appendChild(seg);
-  const body = el(`<div></div>`);
-  body.appendChild(worrySection());
-  wrap.appendChild(body);
-  return wrap;
-}
-
-function worrySection() {
-  const wrap = el(`<div></div>`);
-  wrap.appendChild(el(`<div class="card solid">
-    <p>Toutes les pensées qui te stressent la nuit, tu vas les mettre dans une boîte <strong>pendant la journée</strong>.</p>
-    <p class="small muted mt">À 18h. 15 minutes. Pas plus. Pas au lit.</p>
-  </div>`));
-
-  // sélecteur d'heure
-  const timeCard = el(`<div class="card"><label class="field mb0"><span class="lbl">Heure de ton Worry Time</span><input type="time" value="${state.worryTime}"></label></div>`);
-  timeCard.querySelector("input").onchange = e=>{ state.worryTime=e.target.value; save(); Notif.reschedule(); toast("Worry Time mis à jour"); };
-  wrap.appendChild(timeCard);
-
-  // nouvelle session
-  const sess = { raw:"", thoughts:[] };
-  const card = el(`<div class="card"><div class="card-title">Nouvelle session</div></div>`);
-  const ta = el(`<label class="field"><span class="lbl">Qu'est-ce qui t'a trotté dans la tête cette nuit ?</span><textarea placeholder="Une pensée par ligne…"></textarea></label>`);
-  card.appendChild(ta);
-
-  const colsWrap = el(`<div></div>`);
-  const classifyBtn = el(`<button class="btn ghost block">Classer ces pensées →</button>`);
-  classifyBtn.onclick = ()=>{
-    const lines = ta.querySelector("textarea").value.split("\n").map(s=>s.trim()).filter(Boolean);
-    if (!lines.length) { toast("Écris au moins une pensée"); return; }
-    sess.raw = ta.querySelector("textarea").value;
-    sess.thoughts = lines.map(t=>({text:t, cat:null}));
-    renderClassify();
-  };
-  card.appendChild(classifyBtn);
-  card.appendChild(colsWrap);
-  wrap.appendChild(card);
-
-  function renderClassify() {
-    colsWrap.innerHTML="";
-    colsWrap.appendChild(el(`<p class="small muted mt">Classe chaque pensée : <strong>☑ je peux agir</strong> ou <strong>☑ je ne peux pas agir</strong>.</p>`));
-    sess.thoughts.forEach((th,idx)=>{
-      const chip = el(`<div class="thought-chip"><span class="grow">${esc(th.text)}</span><div class="act">
-        <button title="Je peux agir">✅</button><button title="Je ne peux pas agir">🚫</button></div></div>`);
-      const [a,b]=chip.querySelectorAll(".act button");
-      const sync=()=>{ a.className=th.cat==="act"?"sel-a":""; b.className=th.cat==="no"?"sel-b":""; };
-      a.onclick=()=>{ th.cat="act"; sync(); checkDone(); };
-      b.onclick=()=>{ th.cat="no"; sync(); checkDone(); };
-      sync();
-      colsWrap.appendChild(chip);
-    });
-    const msgBox = el(`<div></div>`);
-    colsWrap.appendChild(msgBox);
-    const closeBtn = el(`<button class="btn primary block mt" disabled>Fermer le créneau 🔒</button>`);
-    colsWrap.appendChild(closeBtn);
-    function checkDone() {
-      const allClassed = sess.thoughts.every(t=>t.cat);
-      closeBtn.disabled = !allClassed;
-      if (allClassed && !msgBox.dataset.shown) {
-        msgBox.dataset.shown="1";
-        msgBox.appendChild(el(`<div class="card solid mt"><p class="small">Pour les pensées sur lesquelles tu n'as pas prise : quand elles reviennent au moment de dormir, rappelle-toi que tu as déjà prévu un moment pour y revenir demain. Tu peux les laisser passer sans t'y accrocher. Avec de la régularité, cette pratique devient un vrai outil.</p></div>`));
-      }
-    }
-    closeBtn.onclick = ()=>{
-      state.worry.push({ date:new Date().toISOString(), raw:sess.raw, thoughts:sess.thoughts });
-      save();
-      // animation de clôture
-      card.style.transition="all .5s var(--ease)"; card.style.opacity="0"; card.style.transform="scale(.95)";
-      setTimeout(()=>{ toast("Créneau fermé. Repose ta tête. 🔒"); navigate("recond"); $("#view .choices button")?.click?.(); }, 500);
-    };
-  }
-
-  // historique
-  if (state.worry.length) {
-    const hist = el(`<div class="card"><div class="card-title">Historique des sessions</div></div>`);
-    [...state.worry].slice(-6).reverse().forEach(s=>{
-      const act = s.thoughts.filter(t=>t.cat==="act").length, no = s.thoughts.filter(t=>t.cat==="no").length;
-      hist.appendChild(el(`<div class="list-entry"><div class="date">${frDate(s.date.slice(0,10))}</div><div class="small">${s.thoughts.length} pensée(s) · ${act} actionnable(s) · ${no} à lâcher</div></div>`));
+  if (state.windowLog.length) {
+    const hist = el(`<div class="card"><div class="card-title">Historique de ma fenêtre</div></div>`);
+    [...state.windowLog].slice(-8).reverse().forEach(l => {
+      const txt = l.kind === "set" ? `Fenêtre fixée ${SETBY_LABEL[l.setBy] || ""} : ${l.bed} → ${l.wake}`
+        : l.kind === "adjust" ? `Ajustée au bilan : coucher à ${l.bed}${l.se != null ? ` (${l.se} %)` : ""}`
+        : `Gardée au bilan${l.se != null ? ` (${l.se} %)` : ""}`;
+      hist.appendChild(el(`<div class="list-entry"><div class="date">${frDate(l.date)}</div><div class="small">${esc(txt)}</div></div>`));
     });
     wrap.appendChild(hist);
   }
   return wrap;
 }
 
-const BELIEFS = [
-  { q:"J'ai besoin de 8h exactement.", a:"Les besoins varient. L'obsession des 8h crée une anxiété qui nuit plus que le manque lui-même." },
-  { q:"Si je dors mal, ma journée est compromise.", a:"Une mauvaise nuit ponctuelle a des effets bien plus modestes qu'on ne le pense. Le cerveau dispose de mécanismes de récupération remarquablement efficaces." },
-  { q:"Rester au lit va m'aider à récupérer.", a:"Non. Chaque minute au lit sans dormir apprend à ton cerveau que le lit ne sert pas à dormir. C'est l'ennemi." },
-  { q:"Je dois rattraper le sommeil perdu le week-end.", a:"La grasse matinée décale ton horloge et aggrave l'insomnie la semaine suivante. Réveil fixe, même le dimanche." },
-  { q:"L'alcool m'aide à dormir.", a:"L'alcool crée une sédation qui peut faciliter l'endormissement, mais fragmente le sommeil et supprime les phases REM. Au bilan, le repos est bien moins récupérateur, et la fatigue au réveil souvent plus marquée." },
-  { q:"Je ne peux rien faire contre mon insomnie.", a:"La CBTI présente un taux de succès supérieur à 80 %. L'insomnie chronique est avant tout un problème d'apprentissage - et ce qui s'apprend peut se désapprendre." },
-  { q:"Il faut que ma tête soit vide pour m'endormir.", a:"Impossible. L'objectif n'est pas de ne pas penser, c'est d'observer les pensées sans les combattre." },
-  { q:"Si je me réveille la nuit, c'est grave.", a:"4 à 6 micro-réveils par nuit sont normaux. C'est l'anxiété qu'ils génèrent qui est le problème, pas les réveils eux-mêmes." },
-];
-
-function beliefsSection() {
-  const wrap = el(`<div></div>`);
-  let idx = 0; const answers = [];
-  const card = el(`<div class="card"></div>`);
-  wrap.appendChild(card);
-
-  function show() {
-    if (idx >= BELIEFS.length) return showResult();
-    const b = BELIEFS[idx];
-    card.innerHTML="";
-    card.appendChild(el(`<div class="dots">${BELIEFS.map((_,i)=>`<span class="${i<=idx?"on":""}"></span>`).join("")}</div>`));
-    card.appendChild(el(`<div class="tiny muted">CROYANCE ${idx+1} / ${BELIEFS.length}</div>`));
-    card.appendChild(el(`<h2 class="mt">« ${esc(b.q)} »</h2>`));
-    card.appendChild(el(`<p class="small muted mt">À quel point tu es d'accord ?</p>`));
-    const scale = el(`<div class="choices mt"></div>`);
-    ["1","2","3","4","5"].forEach(v=>{
-      const btn = el(`<button>${v}</button>`);
-      btn.onclick=()=>{ answers[idx]=Number(v); showReframe(b, Number(v)); };
-      scale.appendChild(btn);
-    });
-    card.appendChild(scale);
-    card.appendChild(el(`<div class="row between tiny muted mt"><span>Pas du tout</span><span>Tout à fait</span></div>`));
+function buildStartCard(today, out) {
+  const wake = state.profile.wakeAnchor;
+  if (out.restriction === "pro") {
+    const c = el(`<div class="card">
+      <div class="card-title">Ma fenêtre de sommeil</div>
+      <p class="small mt">Avec ce que tu as indiqué au départ (${esc(out.reasons.join(", "))}), une fenêtre de sommeil resserrée se décide avec un·e professionnel·le : médecin, ou psy formé·e à la TCC-I.</p>
+      <p class="small muted mt">L'app ne te proposera pas de fenêtre d'elle-même. Si ton/ta professionnel·le t'en a donné une, note-la ici.</p>
+      <button class="btn primary block mt">Noter la fenêtre convenue</button></div>`);
+    c.querySelector("button").onclick = () => openWindowEditor("psy");
+    return c;
   }
-  function showReframe(b, v) {
-    card.innerHTML="";
-    card.appendChild(el(`<div class="pill">${v>=4?"💭 À recadrer":"👍 Plutôt sain"}</div>`));
-    card.appendChild(el(`<h2 class="mt">« ${esc(b.q)} »</h2>`));
-    card.appendChild(el(`<div class="card solid mt"><p>${esc(b.a)}</p></div>`));
-    const next = el(`<button class="btn primary block mt">${idx<BELIEFS.length-1?"Suivante →":"Voir mon score"}</button>`);
-    next.onclick=()=>{ idx++; show(); };
-    card.appendChild(next);
-  }
-  function showResult() {
-    const dysf = answers.filter(v=>v>=4).length;
-    state.beliefsScore = dysf; save();
-    card.innerHTML="";
-    card.appendChild(el(`<div class="center"><div class="metric-big">${dysf}<span style="font-size:1.4rem">/8</span></div>
-      <p class="mt"><strong>${dysf} croyance(s) qui travaillent contre toi.</strong></p>
-      <p class="small muted mt">Voilà comment les recadrer une par une. Relis-les quand l'anxiété revient - ce sont tes contre-arguments.</p></div>`));
-    BELIEFS.forEach((b,i)=>{ if(answers[i]>=4) card.appendChild(el(`<div class="card solid mt"><strong class="small">« ${esc(b.q)} »</strong><p class="small muted mt">${esc(b.a)}</p></div>`)); });
-    const again = el(`<button class="btn ghost block mt">Refaire le quiz</button>`); again.onclick=()=>{ idx=0; answers.length=0; show(); };
-    card.appendChild(again);
-  }
-  show();
-  return wrap;
-}
-
-/* =================================================================
-   SCREEN 5 - CE SOIR
-   ================================================================= */
-const WINDDOWN = [
-  { id:"social", time:"20h30", txt:"Fin des réseaux sociaux et des messages", note:"Les messages reçus après cette heure peuvent attendre demain. Ta disponibilité n'a pas à être permanente : poser cette limite aide ton esprit à se détacher progressivement des sollicitations extérieures." },
-  { id:"lights", time:"20h30", txt:"Lumières basses dans l'appartement", note:"Garde une seule source de lumière tamisée, dans un coin de la pièce. Cette baisse progressive de luminosité signale à ton cerveau que la nuit approche." },
-  { id:"screens", time:"21h30", txt:"Plus d'écrans", note:"Profite de ce moment pour des étirements légers, du yoga doux ou le brossage des dents. Cette transition occupe l'espace laissé par les écrans et aide ton cerveau à décrocher." },
-  { id:"shower", time:"22h00", txt:"Douche ou bain chaud", note:"La chaleur suivie du refroidissement du corps imite le processus naturel qui précède l'endormissement. Ta température baisse quand tu t'endors : tu prépares ton corps à ce signal." },
-  { id:"clocks", time:"Avant le coucher", txt:"Retire horloges et téléphones de la chambre", note:"Regarder l'heure la nuit transforme ton cerveau en calculette. Ce calcul mental génère du stress et entretient l'éveil." },
-];
-
-function renderCeSoir() {
-  const wrap = el(`<div></div>`);
-  const today = todayISO();
-  if (state.windDownDoneToday._date !== today) { state.windDownDoneToday = { _date: today }; save(); }
-
-  // wind-down checklist
-  const card = el(`<div class="card"><div class="card-title">Routine du soir</div><p class="small muted">Coche chaque étape au fil de la soirée. La liste se réinitialise automatiquement chaque jour.</p></div>`);
-  WINDDOWN.forEach(item=>{
-    const done = !!state.windDownDoneToday[item.id];
-    const row = el(`<div class="check-item" data-done="${done?1:0}">
-      <div class="check-box">${done?"✓":""}</div>
-      <div class="grow"><div class="ci-text">${esc(item.txt)} ${item.time?`<span class="check-time">${item.time}</span>`:""}</div>
-      <div class="tiny muted" style="margin-top:.2rem">${esc(item.note)}</div></div></div>`);
-    row.onclick=()=>{
-      const nd = !state.windDownDoneToday[item.id];
-      state.windDownDoneToday[item.id]=nd; save();
-      row.dataset.done = nd?1:0; row.querySelector(".check-box").textContent = nd?"✓":"";
+  const sug = baselineSuggestion(state.journal, wake, today);
+  const c = el(`<div class="card"><div class="card-title">Ma fenêtre de sommeil</div></div>`);
+  if (!sug.ready) {
+    c.appendChild(el(`<p class="small mt">Pour l'instant, c'est la semaine d'observation : ${sug.n} nuit(s) notée(s) sur ${sug.needed}. Garde tes habitudes et note tes nuits ; ensuite, une fenêtre te sera proposée à partir de ton propre sommeil.</p>`));
+  } else {
+    c.appendChild(el(`<p class="small mt">Sur tes ${sug.n} dernières nuits, tu as dormi en moyenne <strong>${fmtHM(sug.meanTst)}</strong> pour <strong>${fmtHM(sug.meanTib)}</strong> au lit.</p>`));
+    c.appendChild(el(`<div class="card solid center mt">
+      <div class="tiny muted">FENÊTRE PROPOSÉE</div>
+      <div class="metric-big" style="font-size:2rem">${sug.bed} → ${sug.wake}</div>
+      <div class="tiny muted">${fmtHM(sug.tib)} au lit</div></div>`));
+    c.appendChild(el(`<p class="small mt">${sug.restricts
+      ? "L'idée : passer au lit à peu près le temps que tu dors vraiment, pour que le sommeil se regroupe. Au début, tu risques de te sentir plus fatigué·e : c'est attendu, et la fenêtre s'élargira à mesure que ton sommeil remplit le temps au lit."
+      : "Ton temps au lit est déjà proche de ton temps de sommeil : pas besoin de le réduire. L'essentiel sera de garder ton heure de lever fixe."}</p>`));
+    if (state.profile.accompanied) c.appendChild(el(`<p class="small muted mt">Tu es suivi·e : montre cette proposition à ton/ta psy avant de la commencer, ou note directement la fenêtre que vous avez convenue.</p>`));
+    c.appendChild(drowsyCard());
+    const go = el(`<button class="btn primary block">Commencer avec cette fenêtre</button>`);
+    go.onclick = () => {
+      setWindow({ bed: sug.bed, wake: sug.wake, setBy: "agenda" });
+      toast("Fenêtre enregistrée. Premier bilan dans une semaine.");
+      rerender();
     };
-    card.appendChild(row);
+    c.appendChild(go);
+  }
+  const manual = el(`<button class="btn ghost block mt">Noter une fenêtre convenue avec mon/ma psy</button>`);
+  manual.onclick = () => openWindowEditor("psy");
+  c.appendChild(manual);
+  return c;
+}
+
+function setWindow({ bed, wake, setBy }, kind = "set", extra = {}) {
+  const today = ymd();
+  state.window = { bed, wake, setBy, since: today };
+  state.profile.wakeAnchor = wake;
+  state.windowLog.push({ date: today, kind, bed, wake, setBy, ...extra });
+  if (state.windowLog.length > 60) state.windowLog = state.windowLog.slice(-60);
+  save(); Notif.reschedule();
+}
+
+function buildReviewCard(today, out) {
+  const info = reviewInfo(state, today);
+  if (!info.due) {
+    const missing = Math.max(0, REVIEW_MIN_NIGHTS - info.nights.length);
+    const txt = info.inDays > 0
+      ? `Prochain bilan dans ${info.inDays} jour(s).`
+      : `Ton bilan sera prêt quand ${missing} nuit(s) de plus seront notées.`;
+    return el(`<div class="card"><div class="card-title">Bilan de la semaine</div><p class="small muted">${txt} Il faut au moins ${REVIEW_MIN_NIGHTS} nuits notées depuis le dernier point.</p></div>`);
+  }
+  const w = state.window;
+  const adh = adherence(info.nights, w);
+  const c = el(`<div class="card" style="border-left:4px solid var(--color-primary)">
+    <div class="card-title">Bilan de la semaine</div>
+    <p class="small mt">${info.nights.length} nuits notées depuis le dernier point, le ${frDate(info.last)}</p>
+    <ul class="small muted mt" style="padding-left:1.1rem">
+      <li>Coucher pas avant ${w.bed} : ${adh.bedOk} nuit(s) sur ${adh.n}</li>
+      <li>Lever autour de ${w.wake} : ${adh.riseOk} nuit(s) sur ${adh.n}</li>
+    </ul></div>`);
+  const result = el(`<div></div>`);
+  c.appendChild(choiceField("Cette semaine, t'est-il arrivé de piquer du nez en journée (en lisant, devant un écran, au volant) ?", ["Oui","Non"], null, v => showSuggestion(v === "Oui")));
+  c.appendChild(result);
+
+  function showSuggestion(sleepy) {
+    const s = suggestAdjustment(info.nights, w, { sleepy });
+    result.innerHTML = "";
+    const pct = `environ ${s.meanSE} % du temps passé au lit`;
+    const TEXT = {
+      up: sleepy && s.meanSE < 85
+        ? `Comme tu as été somnolent·e, mieux vaut élargir ta fenêtre de 15 minutes : coucher à ${s.newBed}.`
+        : `Ton sommeil occupe bien ta fenêtre (${pct}). Tu peux l'élargir de 15 minutes : coucher à ${s.newBed}.`,
+      keep: sleepy
+        ? `Tu as été somnolent·e : on ne resserre pas. On garde ta fenêtre, et si la somnolence continue, parles-en avec ton/ta psy ou ton médecin.`
+        : `Ton sommeil a occupé ${pct}. On garde ta fenêtre telle quelle cette semaine.`,
+      down: `Il reste pas mal de temps éveillé au lit (sommeil sur ${pct}). Resserrer de 15 minutes peut aider le sommeil à se regrouper : coucher à ${s.newBed}.`,
+      floor: `Ta fenêtre est déjà à ${fmtHM(s.tib)}, le minimum que l'app propose. On la garde ; si les choses ne bougent pas, parles-en avec ton/ta psy.`,
+      cap: `Ta fenêtre est déjà large (${fmtHM(s.tib)}). On la garde.`,
+    };
+    // en mode « avec un pro », on montre les chiffres sans proposer de resserrer ni d'élargir
+    const msg = out.restriction === "pro" ? `Ton sommeil a occupé ${pct}.${sleepy ? " Tu as signalé de la somnolence : parles-en vite avec ton/ta professionnel·le." : ""}` : TEXT[s.status];
+    result.appendChild(el(`<div class="card solid mt"><p class="small">${esc(msg)}</p></div>`));
+    const logExtra = { se: s.meanSE, n: s.n, sleepy };
+    const keep = () => {
+      state.windowLog.push({ date: today, kind:"keep", bed: w.bed, wake: w.wake, setBy: w.setBy, ...logExtra });
+      save(); toast("C'est noté. Prochain bilan dans une semaine."); rerender();
+    };
+    if (out.restriction === "pro") {
+      result.appendChild(el(`<p class="small muted mt">Avec ce que tu as indiqué au départ, les changements de fenêtre se décident avec ton/ta professionnel·le : montre-lui ce bilan.</p>`));
+      const ok = el(`<button class="btn primary block mt">C'est noté</button>`); ok.onclick = keep; result.appendChild(ok);
+      return;
+    }
+    if (s.status === "up" || s.status === "down") {
+      if (state.profile.accompanied) result.appendChild(el(`<p class="tiny muted mt">C'est une proposition : si tu as convenu d'autre chose en séance, c'est ce qui compte.</p>`));
+      const apply = el(`<button class="btn primary block mt">Coucher à ${s.newBed} à partir de ce soir</button>`);
+      apply.onclick = () => {
+        setWindow({ bed: s.newBed, wake: w.wake, setBy: "bilan" }, "adjust", logExtra);
+        toast("Fenêtre ajustée"); rerender();
+      };
+      const k = el(`<button class="btn ghost block mt">Garder ma fenêtre actuelle</button>`); k.onclick = keep;
+      result.appendChild(apply); result.appendChild(k);
+    } else {
+      const ok = el(`<button class="btn primary block mt">D'accord</button>`); ok.onclick = keep; result.appendChild(ok);
+    }
+  }
+  return c;
+}
+
+function openWindowEditor(defaultSetBy) {
+  const out = screeningOutcome(state.profile);
+  const cur = state.window || { bed:"", wake: state.profile.wakeAnchor };
+  const f = { bed: cur.bed, wake: cur.wake, setBy: defaultSetBy || (out.restriction === "pro" ? "psy" : null) };
+  const body = el(`<div><h2>Ma fenêtre de sommeil</h2>
+    <p class="small muted">Par exemple celle convenue en séance. L'heure de lever reste la même tous les jours.</p></div>`);
+  body.appendChild(el(`<div class="mt"></div>`));
+  body.appendChild(timeField("Coucher, pas avant", f.bed, v => f.bed = v));
+  body.appendChild(timeField("Lever", f.wake, v => f.wake = v));
+  const opts = out.restriction === "pro" ? ["Avec mon/ma psy"] : ["Avec mon/ma psy", "Moi"];
+  body.appendChild(choiceField("Qui l'a décidée ?", opts, f.setBy === "psy" ? "Avec mon/ma psy" : f.setBy === "moi" ? "Moi" : null,
+    v => f.setBy = v === "Moi" ? "moi" : "psy"));
+  if (out.restriction === "pro") body.appendChild(el(`<p class="tiny muted">Avec ce que tu as indiqué au départ, la fenêtre se fixe avec un·e professionnel·le.</p>`));
+  const ok = el(`<button class="btn primary block mt">Enregistrer</button>`);
+  ok.onclick = () => {
+    if (!f.setBy) { toast("Indique qui a décidé de cette fenêtre"); return; }
+    const err = validateWindow(f.bed, f.wake, f.setBy);
+    if (err) { toast(err, 3200); return; }
+    setWindow({ bed: f.bed, wake: f.wake, setBy: f.setBy });
+    closeModal(); toast("Fenêtre enregistrée"); rerender();
+  };
+  const cancel = el(`<button class="btn ghost block mt">Annuler</button>`); cancel.onclick = closeModal;
+  body.appendChild(ok); body.appendChild(cancel);
+  openModal(body);
+}
+
+function buildAgendaCard(today) {
+  const card = el(`<div class="card"><div class="card-title">Mon agenda du sommeil</div></div>`);
+  const nights = state.journal.filter(e => e.date > addDays(today, -14) && e.date <= today);
+  if (!nights.length) {
+    card.appendChild(el(`<p class="small muted">Aucune nuit notée ces deux dernières semaines.</p>`));
+  } else {
+    card.appendChild(agendaChart(today));
+    [...nights].reverse().forEach(e => {
+      const c = computeNight(e);
+      const row = el(`<button class="list-entry night-row" style="display:block;width:100%;text-align:left">
+        <div class="row between"><span class="date">${frDate(e.date)}</span><span class="tiny muted">${esc(QUALITY_LABELS[e.quality-1] || "")}</span></div>
+        <div class="small muted">${e.bed} → ${e.rise} · sommeil estimé ${fmtHM(c.tst)} sur ${fmtHM(c.tib)}</div></button>`);
+      row.onclick = () => navigate("nuit", e.date);
+      card.appendChild(row);
+    });
+  }
+  const tools = el(`<div class="row mt"><button class="btn ghost grow">Noter une nuit</button><button class="btn ghost grow">Partager</button></div>`);
+  tools.children[0].onclick = () => navigate("nuit", today);
+  tools.children[1].onclick = shareAgenda;
+  card.appendChild(tools);
+  card.appendChild(el(`<p class="tiny muted mt">« Partager » prépare un récap texte de tes 14 dernières nuits, à montrer à ton/ta psy.</p>`));
+  return card;
+}
+
+/* Barres : temps au lit (clair) et sommeil estimé (plein), 14 derniers jours. Neutre :
+   pas de couleur « bonne » ou « mauvaise » nuit. */
+function agendaChart(today) {
+  const W = 320, H = 140, P = 18, days = 14, maxMin = 600;
+  const bw = (W - P*2) / days - 4;
+  const y = m => H - P - (H - P*2) * Math.min(maxMin, m) / maxMin;
+  let bars = "";
+  for (let i = 0; i < days; i++) {
+    const d = addDays(today, i - days + 1);
+    const e = state.journal.find(x => x.date === d);
+    const x = P + i * ((W - P*2) / days) + 2;
+    if (e) {
+      const c = computeNight(e);
+      bars += `<rect x="${x.toFixed(1)}" y="${y(c.tib).toFixed(1)}" width="${bw.toFixed(1)}" height="${(H-P-y(c.tib)).toFixed(1)}" rx="3" fill="var(--color-primary)" opacity="0.22"/>`;
+      bars += `<rect x="${x.toFixed(1)}" y="${y(c.tst).toFixed(1)}" width="${bw.toFixed(1)}" height="${(H-P-y(c.tst)).toFixed(1)}" rx="3" fill="var(--color-primary)" opacity="0.85"/>`;
+    }
+    if (i % 2 === 1 || i === days - 1) bars += `<text x="${(x + bw/2).toFixed(1)}" y="${H - 4}" fill="var(--color-muted)" font-size="8" text-anchor="middle">${parseYmd(d).getDate()}</text>`;
+  }
+  const svg = el(`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Temps au lit et sommeil estimé sur 14 jours">${bars}</svg>`);
+  const box = el(`<div style="margin-bottom:.8rem"></div>`);
+  box.appendChild(svg);
+  box.appendChild(el(`<div class="legend"><span><i style="background:var(--color-primary);opacity:.3"></i>Temps au lit</span><span><i style="background:var(--color-primary)"></i>Sommeil estimé</span></div>`));
+  return box;
+}
+
+async function shareAgenda() {
+  const text = agendaText(state.journal, state.window, ymd());
+  try {
+    if (navigator.share) { await navigator.share({ title: "Mon agenda du sommeil", text }); return; }
+  } catch(e) { if (e && e.name === "AbortError") return; }
+  try { await navigator.clipboard.writeText(text); toast("Récap copié : tu peux le coller dans un message"); return; } catch(e) {}
+  const body = el(`<div><h2>Mon agenda</h2><textarea readonly style="min-height:300px;font-size:.8rem">${esc(text)}</textarea></div>`);
+  const close = el(`<button class="btn primary block mt">Fermer</button>`); close.onclick = closeModal; body.appendChild(close);
+  openModal(body);
+}
+
+/* =================================================================
+   OUTILS
+   ================================================================= */
+function renderOutils() {
+  const wrap = el(`<div></div>`);
+  const tools = [
+    { id:"regles",     emoji:"🛏️", t:"Les 5 règles", d:"Le lit, le lever, le sommeil : les repères de base" },
+    { id:"soucis",     emoji:"📝", t:"Le moment des soucis", d:"En fin de journée, poser ce qui te préoccupe, loin du lit" },
+    { id:"croyances",  emoji:"💭", t:"Mes croyances sur le sommeil", d:"Examiner une idée sur le sommeil, une à la fois" },
+    { id:"detente",    emoji:"🧘", t:"Se détendre en soirée", d:"Respiration, body scan, visualisation" },
+    { id:"transition", emoji:"🌆", t:"La transition du soir", d:"Des repères pour l'heure qui précède le coucher" },
+  ];
+  tools.forEach(x => {
+    const c = el(`<button class="card tool" style="width:100%;text-align:left"><span class="emoji" aria-hidden="true">${x.emoji}</span>
+      <span class="grow"><strong>${esc(x.t)}</strong><small>${esc(x.d)}</small></span><span class="muted" aria-hidden="true">›</span></button>`);
+    c.onclick = () => navigate(x.id);
+    wrap.appendChild(c);
   });
+  return wrap;
+}
+
+function renderRegles() {
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(subhead("Les 5 règles"));
+  wrap.appendChild(el(`<p class="small muted" style="margin-bottom:1rem">Le contrôle du stimulus : aider ton cerveau à réassocier le lit et le sommeil.</p>`));
+  STIMULUS_RULES.forEach(r => wrap.appendChild(el(`<div class="rule"><span class="emoji" aria-hidden="true">${r.emoji}</span><div><strong>${esc(r.title)}</strong><span class="small muted">${esc(r.body)}</span></div></div>`)));
+  return wrap;
+}
+
+/* ---- Le moment des soucis (« constructive worry », Carney & Waters 2006) ---- */
+function renderSoucis() {
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(subhead("Le moment des soucis"));
+  wrap.appendChild(el(`<div class="card solid">
+    <p class="small">En fin de journée, loin du lit, prends un quart d'heure pour poser ce qui te préoccupe. Pour ce qui dépend de toi, tu notes une prochaine petite étape. Le soir venu, ces pensées ont déjà eu leur moment.</p></div>`));
+
+  const timeCard = el(`<div class="card"><label class="field mb0"><span class="lbl">Heure de ton moment des soucis</span><input type="time" value="${esc(state.worryTime)}"></label></div>`);
+  timeCard.querySelector("input").onchange = e => { state.worryTime = e.target.value; save(); Notif.reschedule(); toast("Heure enregistrée"); };
+  wrap.appendChild(timeCard);
+
+  const sess = { items: [] };
+  const card = el(`<div class="card"><div class="card-title">Maintenant</div></div>`);
+  const ta = el(`<label class="field"><span class="lbl">Ce qui te préoccupe en ce moment <span class="hint">(une chose par ligne)</span></span><textarea></textarea></label>`);
+  card.appendChild(ta);
+  const list = el(`<div></div>`);
+  const next = el(`<button class="btn ghost block">Continuer →</button>`);
+  next.onclick = () => {
+    const lines = ta.querySelector("textarea").value.split("\n").map(s => s.trim()).filter(Boolean);
+    if (!lines.length) { toast("Écris au moins une chose"); return; }
+    sess.items = lines.map(text => ({ text, cat:null, step:"" }));
+    next.hidden = true; ta.hidden = true;
+    renderItems();
+  };
+  card.appendChild(next);
+  card.appendChild(list);
   wrap.appendChild(card);
 
-  // relaxation
-  const relax = el(`<div class="card"><div class="card-title">Techniques de relaxation</div><p class="small muted">À utiliser dans la chambre, lumières éteintes.</p></div>`);
-  const techs = [
-    { t:"Respiration lente", d:"Inspire 5s · retiens 1s · expire 8s", fn:openBreathSlow },
-    { t:"Body scan", d:"Relâche chaque zone, des orteils au visage", fn:openBodyScan },
-    { t:"Visualisation de promenade", d:"Une balade que tu connais par cœur", fn:openWalk },
-    { t:"Respiration du ventre", d:"Guide visuel au diaphragme", fn:openBreathBelly },
-  ];
-  techs.forEach(x=>{
-    const b = el(`<div class="check-item" style="cursor:pointer"><div style="font-size:1.3rem">🧘</div><div class="grow"><strong class="small">${x.t}</strong><div class="tiny muted">${x.d}</div></div><span class="muted">›</span></div>`);
-    b.onclick=x.fn; relax.appendChild(b);
-  });
-  wrap.appendChild(relax);
+  function renderItems() {
+    list.innerHTML = "";
+    sess.items.forEach(it => {
+      const box = el(`<div class="list-entry"><p class="small"><strong>${esc(it.text)}</strong></p></div>`);
+      const detail = el(`<div class="mt"></div>`);
+      box.appendChild(choiceField("", ["Je peux faire quelque chose", "Ça ne dépend pas de moi pour l'instant"],
+        it.cat === "act" ? "Je peux faire quelque chose" : it.cat === "no" ? "Ça ne dépend pas de moi pour l'instant" : null,
+        v => { it.cat = v.startsWith("Je peux") ? "act" : "no"; showDetail(); check(); }, true));
+      box.appendChild(detail);
+      function showDetail() {
+        detail.innerHTML = "";
+        if (it.cat === "act") {
+          const s = el(`<label class="field mb0"><span class="lbl small">Prochaine petite étape <span class="hint">(facultatif)</span></span><input type="text" maxlength="120" placeholder="Ex. : appeler demain à 10 h" value="${esc(it.step)}"></label>`);
+          s.querySelector("input").oninput = e => it.step = e.target.value;
+          detail.appendChild(s);
+        } else if (it.cat === "no") {
+          detail.appendChild(el(`<p class="tiny muted">Elle a eu son moment aujourd'hui. Si elle revient ce soir, tu peux te le rappeler et la laisser passer.</p>`));
+        }
+      }
+      showDetail();
+      list.appendChild(box);
+    });
+    const done = el(`<button class="btn primary block mt" disabled>Refermer le carnet</button>`);
+    list.appendChild(done);
+    function check() { done.disabled = !sess.items.every(i => i.cat); }
+    check();
+    done.onclick = () => {
+      state.worry.push({ date: ymd(), items: sess.items.map(i => ({ text:i.text, cat:i.cat, step:i.step.trim() })) });
+      if (state.worry.length > 120) state.worry = state.worry.slice(-120);
+      save(); toast("Carnet refermé pour aujourd'hui"); rerender();
+    };
+  }
 
+  const steps = state.worry.slice(-6).reverse().flatMap(s => s.items.filter(i => i.cat === "act" && i.step).map(i => ({ ...i, date: s.date })));
+  if (steps.length) {
+    const c = el(`<div class="card"><div class="card-title">Mes prochaines étapes</div></div>`);
+    steps.slice(0, 8).forEach(i => c.appendChild(el(`<div class="list-entry"><div class="date">${frDate(i.date)} · ${esc(i.text)}</div><div class="small">→ ${esc(i.step)}</div></div>`)));
+    wrap.appendChild(c);
+  }
+  return wrap;
+}
+
+/* ---- Croyances : examiner une croyance (pour / contre), puis la recoter ---- */
+function renderCroyances() {
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(subhead("Mes croyances sur le sommeil"));
+  wrap.appendChild(el(`<p class="small muted" style="margin-bottom:1rem">Certaines idées sur le sommeil ajoutent de la pression au moment de dormir. Choisis-en une qui te parle et regarde-la de plus près.</p>`));
+  BELIEFS.forEach((b, idx) => {
+    const last = [...state.beliefs].reverse().find(x => x.idx === idx);
+    const row = el(`<button class="list-entry night-row" style="display:block;width:100%;text-align:left">
+      <div class="small"><strong>« ${esc(b.q)} »</strong></div>
+      ${last ? `<div class="tiny muted">La dernière fois : ${last.before} → ${last.after} / 100</div>` : ""}</button>`);
+    row.onclick = () => openBelief(idx);
+    wrap.appendChild(row);
+  });
+  return wrap;
+}
+function openBelief(idx) {
+  const b = BELIEFS[idx];
+  const r = { before:null, after:null };
+  const scale = ["0","20","40","60","80","100"];
+  const body = el(`<div><div class="tiny muted">CROYANCE</div><h2 class="mt">« ${esc(b.q)} »</h2></div>`);
+  const step1 = el(`<div></div>`);
+  step1.appendChild(choiceField("À quel point y crois-tu, là, maintenant ? (sur 100)", scale, null, v => { r.before = Number(v); go1.disabled = false; }));
+  step1.appendChild(el(`<label class="field"><span class="lbl">Ce qui va dans ce sens</span><textarea maxlength="300"></textarea></label>`));
+  step1.appendChild(el(`<label class="field"><span class="lbl">Ce qui ne va pas dans ce sens</span><textarea maxlength="300" placeholder="Une fois où ça ne s'est pas passé comme prévu…"></textarea></label>`));
+  const go1 = el(`<button class="btn primary block" disabled>Continuer</button>`);
+  step1.appendChild(go1);
+  body.appendChild(step1);
+  go1.onclick = () => {
+    step1.hidden = true;
+    const step2 = el(`<div><div class="card solid mt"><div class="tiny muted">CE QU'ON SAIT DU SOMMEIL</div><p class="small mt">${esc(b.a)}</p></div></div>`);
+    step2.appendChild(choiceField("Et maintenant, à quel point y crois-tu ?", scale, null, v => { r.after = Number(v); fin.disabled = false; }));
+    const fin = el(`<button class="btn primary block mt" disabled>Enregistrer</button>`);
+    fin.onclick = () => {
+      state.beliefs.push({ date: ymd(), idx, before: r.before, after: r.after });
+      if (state.beliefs.length > 200) state.beliefs = state.beliefs.slice(-200);
+      save(); closeModal(); rerender();
+      toast(r.after < r.before ? "Noté. Ça a un peu bougé." : "Noté. Tu pourras y revenir plus tard.");
+    };
+    step2.appendChild(fin);
+    body.appendChild(step2);
+  };
+  const close = el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick = closeModal;
+  body.appendChild(close);
+  openModal(body);
+}
+
+/* ---- Se détendre en soirée ---- */
+function renderDetente() {
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(subhead("Se détendre en soirée"));
+  wrap.appendChild(el(`<p class="small muted" style="margin-bottom:1rem">À pratiquer en soirée avant d'aller au lit, ou dans une autre pièce si tu t'es levé·e la nuit. Le but n'est pas de forcer le sommeil, juste de ralentir.</p>`));
+  const techs = [
+    { t:"Respiration lente", d:"Une expiration plus longue que l'inspiration", fn:openBreathSlow },
+    { t:"Respiration du ventre", d:"Une main sur le ventre, suivre le cercle", fn:openBreathBelly },
+    { t:"Body scan", d:"Passer en revue chaque zone du corps", fn:openBodyScan },
+    { t:"Visualisation de promenade", d:"Une balade que tu connais par cœur", fn:openWalk },
+  ];
+  const card = el(`<div class="card"></div>`);
+  techs.forEach(x => {
+    const b = el(`<button class="check-item" style="cursor:pointer;width:100%;text-align:left"><div style="font-size:1.3rem" aria-hidden="true">🧘</div><div class="grow"><strong class="small">${x.t}</strong><div class="tiny muted">${x.d}</div></div><span class="muted" aria-hidden="true">›</span></button>`);
+    b.onclick = x.fn; card.appendChild(b);
+  });
+  wrap.appendChild(card);
+  return wrap;
+}
+
+/* ---- La transition du soir : des repères relatifs à l'heure de coucher, pas une liste à cocher ---- */
+function renderTransition() {
+  const wrap = el(`<div></div>`);
+  wrap.appendChild(subhead("La transition du soir"));
+  const bed = state.window ? state.window.bed : null;
+  const at = off => bed ? ` <span class="check-time">vers ${minToTime(timeToMin(bed) - off)}</span>` : "";
+  const items = [
+    { t:`Environ 1h30 avant ton coucher${at(90)}`, d:"Lumières plus douces, et tu termines messages et réseaux : ce qui arrive après peut attendre demain." },
+    { t:`Environ 1 h avant${at(60)}`, d:"Les écrans de côté, une activité calme : lecture, musique, étirements légers." },
+    { t:"Si tu aimes ça, 1 à 2 h avant", d:"Une douche ou un bain chaud : le refroidissement du corps qui suit accompagne l'arrivée du sommeil." },
+    { t:"Au moment d'aller au lit", d:"Réveil tourné ou hors de vue, téléphone hors de la chambre si possible : regarder l'heure la nuit entretient l'éveil." },
+  ];
+  wrap.appendChild(el(`<p class="small muted" style="margin-bottom:1rem">${bed ? `Calé sur ta fenêtre (coucher pas avant ${bed}).` : "Quand tu auras une fenêtre de sommeil, ces repères se caleront dessus."}</p>`));
+  const card = el(`<div class="card"></div>`);
+  items.forEach(i => card.appendChild(el(`<div class="check-item"><div class="grow"><div class="ci-text"><strong class="small">${i.t}</strong></div><div class="tiny muted" style="margin-top:.2rem">${esc(i.d)}</div></div></div>`)));
+  wrap.appendChild(card);
+  wrap.appendChild(el(`<p class="tiny muted">Ce sont des repères pour préparer la nuit, pas des règles à cocher. À eux seuls, ils ne suffisent pas à régler une insomnie : le cœur du travail reste la fenêtre et les 5 règles.</p>`));
   return wrap;
 }
 
 /* =================================================================
-   RÉGLAGES (hors barre de nav, atteint via l'icône ⚙️ du header)
+   RÉGLAGES (hors barre de nav, via l'icône ⚙️ du header)
    ================================================================= */
 function renderReglages() {
   const wrap = el(`<div></div>`);
-  const back = el(`<button class="btn ghost" style="margin-bottom:1rem">← Retour</button>`);
-  back.onclick = ()=>navigate(lastTab);
-  wrap.appendChild(back);
-  wrap.appendChild(el(`<h2 style="margin-bottom:1rem">Réglages</h2>`));
+  wrap.appendChild(subhead("Réglages"));
 
-  // Apparence
   const appearance = el(`<div class="card"><div class="card-title">Apparence</div></div>`);
   appearance.appendChild(choiceField("Thème", ["Sombre","Clair"], state.theme==="dark"?"Sombre":"Clair", v=>{
     state.theme = v==="Sombre"?"dark":"light"; save(); applyTheme();
   }));
+  appearance.appendChild(toggleRow("Mode nuit auto (21h-7h)", state.nightModeAuto, v=>{ state.nightModeAuto=v; save(); applyNightMode(); }));
   wrap.appendChild(appearance);
 
-  // Rappels
   const rem = el(`<div class="card"><div class="card-title">Rappels</div></div>`);
-  rem.appendChild(toggleRow("Mode nuit auto (21h-7h)", state.nightModeAuto, v=>{ state.nightModeAuto=v; save(); applyNightMode(); }));
-  rem.appendChild(toggleRow("Rappel journal du matin (8h)", state.reminders.journal, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.journal=v; save(); Notif.reschedule(); }));
-  rem.appendChild(toggleRow("Rappel Worry Time", state.reminders.worry, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.worry=v; save(); Notif.reschedule(); }));
-  rem.appendChild(toggleRow("Rappel coucher (30 min avant)", state.reminders.bedtime, async v=>{ if(v && !await Notif.ensure()){toast("Autorise les notifications");return false;} state.reminders.bedtime=v; save(); Notif.reschedule(); }));
+  const notifToggle = (label, key) => toggleRow(label, state.reminders[key], async v=>{
+    if (v && !await Notif.ensure()) { toast("Autorise les notifications"); return false; }
+    state.reminders[key] = v; save(); Notif.reschedule();
+  });
+  rem.appendChild(notifToggle(`Noter ma nuit (${NOTIF_DEFS[0].time()})`, "journal"));
+  rem.appendChild(notifToggle(`Le moment des soucis (${state.worryTime})`, "worry"));
+  rem.appendChild(notifToggle("Début de ma fenêtre (30 min avant)", "bedtime"));
   wrap.appendChild(rem);
 
-  // Synchro santé (natif uniquement)
   if (HealthSync.available()) {
     const health = el(`<div class="card"><div class="card-title">Synchro santé</div></div>`);
     health.appendChild(toggleRow("Apple Santé / Health Connect", state.healthSync, async v=>{
       if (v && !await HealthSync.ensure()) { toast("Autorise l'accès aux données de sommeil"); return false; }
       state.healthSync = v; save();
     }));
-    health.appendChild(el(`<p class="tiny muted" style="padding:.3rem 0 0">Pré-remplit le coucher et le lever dans ton journal. Tu gardes la main sur tout le reste.</p>`));
+    health.appendChild(el(`<p class="tiny muted" style="padding:.3rem 0 0">Pré-remplit le coucher et le dernier réveil dans ton agenda. Tu gardes la main sur tout le reste.</p>`));
     wrap.appendChild(health);
   }
 
-  // Données
+  const follow = el(`<div class="card"><div class="card-title">Mon accompagnement</div></div>`);
+  follow.appendChild(toggleRow("Je suis suivi·e par un·e professionnel·le pour mon sommeil", !!state.profile.accompanied, v=>{ state.profile.accompanied = v; save(); }));
+  const redo = el(`<button class="btn ghost block mt">Refaire le questionnaire de départ</button>`);
+  redo.onclick = () => startOnboarding(true);
+  follow.appendChild(redo);
+  wrap.appendChild(follow);
+
+  wrap.appendChild(helpCard());
+
   const data = el(`<div class="card"><div class="card-title">Données</div><p class="small muted">Tout reste sur ton appareil : rien n'est transmis à nos serveurs ni à des tiers.</p></div>`);
-  const tools = el(`<div class="row mt"><button class="btn ghost grow">⬇️ Exporter</button><button class="btn ghost grow">↺ Recommencer</button></div>`);
+  const tools = el(`<div class="row mt"><button class="btn ghost grow">⬇️ Exporter</button><button class="btn ghost grow">↺ Tout effacer</button></div>`);
   tools.children[0].onclick = exportJSON;
-  tools.children[1].onclick = ()=>{ if(confirm("Effacer toutes tes données et recommencer l'onboarding ?")){ localStorage.removeItem(LS_KEY); location.reload(); } };
+  tools.children[1].onclick = ()=>{ if(confirm("Effacer toutes tes données (agenda compris) et recommencer ?")){ localStorage.removeItem(LS_KEY); location.reload(); } };
   data.appendChild(tools);
   const about = el(`<p class="tiny muted center" style="margin-top:.9rem"><button class="tiny" style="color:var(--color-primary);text-decoration:underline">Politique de confidentialité</button> · v${APP_VERSION} · AGPL-3.0</p>`);
   about.querySelector("button").onclick = openPrivacy;
   data.appendChild(about);
   wrap.appendChild(data);
-
   return wrap;
+}
+
+function helpCard() {
+  return el(`<div class="card help-card"><div class="card-title">Besoin d'aide</div>
+    <p class="small">Si tes pensées deviennent très sombres : <a href="tel:3114">3114</a>, numéro national de prévention du suicide, gratuit, 24 h/24.</p>
+    <p class="small mt">Urgence : <a href="tel:15">15</a> ou <a href="tel:112">112</a>.</p>
+    <p class="tiny muted mt">Serein Sommeil est un compagnon : il ne remplace ni ton/ta psy, ni ton médecin.</p></div>`);
 }
 
 async function openPrivacy() {
@@ -1256,7 +1586,7 @@ async function openPrivacy() {
 
 function toggleRow(label, val, onChange) {
   const row = el(`<div class="row between" style="padding:.7rem 0;border-bottom:1px solid var(--color-border)"><span class="small">${esc(label)}</span></div>`);
-  const sw = el(`<button class="check-box" style="width:46px;height:26px;border-radius:13px;border:none;background:${val?"var(--color-primary)":"var(--color-surface-2)"};position:relative;transition:.2s"><span style="position:absolute;top:3px;left:${val?23:3}px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s"></span></button>`);
+  const sw = el(`<button class="check-box" style="width:46px;height:26px;border-radius:13px;border:none;flex-shrink:0;background:${val?"var(--color-primary)":"var(--color-surface-2)"};position:relative;transition:.2s"><span style="position:absolute;top:3px;left:${val?23:3}px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s"></span></button>`);
   sw.setAttribute("role","switch"); sw.setAttribute("aria-checked",val); sw.setAttribute("aria-label",label);
   sw.onclick = async ()=>{
     const nv = sw.getAttribute("aria-checked")!=="true";
@@ -1270,10 +1600,10 @@ function toggleRow(label, val, onChange) {
   return row;
 }
 
-/* ---------- Relaxation modals ---------- */
-/* Voix guidées Serein (méditation), streamées depuis le CDN public déjà utilisé par
-   l'app Serein native - trop volumineuses (6-14 Mo) pour être embarquées dans ce fichier
-   unique. Nécessite une connexion internet ; le guide visuel animé reste utilisable hors-ligne. */
+/* ---------- Relaxation ---------- */
+/* Voix guidées Serein (méditation), streamées depuis le CDN public de l'app Serein -
+   trop volumineuses (6-14 Mo) pour ce fichier unique. Nécessite une connexion ; le guide
+   visuel reste utilisable hors-ligne. */
 const AUDIO_CDN = "https://audio.sereinapp.fr/masculin/";
 function audioPlayerCard(file, label, minutes) {
   const url = AUDIO_CDN + encodeURIComponent(file);
@@ -1288,7 +1618,7 @@ function audioPlayerCard(file, label, minutes) {
 
 function openBreathSlow() {
   const body = el(`<div class="center"><h2>Respiration lente</h2>
-    <p class="small muted">En situation de stress, respirer lentement est difficile - et c'est précisément pour cette raison que ça fonctionne. Lorsque tu y parviens, ton système nerveux reçoit un signal de sécurité. La détente suit naturellement.</p>
+    <p class="small muted">Inspire 5 secondes, retiens 1 seconde, expire 8 secondes. Une expiration plus longue que l'inspiration est une façon simple de ralentir. Si c'est inconfortable, reviens à ton rythme naturel.</p>
     <div class="breath-stage"><div class="breath-circle">Prêt·e ?</div></div></div>`);
   const circle = body.querySelector(".breath-circle");
   let stop=false;
@@ -1298,7 +1628,7 @@ function openBreathSlow() {
   let running=false;
   ctrl.onclick=()=>{ if(!running){ running=true; stop=false; ctrl.textContent="Arrêter"; loop(); } else { stop=true; running=false; ctrl.textContent="Commencer"; circle.style.transform="scale(1)"; circle.textContent="Prêt·e ?"; } };
   body.appendChild(ctrl);
-  body.appendChild(audioPlayerCard("Respiration 4-7-8 — Calme profond.mp3", "Version audio narrée", 6));
+  body.appendChild(audioPlayerCard("Respiration 4-7-8 — Calme profond.mp3", "Version audio guidée, sur un autre rythme (4-7-8)", 6));
   const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=closeModal; body.appendChild(close);
   openModal(body);
   onModalClose(()=>{ stop = true; });
@@ -1319,14 +1649,14 @@ function openBreathBelly() {
 function openBodyScan() {
   const zones=["les orteils","les pieds","les mollets","les genoux","les cuisses","les hanches","le ventre","le dos","les mains","les bras","les épaules","le cou","le visage"];
   const body=el(`<div class="center"><h2>Body scan</h2>
-    <p class="small muted">Tu pars des orteils. Pour chaque zone : est-ce que c'est vraiment relâché ?</p>
-    <div class="card solid mt"><div class="body-zone">Prêt·e ?</div><div class="tiny muted mt" id="bsHint">10 secondes par zone</div></div></div>`);
-  const zone=body.querySelector(".body-zone"); let stop=false, i=0;
-  async function run(){ for(i=0;i<zones.length;i++){ if(stop)return; zone.style.opacity=0; await wait(300); zone.textContent="Relâche "+zones[i]; zone.style.opacity=1; await wait(9700);} zone.textContent="Tout est relâché. 🌙"; }
+    <p class="small muted">Tu pars des orteils. Pour chaque zone, tu remarques simplement ce qui est là, et tu laisses relâcher si ça vient.</p>
+    <div class="card solid mt"><div class="body-zone">Prêt·e ?</div><div class="tiny muted mt">10 secondes par zone</div></div></div>`);
+  const zone=body.querySelector(".body-zone"); let stop=false;
+  async function run(){ for(let i=0;i<zones.length;i++){ if(stop)return; zone.style.opacity=0; await wait(300); zone.textContent="Remarque "+zones[i]; zone.style.opacity=1; await wait(9700);} if(!stop) zone.textContent="Fin du parcours 🌙"; }
   const ctrl=el(`<button class="btn primary block mt">Commencer</button>`); let running=false;
   ctrl.onclick=()=>{ if(!running){running=true;stop=false;ctrl.textContent="Arrêter";run();}else{stop=true;running=false;ctrl.textContent="Commencer";} };
   body.appendChild(ctrl);
-  body.appendChild(audioPlayerCard("Le scan corporel.mp3", "Version audio narrée", 10));
+  body.appendChild(audioPlayerCard("Le scan corporel.mp3", "Version audio guidée", 10));
   const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=closeModal; body.appendChild(close);
   openModal(body);
   onModalClose(()=>{ stop = true; });
@@ -1335,37 +1665,33 @@ function openWalk() {
   const body=el(`<div><h2 class="center">Visualisation de promenade</h2>
     <div class="card solid mt"><p>Choisis une promenade que tu connais par cœur.</p>
     <p class="small muted mt">Comment tu es habillé·e. Ta façon de marcher. Les sons, les immeubles, les gens qui passent. Chaque détail.</p>
-    <p class="small mt">Effort cognitif minimal, mais tu es loin de tes pensées. C'est exactement ce qu'on cherche : occuper l'esprit sans le stimuler.</p></div></div>`);
+    <p class="small mt">Peu d'effort, mais de quoi occuper l'esprit sans le stimuler, loin des pensées qui tournent.</p></div></div>`);
   const close=el(`<button class="btn primary block mt">Commencer la visualisation</button>`); close.onclick=closeModal; body.appendChild(close);
   openModal(body);
 }
 const wait = ms => new Promise(r=>setTimeout(r,ms));
 
-/* ---------- SOS ---------- */
+/* ---------- SOS nuit ---------- */
+/* Volontairement minimal : pas de minuteur, pas de notification, rien qui pousse à
+   regarder l'heure ou à garder le téléphone en main. */
 function openSOS() {
-  const body = el(`<div><h2>🌙 Tu n'arrives pas à dormir</h2>
-    <div class="card solid mt"><p><strong>Lève-toi. Maintenant.</strong></p>
-    <p class="small mt">C'est la règle la plus difficile et la plus importante. Rends-toi dans une autre pièce. Laisse le téléphone de côté. Lis quelque chose de calme ou d'un peu ennuyeux.</p>
-    <p class="small muted mt">Reviens te coucher seulement quand tu tombes de sommeil - pas avant.</p></div></div>`);
-  const timerBox = el(`<div class="card center"><div class="tiny muted">SI TU AS BESOIN D'UN REPÈRE</div><div class="countdown" id="sosTimer">20:00</div></div>`);
-  const startBtn = el(`<button class="btn primary block">Lancer 20 min</button>`);
-  let interval=null;
-  startBtn.onclick=()=>{
-    if (interval){ clearInterval(interval); interval=null; startBtn.textContent="Lancer 20 min"; $("#sosTimer",timerBox).textContent="20:00"; return; }
-    let left=20*60; startBtn.textContent="Réinitialiser";
-    interval=setInterval(()=>{ left--; $("#sosTimer",timerBox).textContent=`${pad(Math.floor(left/60))}:${pad(left%60)}`;
-      if(left<=0){ clearInterval(interval); interval=null; Notif.fire("Serein Sommeil","Tu tombes de sommeil ? Retourne te coucher."); toast("Si tu tombes de sommeil, retourne au lit."); } },1000);
-  };
-  body.appendChild(timerBox); body.appendChild(startBtn);
-  const close=el(`<button class="btn ghost block mt">Fermer</button>`); close.onclick=closeModal; body.appendChild(close);
+  const body = el(`<div><h2>Tu n'arrives pas à dormir</h2>
+    <p class="small muted mt">Inutile de lutter dans le lit.</p>
+    <div class="card solid mt"><ol class="sos-steps small">
+      <li>Lève-toi et va dans une autre pièce, lumière douce.</li>
+      <li>Fais quelque chose de calme : un livre papier, de la musique douce.</li>
+      <li>Reviens te coucher quand tu sens le sommeil revenir. Pas besoin de regarder l'heure.</li>
+      <li>Si ça recommence, refais pareil. Demain, lève-toi à ton heure habituelle.</li>
+    </ol></div>
+    <p class="small mt"><strong>Tu peux poser ton téléphone maintenant.</strong></p></div>`);
+  body.appendChild(el(`<p class="tiny muted mt">Si tes pensées deviennent très sombres : <a href="tel:3114" style="color:var(--color-primary)">3114</a> (24 h/24, gratuit). Urgence : <a href="tel:15" style="color:var(--color-primary)">15</a> ou <a href="tel:112" style="color:var(--color-primary)">112</a>.</p>`));
+  const close = el(`<button class="btn primary block mt">Fermer</button>`); close.onclick = closeModal; body.appendChild(close);
   openModal(body);
-  onModalClose(()=>{ if (interval) { clearInterval(interval); interval = null; } });
 }
 
 /* ============================ MODAL SYSTEM ============================ */
 /* Registre de nettoyage : chaque modal peut enregistrer un callback exécuté à SA fermeture,
-   quel que soit le chemin (bouton, tap sur le fond, bouton retour Android). Évite les timers
-   fantômes (SOS, boucles respiration/body scan) qui continuaient sur du DOM détaché. */
+   quel que soit le chemin (bouton, tap sur le fond, bouton retour Android). */
 let modalCleanups = [];
 let modalDismissable = true;
 function onModalClose(fn) { modalCleanups.push(fn); }
@@ -1376,7 +1702,6 @@ function openModal(contentNode, opts = {}) {
   const modal = el(`<div class="modal" role="dialog" aria-modal="true"></div>`);
   modal.appendChild(contentNode);
   back.appendChild(modal);
-  // dismissable:false = modals critiques (avertissement, onboarding) : pas de fermeture par le fond
   back.onclick = e=>{ if(e.target===back && modalDismissable) closeModal(); };
   $("#modalRoot").appendChild(back);
   document.body.style.overflow="hidden";
@@ -1392,125 +1717,128 @@ function closeModal() {
 function exportJSON() {
   const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a"); a.href=url; a.download=`serein-sommeil-${todayISO()}.json`;
-  a.click(); URL.revokeObjectURL(url); toast("Données exportées 📄");
+  const a = document.createElement("a"); a.href=url; a.download=`serein-sommeil-${ymd()}.json`;
+  a.click(); URL.revokeObjectURL(url); toast("Données exportées");
 }
 
 /* =================================================================
-   ONBOARDING
+   ACCUEIL (positionnement + garde-fous). Non fermable : on ne restreint
+   pas le sommeil de quelqu'un sans avoir posé les questions de sécurité.
    ================================================================= */
-function startOnboarding() {
+function startOnboarding(redo = false) {
   const data = structuredClone(state.profile);
-  let step = 0; // 0..3
-  const STEPS = 4;
+  if (!Array.isArray(data.screening)) data.screening = null;
+  let step = 0;
+  const STEPS = 5;
+  let psyWindow = { has:null, bed:"" };
 
   function render() {
     const body = el(`<div></div>`);
     body.appendChild(el(`<div class="dots">${Array.from({length:STEPS},(_,i)=>`<span class="${i<=step?"on":""}"></span>`).join("")}</div>`));
-    if (step===0) body.appendChild(stepDiagnostic());
-    else if (step===1) body.appendChild(stepEfficiency());
-    else if (step===2) body.appendChild(stepWindow());
-    else body.appendChild(stepRules());
-    openModal(body, { dismissable: false });
+    body.appendChild([stepWelcome, stepSommeil, stepSecurite, stepLever, stepDepart][step]());
+    openModal(body, { dismissable: redo });
+  }
+  function nav(c, onNext, nextLabel = "Continuer →") {
+    const next = el(`<button class="btn primary block mt">${nextLabel}</button>`); next.onclick = onNext; c.appendChild(next);
+    if (step > 0) { const back = el(`<button class="btn ghost block mt">← Retour</button>`); back.onclick = () => { step--; render(); }; c.appendChild(back); }
   }
 
-  function stepDiagnostic() {
-    const c = el(`<div></div>`);
-    c.appendChild(el(`<h2>Le diagnostic honnête</h2>
-      <p class="small muted mt">Quelle qu'en soit la cause - stress, horaires décalés, écrans - l'insomnie chronique suit le même mécanisme : le cerveau a progressivement dissocié le lit du sommeil. Cette méthode va restaurer cette association.</p>`));
-    c.appendChild(choiceField("Depuis combien de temps tu dors mal ?", ["< 1 mois","1-3 mois","3-6 mois","> 6 mois"], data.duration, v=>data.duration=v));
-    c.appendChild(choiceField("Ton problème principal ?", ["Mal à m'endormir","Réveils nocturnes","Réveil trop tôt","Sommeil non réparateur"], data.problem, v=>data.problem=v));
-    c.appendChild(timeField("Heure de coucher habituelle", data.usualBed, v=>data.usualBed=v));
-    c.appendChild(timeField("Heure de réveil habituelle", data.usualWake, v=>{ data.usualWake=v; data.wakeAnchor=v; }));
-    c.appendChild(sliderField("Heures dormies vraiment par nuit (moyenne)", data.sleptHours, 1, 10, 0.5, "h", v=>data.sleptHours=v));
-    c.appendChild(sliderField("Temps pour t'endormir", data.latency, 0, 120, 5, "min", v=>data.latency=v));
-    c.appendChild(choiceField("Tu restes au lit même sans dormir ?", ["Oui","Non","Parfois"], data.stayInBed, v=>data.stayInBed=v));
-    c.appendChild(choiceField("Tu utilises ton téléphone dans ton lit ?", ["Oui","Non","Parfois"], data.phoneInBed, v=>data.phoneInBed=v));
-    c.appendChild(choiceField("Tu regardes l'heure la nuit ?", ["Oui","Non","Parfois"], data.watchClock, v=>data.watchClock=v));
-    const next = el(`<button class="btn primary block mt">Continuer →</button>`);
-    next.onclick=()=>{ if(!data.duration||!data.problem){toast("Réponds aux deux premières questions");return;} data.wakeAnchor=data.usualWake; step=1; render(); };
-    c.appendChild(next);
+  function stepWelcome() {
+    const c = el(`<div><div class="center" style="font-size:2.5rem" aria-hidden="true">🌙</div>
+      <h2 class="center mt">Bienvenue</h2>
+      <p class="mt">Serein Sommeil t'accompagne avec les outils de la <strong>TCC-I</strong> (thérapie cognitivo-comportementale de l'insomnie) : entre tes séances si tu es suivi·e, ou si tu pratiques en autonomie.</p>
+      <p class="small muted mt">C'est un compagnon, pas un thérapeute. Il ne pose pas de diagnostic et ne remplace pas un avis médical. Si ton sommeil t'inquiète, parles-en à ton médecin.</p></div>`);
+    nav(c, () => { step = 1; render(); }, "Commencer →");
     return c;
   }
 
-  function stepEfficiency() {
-    const inBed = diffMin(data.usualBed, data.usualWake) || 480;
-    const eff = Math.round((data.sleptHours*60) / inBed * 100);
-    const m = effMsg(eff);
-    const c = el(`<div class="center"><h2>Ton efficacité de sommeil</h2>
-      <p class="small muted mt">Le temps que tu dors vraiment, divisé par le temps que tu passes au lit.</p>
-      <div class="metric-big mt">${eff}%</div>
-      <div class="card solid mt"><p>${m.emoji} ${esc(m.txt)}</p></div></div>`);
-    const next = el(`<button class="btn primary block mt">Voir ma fenêtre de sommeil →</button>`); next.onclick=()=>{ step=2; render(); };
-    const back = el(`<button class="btn ghost block mt">← Retour</button>`); back.onclick=()=>{ step=0; render(); };
-    c.appendChild(next); c.appendChild(back);
+  function stepSommeil() {
+    const c = el(`<div><h2>Ton sommeil</h2></div>`);
+    c.appendChild(el(`<div class="mt"></div>`));
+    c.appendChild(choiceField("Depuis combien de temps tu dors mal ?", ["Moins de 3 mois","3 mois ou plus"], data.duration, v => data.duration = v));
+    c.appendChild(choiceField("Ce qui te gêne le plus", ["M'endormir","Les réveils la nuit","Me réveiller trop tôt","Un sommeil peu reposant"], data.problem, v => data.problem = v, true));
+    c.appendChild(choiceField("Es-tu suivi·e par un·e professionnel·le pour ton sommeil ?", ["Oui","Non"],
+      data.accompanied == null ? null : (data.accompanied ? "Oui" : "Non"), v => data.accompanied = v === "Oui"));
+    nav(c, () => {
+      if (!data.duration || !data.problem || data.accompanied == null) { toast("Réponds aux trois questions"); return; }
+      step = 2; render();
+    });
     return c;
   }
 
-  function stepWindow() {
-    const presHours = Math.max(data.sleptHours, 5.5);
-    data.prescribedHours = presHours;
-    const presMin = Math.round(presHours*60);
-    const bedMin = (timeToMin(data.wakeAnchor) - presMin + 1440) % 1440;
-    const bed = minToTime(bedMin);
-    const c = el(`<div><h2 class="center">Ta fenêtre de sommeil</h2>
-      <div class="card solid center mt">
-        <div class="row between" style="align-items:flex-end">
-          <div><div class="tiny muted">COUCHER</div><div class="metric-big" style="font-size:2rem">${bed}</div></div>
-          <div class="muted">→</div>
-          <div style="text-align:right"><div class="tiny muted">RÉVEIL (ancre)</div><div class="metric-big" style="font-size:2rem">${data.wakeAnchor}</div></div>
-        </div>
-        <p class="small muted mt">${fmtHM(presMin)} au lit · ton réveil ne change JAMAIS, même le week-end.</p>
-      </div>
-      <div class="card mt"><p class="small">Au début, tu vas peut-être dormir encore moins. C'est normal et temporaire. L'objectif : créer une vraie pression de sommeil pour que ton cerveau réapprenne à s'endormir vite et à dormir profondément.</p>
-      <p class="small mt"><strong>Tu n'as rien de cassé. Ton cerveau a simplement appris quelque chose qu'il peut désapprendre. C'est précisément l'objet de cette méthode.</strong></p></div>`);
-    const next = el(`<button class="btn primary block mt">Voir les 5 règles →</button>`); next.onclick=()=>{ step=3; render(); };
-    const back = el(`<button class="btn ghost block mt">← Retour</button>`); back.onclick=()=>{ step=1; render(); };
-    c.appendChild(next); c.appendChild(back);
+  function stepSecurite() {
+    const c = el(`<div><h2>Quelques questions de sécurité</h2>
+      <p class="small muted mt">Certaines situations demandent qu'une fenêtre de sommeil resserrée soit décidée avec un·e professionnel·le. Est-ce que l'une d'elles te concerne ?</p></div>`);
+    const sel = new Set(data.screening || []);
+    let none = Array.isArray(data.screening) && data.screening.length === 0;
+    const box = el(`<div class="choices col mt"></div>`);
+    const btns = [];
+    SCREEN_ITEMS.forEach(i => {
+      const b = el(`<button type="button" aria-pressed="${sel.has(i.id)}">${esc(i.label)}</button>`);
+      b.onclick = () => { if (sel.has(i.id)) sel.delete(i.id); else sel.add(i.id); none = false; sync(); };
+      btns.push([b, i.id]); box.appendChild(b);
+    });
+    const noneBtn = el(`<button type="button" aria-pressed="${none}">Rien de tout ça</button>`);
+    noneBtn.onclick = () => { none = !none; if (none) sel.clear(); sync(); };
+    box.appendChild(noneBtn);
+    function sync() { btns.forEach(([b,id]) => b.setAttribute("aria-pressed", sel.has(id))); noneBtn.setAttribute("aria-pressed", none); }
+    c.appendChild(box);
+    nav(c, () => {
+      if (!sel.size && !none) { toast("Coche ce qui te concerne, ou « Rien de tout ça »"); return; }
+      data.screening = [...sel]; step = 3; render();
+    });
     return c;
   }
 
-  function stepRules() {
-    const c = el(`<div><h2>Les 5 règles du contrôle du stimulus</h2><p class="small muted">Le cœur de la méthode. Lis-les, tu les retrouveras dans l'app.</p></div>`);
-    let shown = 0;
-    const list = el(`<div class="mt"></div>`); c.appendChild(list);
-    function reveal() {
-      if (shown < STIMULUS_RULES.length) {
-        const r = STIMULUS_RULES[shown];
-        const node = el(`<div class="rule" style="opacity:0;transform:translateY(8px);transition:all .3s var(--ease)"><span class="emoji">${r.emoji}</span><div><strong>${esc(r.title)}</strong><span class="small muted">${esc(r.body)}</span></div></div>`);
-        list.appendChild(node);
-        requestAnimationFrame(()=>{ node.style.opacity=1; node.style.transform="none"; });
-        shown++;
-        if (shown < STIMULUS_RULES.length) revealBtn.textContent=`Règle suivante (${shown+1}/5) →`;
-        else { revealBtn.remove(); c.appendChild(finishBtn); }
-      }
+  function stepLever() {
+    const c = el(`<div><h2>Ton heure de lever</h2>
+      <p class="small muted mt">L'heure à laquelle tu te lèveras tous les jours, week-end compris. Choisis-la réaliste : c'est le point d'appui de tout le reste.</p></div>`);
+    c.appendChild(el(`<div class="mt"></div>`));
+    c.appendChild(timeField("Heure de lever", data.wakeAnchor, v => data.wakeAnchor = v));
+    nav(c, () => { if (timeToMin(data.wakeAnchor) == null) { toast("Choisis une heure de lever"); return; } step = 4; render(); });
+    return c;
+  }
+
+  function stepDepart() {
+    const out = screeningOutcome(data);
+    const c = el(`<div><h2>Pour commencer</h2></div>`);
+    if (out.restriction === "pro") {
+      c.appendChild(el(`<div class="card solid mt"><p class="small">Avec ce que tu as indiqué (${esc(out.reasons.join(", "))}), une fenêtre de sommeil resserrée se décide avec un·e professionnel·le : médecin, ou psy formé·e à la TCC-I.</p>
+        <p class="small mt">L'app t'accompagne pour tout le reste : ton agenda du sommeil, ton heure de lever, les 5 règles et les outils.</p></div>`));
+      if (out.recent) c.appendChild(el(`<p class="small muted mt">Des difficultés récentes s'arrangent souvent d'elles-mêmes. Si elles durent ou te pèsent, parles-en à ton médecin.</p>`));
+    } else if (state.window) {
+      c.appendChild(el(`<div class="card solid mt"><p class="small">Ta fenêtre actuelle (${state.window.bed} → ${state.window.wake}) est conservée. Tu peux la modifier dans « Ma fenêtre ».</p></div>`));
+    } else if (data.accompanied) {
+      c.appendChild(el(`<p class="small mt">Ton/ta psy t'a-t-il ou elle déjà donné une fenêtre de sommeil (une heure de coucher) ?</p>`));
+      const bedField = timeField("Heure de coucher convenue", psyWindow.bed, v => psyWindow.bed = v);
+      bedField.hidden = psyWindow.has !== true;
+      c.appendChild(choiceField("", ["Oui","Pas encore"], psyWindow.has == null ? null : (psyWindow.has ? "Oui" : "Pas encore"),
+        v => { psyWindow.has = v === "Oui"; bedField.hidden = !psyWindow.has; }));
+      c.appendChild(bedField);
+      c.appendChild(el(`<p class="small muted">Sinon, commence par une semaine d'observation : note tes nuits chaque matin, ce sera utile pour ta prochaine séance.</p>`));
+    } else {
+      c.appendChild(el(`<div class="card solid mt"><p class="small">Pendant 7 nuits, garde tes habitudes et note simplement tes nuits chaque matin. Ensuite, l'app te proposera une fenêtre de sommeil calculée à partir de ton propre sommeil.</p></div>`));
     }
-    const revealBtn = el(`<button class="btn ghost block mt">Voir la 1ère règle →</button>`); revealBtn.onclick=reveal;
-    const finishBtn = el(`<button class="btn primary block mt">Je commence mon programme 🌙</button>`);
-    finishBtn.onclick=()=>{
+    if (out.drowsy) c.appendChild(el(`<p class="small mt">⚠️ Tu as indiqué conduire beaucoup ou avoir un travail où la somnolence est dangereuse. Avec une fenêtre resserrée, la somnolence peut augmenter : sois particulièrement vigilant·e, et ne prends pas le volant si tu te sens somnolent·e.</p>`));
+    c.appendChild(helpCard());
+    nav(c, () => {
+      if (!redo && !state.window && out.restriction !== "pro" && data.accompanied && psyWindow.has === true) {
+        const err = validateWindow(psyWindow.bed, data.wakeAnchor, "psy");
+        if (err) { toast(err, 3200); return; }
+      }
       state.profile = data;
-      state.profile.startDate = state.profile.startDate || new Date().toISOString();
-      state.onboarded = true; save();
-      closeModal(); navigate("programme");
-      toast("Bienvenue. La régularité est ta meilleure alliée.");
-    };
-    c.appendChild(revealBtn);
+      state.profile.startDate = state.profile.startDate || ymd();
+      if (state.window && state.window.wake !== data.wakeAnchor) state.window.wake = data.wakeAnchor;
+      if (!state.window && out.restriction !== "pro" && data.accompanied && psyWindow.has === true)
+        setWindow({ bed: psyWindow.bed, wake: data.wakeAnchor, setBy: "psy" });
+      state.onboarded = true; save(); Notif.reschedule();
+      closeModal(); navigate(redo ? "reglages" : "aujourdhui");
+      toast(redo ? "C'est enregistré" : "Bienvenue. On avance à ton rythme.");
+    }, redo ? "Enregistrer" : "C'est parti");
     return c;
   }
 
   render();
-}
-
-/* ============================ DISCLAIMER ============================ */
-function showDisclaimer(then) {
-  const body = el(`<div class="center"><div style="font-size:2.5rem">🌙</div>
-    <h2 class="mt">Avant de commencer</h2>
-    <p class="mt">Cette app est basée sur une méthode <strong>scientifiquement validée</strong> (CBTI).</p>
-    <p class="small muted mt">Elle ne remplace pas un suivi médical. En cas d'insomnie sévère, consulte un médecin du sommeil.</p></div>`);
-  const ok = el(`<button class="btn primary block mt">J'ai compris</button>`);
-  ok.onclick=()=>{ state.disclaimerSeen=true; save(); closeModal(); then&&then(); };
-  body.appendChild(ok);
-  openModal(body, { dismissable: false });
 }
 
 /* ============================ THEME ============================ */
@@ -1518,23 +1846,17 @@ function applyTheme() {
   document.documentElement.dataset.theme = state.theme;
   $('meta[name=theme-color]').setAttribute("content", state.theme==="dark"?"#0d1b15":"#f4f2ec");
 }
-$("#settingsBtn").onclick = ()=>navigate("reglages");
 
-/* ============================ BOOT ============================ */
+/* ==== BOOT (les tests coupent le script ici) ==== */
 function boot() {
   applyTheme();
   applyNightMode();
   setInterval(applyNightMode, 60000);
-  renderTabs();
-  navigate("programme");
+  $("#settingsBtn").onclick = () => navigate("reglages");
   $("#sosBtn").onclick = openSOS;
+  navigate("aujourdhui");
   Notif.reschedule();
-
-  if (!state.disclaimerSeen) {
-    showDisclaimer(()=>{ if(!state.onboarded) startOnboarding(); });
-  } else if (!state.onboarded) {
-    startOnboarding();
-  }
+  if (!state.onboarded) startOnboarding();
 }
 boot();
 </script>
