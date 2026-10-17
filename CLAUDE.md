@@ -50,8 +50,13 @@ Navigation : `navigate(id, param)` pousse dans l'historique (bouton retour Andro
 
 `tests/clinical-logic.test.js` charge le vrai `<script>` dans un sandbox `node:vm`, coupé au marqueur `/* ==== BOOT (les tests coupent le script ici) ==== */`. Couvre agenda, garde-fous, fenêtre de départ, titration, bilan, dates, partage, migration. Toute nouvelle fonction clinique pure → un test ici. `versions.test.js` et `assets.test.js` vérifient versions et assets du build.
 
+## CI
+
+- **GitHub Actions** (`.github/workflows/tests.yml`) : `npm ci` + `npm test` sur chaque push vers `main` et chaque PR. Node 22+ (le glob quoté de `node --test` exige Node 21+).
+- **Xcode Cloud** (même circuit que Serein et Serein Relais ; Codemagic retiré le 17/10/2026, historique : `git log -- codemagic.yaml`) : build iOS + TestFlight. `ios/App/ci_scripts/ci_post_clone.sh` est lancé automatiquement après le clone : `npm ci`, **`npm test` (build compris ; s'il échoue, rien n'arrive sur TestFlight)**, `cap sync ios`. Le script doit rester exécutable (`chmod +x`). Le workflow (déclencheur, archive, TestFlight) se règle dans Xcode ou App Store Connect, pas dans le repo. Le build number est attribué par Xcode Cloud — **ne jamais le bumper à la main**. La version affichée (`version` de `package.json`, `versionName`, `MARKETING_VERSION`) se bumpe à la main dans les fichiers vérifiés par `versions.test.js`. `ITSAppUsesNonExemptEncryption = false` dans `Info.plist` (pas de question d'export à chaque build).
+- **Android** : pas de CI, build manuel via Android Studio.
+
 ## Chantiers connus
 
-- **CI** : encore sur Codemagic (`codemagic.yaml`, `node: latest`), alors que Serein et Serein Relais sont passés à Xcode Cloud (`ios/App/ci_scripts/ci_post_clone.sh` qui lance `npm test`). À aligner avant la première soumission.
 - **Sauvegarde** : export JSON seulement, pas d'import ; le téléchargement par `a.download` est à tester sur appareil.
 - **Validation sur appareil réel** : notifications, synchro Apple Santé / Health Connect, bouton retour Android.
