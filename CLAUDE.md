@@ -46,6 +46,12 @@ Navigation : `navigate(id, param)` pousse dans l'historique (bouton retour Andro
 - **iOS** : cycle de vie UIScene (`SceneDelegate.swift` + `UIApplicationSceneManifest`), obligatoire depuis le SDK iOS 27, nécessite Capacitor ≥ 8.5.1. Même migration que Serein et Serein Relais.
 - **Android** : AGP 9.2.1 / Gradle 9.4.1 (comme Relais, nécessaires avec le JDK 25 d'Android Studio), minSdk 26 (exigé par le plugin santé). Le manifest retire avec `tools:node="remove"` toutes les permissions santé du plugin sauf `READ_SLEEP` (vérifié dans le manifest fusionné) ; pas de `SCHEDULE_EXACT_ALARM` (le plugin de notifications se rabat sur des alarmes inexactes, suffisantes pour des rappels).
 
+## Icône et logo
+
+- **Master** : `tools/icons/logo-serein-sommeil.svg`, le S de Serein (même fichier que l'icône Serein : tracé, dégradé, halo, lueur) en version nuit, S clair de lune sur fond nuit bleutée. Choisi le 17/10/2026 après plusieurs pistes (S couché, S qui se rassemble, lune dans le S…) gardées dans `design/logo/` avec le brief.
+- **Tout régénérer** : `npm run icons` = `tools/icons/make-sources.mjs` (sharp : sources `assets/`, icônes PWA `www/icons/`, petite icône de notification Android `drawable-*/ic_stat_sommeil.png`) puis `capacitor-assets generate --ios --android` (icône iOS, icônes adaptatives Android, écrans de démarrage). Les PNG sont commités ; le build ne les régénère plus (l'ancien `scripts/gen-icons.mjs`, qui dessinait un croissant à chaque build, a été retiré).
+- L'en-tête de l'app affiche `icons/icon-192.png`.
+
 ## Tests
 
 `tests/clinical-logic.test.js` charge le vrai `<script>` dans un sandbox `node:vm`, coupé au marqueur `/* ==== BOOT (les tests coupent le script ici) ==== */`. Couvre agenda, garde-fous, fenêtre de départ, titration, bilan, dates, partage, migration. Toute nouvelle fonction clinique pure → un test ici. `versions.test.js` et `assets.test.js` vérifient versions et assets du build.

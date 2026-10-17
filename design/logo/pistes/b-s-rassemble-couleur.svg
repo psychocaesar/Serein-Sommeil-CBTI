@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>Serein Sommeil</title>
+  <!-- B couleur : aperçu -->
+  <rect width="512" height="512" rx="108" fill="#0f241d"/><g fill="none" stroke-linecap="round"><path d="M 308.0 158.0 C 308.0 158.0 299.1 155.8 286.2 154.9" stroke="#d8b78a" stroke-width="44" stroke-linecap="butt"/><path d="M 268.8 154.6 C 257.7 155.0 245.6 156.8 234.4 161.3" stroke="#d8b78a" stroke-width="44" stroke-linecap="butt"/><path d="M 221.1 168.3 C 217.1 171.0 213.4 174.2 210.0 178.0 C 199.6 189.7 195.5 200.3 196.1 209.8" stroke="#d8b78a" stroke-width="44" stroke-linecap="butt"/><circle cx="308.0" cy="158.0" r="22.0" fill="#d8b78a" stroke="none"/><path d="M 199.8 222.3 C 207.0 235.6 224.1 245.7 244.0 252.0 C 282.0 264.0 312.0 284.0 306.0 322.0 C 300.0 358.0 228.0 370.0 196.0 362.0" stroke="#4db896" stroke-width="44" stroke-linecap="butt"/><circle cx="196.0" cy="362.0" r="22.0" fill="#4db896" stroke="none"/></g>
+</svg>

@@ -94,10 +94,8 @@ header.app-header {
   backdrop-filter: blur(6px);
 }
 .app-header .brand { display:flex; align-items:center; gap:.55rem; }
-.app-header .brand .logo {
-  width: 30px; height: 30px; border-radius: 9px; background: var(--gradient);
-  display:grid; place-items:center; font-size: 1rem;
-}
+/* l'icône de l'app (tools/icons/logo-serein-sommeil.svg, rendue en www/icons/) */
+.app-header .brand .logo { width: 32px; height: 32px; border-radius: 8px; display:block; }
 .app-header .brand h1 { font-size: 1.15rem; }
 .app-header .brand small { display:block; font-size:.62rem; color:var(--color-muted); font-family:var(--font-body); font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
 .icon-btn {
@@ -336,7 +334,7 @@ details.more summary { cursor:pointer; font-weight:600; font-size:.9rem; color:v
 <div id="app">
   <header class="app-header">
     <div class="brand">
-      <div class="logo">🌙</div>
+      <img class="logo" src="icons/icon-192.png" alt="" width="32" height="32">
       <div>
         <h1>Serein Sommeil</h1>
         <small>Entre les séances</small>
