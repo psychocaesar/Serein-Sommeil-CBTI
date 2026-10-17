@@ -66,7 +66,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Serein Sommeil n'enregistre rien dans Apple Santé : l'app lit seulement tes heures de coucher et de lever, si tu l'y autorises, pour pré-remplir ton agenda du sommeil.</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Serein Sommeil peut lire tes heures de coucher et de lever depuis Apple Santé pour pré-remplir ton journal de sommeil. Tu gardes toujours la main pour corriger ces valeurs.</string>
+	<string>Serein Sommeil peut lire tes heures de coucher et de lever depuis Apple Santé pour pré-remplir ton agenda du sommeil. Tu gardes toujours la main pour corriger ces valeurs.</string>
 </dict>
 </plist>
