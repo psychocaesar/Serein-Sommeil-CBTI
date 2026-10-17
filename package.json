@@ -1,14 +1,14 @@
 {
   "name": "serein-sommeil-cbti",
   "version": "1.0.0",
-  "description": "App CBTI — Thérapie cognitivo-comportementale de l'insomnie, extension de Serein",
+  "description": "Serein Sommeil — compagnon des outils de la TCC-I, extension de Serein",
   "author": "César Broche Aguilar <contact@cesarbroche.fr>",
   "license": "AGPL-3.0-or-later",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/gen-icons.mjs && node scripts/build.mjs",
-    "icons": "node scripts/gen-icons.mjs",
+    "build": "node scripts/build.mjs",
+    "icons": "node tools/icons/make-sources.mjs && npx capacitor-assets generate --ios --android",
     "pretest": "npm run build",
     "test": "node --test \"tests/*.test.js\"",
     "cap:add:android": "npx cap add android",
@@ -18,11 +18,15 @@
     "cap:open:ios": "npx cap open ios"
   },
   "dependencies": {
-    "@capacitor/android": "^8.4.0",
-    "@capacitor/cli": "^8.4.0",
-    "@capacitor/core": "^8.4.0",
-    "@capacitor/ios": "^8.4.0",
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/ios": "^8.5.3",
     "@capacitor/local-notifications": "^8.1.0",
+    "@capacitor/preferences": "^8.0.1",
     "@capgo/capacitor-health": "^8.7.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5"
   }
 }

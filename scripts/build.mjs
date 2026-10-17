@@ -33,6 +33,9 @@ const fontFace = `
 
 html = html.replace("<style>", fontFace + "\n<style>");
 
+/* ---- 2b. CSP : plus besoin d'autoriser Google Fonts une fois les polices locales ---- */
+html = html.replace(" https://fonts.googleapis.com", "").replace(" https://fonts.gstatic.com", "");
+
 /* ---- 3. Ajouter manifest + SW registration avant </head> ---- */
 const headInjection = `
 <link rel="manifest" href="manifest.json">

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <title>Serein Sommeil</title>
+  <!-- B. Clair de lune + croissant — icône de Serein (tracé, dégradé, halo, lueur identiques), couleurs de nuit -->
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#10241f"/>
+      <stop offset="100%" stop-color="#050d0a"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="50%" cy="42%" r="50%">
+      <stop offset="0%" stop-color="#c9c2a4" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#c9c2a4" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="stroke-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fbf5e6"/>
+      <stop offset="50%" stop-color="#e6dab9"/>
+      <stop offset="100%" stop-color="#bfa97c"/>
+    </linearGradient>
+    <filter id="glow-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="halo-blur">
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+  <ellipse cx="256" cy="210" rx="180" ry="160" fill="url(#halo)" filter="url(#halo-blur)"/>
+  <path d="M 308 158
+       C 308 158 242 142 210 178
+       C 178 214 206 240 244 252
+       C 282 264 312 284 306 322
+       C 300 358 228 370 196 362" fill="none" stroke="url(#stroke-grad)" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow-soft)"/>
+  <path d="M 308 158
+       C 308 158 242 142 210 178
+       C 178 214 206 240 244 252
+       C 282 264 312 284 306 322
+       C 300 358 228 370 196 362" fill="none" stroke="#fffaf0" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+  <path d="M 322.5 152.4 A 15 15 0 1 1 304.6 172.4 A 11.5 11.5 0 1 0 322.5 152.4 Z" fill="#fbf5e6" opacity="0.95"/>
+  <circle cx="196" cy="362" r="7" fill="#d8c8a0" opacity="0.5"/>
+</svg>

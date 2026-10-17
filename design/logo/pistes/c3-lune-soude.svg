@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>Serein Sommeil</title>
+  <!-- C v3 bis : la pointe basse de la lune se fond dans le trait -->
+  <path d="M 322.0 152.0 A 77.6 77.6 0 1 0 242.3 251.5 A 64.0 64.0 0 0 1 322.0 152.0 Z" fill="#000"/><g fill="none" stroke-linecap="round"><path d="M 230.1 246.7 C 234.5 248.7 239.2 250.5 244.0 252.0 C 282.0 264.0 312.0 284.0 306.0 322.0 C 300.0 358.0 228.0 370.0 196.0 362.0" stroke="#000" stroke-width="44"/></g>
+</svg>

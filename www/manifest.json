@@ -1,7 +1,7 @@
 {
-  "name": "Serein Sommeil — CBTI",
+  "name": "Serein Sommeil",
   "short_name": "Serein Sommeil",
-  "description": "Thérapie cognitivo-comportementale de l'insomnie, en français, sans compte, sans pub.",
+  "description": "Un compagnon pour les outils de la TCC-I, entre les séances ou en autonomie. En français, sans compte, sans pub.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

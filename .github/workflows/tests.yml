@@ -1,0 +1,22 @@
+# Lance la suite de tests à chaque push/PR : une régression dans la logique clinique
+# (garde-fous de la restriction, titration de Morin, agenda) ou une incohérence de
+# versions est signalée immédiatement, sans attendre le prochain build TestFlight.
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # 22+ requis : le script test passe un glob quoté à node --test,
+          # dont le support natif date de Node 21 (local : 24).
+          node-version: 22
+      - run: npm ci
+      - run: npm test

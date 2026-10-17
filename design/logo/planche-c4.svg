@@ -1,0 +1,388 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+<rect width="1600" height="900" fill="#f4f1ea"/>
+<text x="60" y="80" font-family="Helvetica" font-size="40" font-weight="700" fill="#1d2a25">Serein Sommeil — piste C retravaillée : la lune dans le S</text>
+<text x="60" y="120" font-family="Helvetica" font-size="22" fill="#5d7066">Un vrai croissant (deux arcs de cercle) forme la boucle haute du S ; le bas reste le trait de Serein.</text>
+<rect x="60" y="160" width="440" height="440" rx="24" fill="#fff"/>
+<svg x="60" y="160" width="440" height="440" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  
+  <!-- C v4. La lune dans le S : un croissant (deux arcs) forme la boucle haute du S ; coupure sur l'épine -->
+  <path d="M 318.0 154.0 A 74.0 74.0 0 1 0 232.0 244.0 A 62.9 62.9 0 0 1 318.0 154.0 Z" fill="#000"/><g fill="none" stroke-linecap="round"><path d="M 270.6 262.7 C 294.8 275.1 310.5 293.5 306.0 322.0 C 300.0 358.0 228.0 370.0 196.0 362.0" stroke="#000" stroke-width="44"/></g>
+</svg>
+
+<svg x="560" y="160" width="440" height="440" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  
+  <!-- C v4 couleur : lune clair de lune, trait vert -->
+  <rect width="512" height="512" rx="108" fill="#0f241d"/><path d="M 318.0 154.0 A 74.0 74.0 0 1 0 232.0 244.0 A 62.9 62.9 0 0 1 318.0 154.0 Z" fill="#efe6d2"/><g fill="none" stroke-linecap="round"><path d="M 270.6 262.7 C 294.8 275.1 310.5 293.5 306.0 322.0 C 300.0 358.0 228.0 370.0 196.0 362.0" stroke="#4db896" stroke-width="44"/></g>
+</svg>
+
+<svg x="1060" y="160" width="440" height="440" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  
+  <!-- C v4 couleur : lune sable, trait vert -->
+  <rect width="512" height="512" rx="108" fill="#0f241d"/><path d="M 318.0 154.0 A 74.0 74.0 0 1 0 232.0 244.0 A 62.9 62.9 0 0 1 318.0 154.0 Z" fill="#d8b78a"/><g fill="none" stroke-linecap="round"><path d="M 270.6 262.7 C 294.8 275.1 310.5 293.5 306.0 322.0 C 300.0 358.0 228.0 370.0 196.0 362.0" stroke="#4db896" stroke-width="44"/></g>
+</svg>
+
+<text x="60" y="640" font-family="Helvetica" font-size="22" fill="#1d2a25">Noir</text>
+<text x="560" y="640" font-family="Helvetica" font-size="22" fill="#1d2a25">Lune clair de lune · trait vert (recommandé)</text>
+<text x="1060" y="640" font-family="Helvetica" font-size="22" fill="#1d2a25">Lune sable · trait vert</text>
+<rect x="60" y="680" width="1480" height="190" rx="24" fill="#3d566e"/>
+<svg x="110" y="705" width="110" height="110" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="h0-bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#132e26"/>
+      <stop offset="100%" stop-color="#0a1a14"/>
+    </radialGradient>
+    <radialGradient id="h0-halo" cx="50%" cy="42%" r="50%">
+      <stop offset="0%" stop-color="#2f6f5e" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#2f6f5e" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="h0-stroke-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7ee8be"/>
+      <stop offset="50%" stop-color="#4db896"/>
+      <stop offset="100%" stop-color="#2a8a68"/>
+    </linearGradient>
+    <filter id="h0-glow-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="h0-halo-blur">
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+  </defs>
+
+  <!-- Fond arrondi -->
+  <rect width="512" height="512" rx="108" fill="url(#h0-bg)"/>
+
+  <!-- Halo de profondeur -->
+  <ellipse cx="256" cy="210" rx="180" ry="160" fill="url(#h0-halo)" filter="url(#h0-halo-blur)"/>
+
+  <!-- S principal — trait épais avec dégradé -->
+  <path
+    d="M 308 158
+       C 308 158 242 142 210 178
+       C 178 214 206 240 244 252
+       C 282 264 312 284 306 322
+       C 300 358 228 370 196 362"
+    fill="none"
+    stroke="url(#h0-stroke-grad)"
+    stroke-width="32"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    filter="url(#h0-glow-soft)"
+  />
+
+  <!-- S — filet lumineux par-dessus -->
+  <path
+    d="M 308 158
+       C 308 158 242 142 210 178
+       C 178 214 206 240 244 252
+       C 282 264 312 284 306 322
+       C 300 358 228 370 196 362"
+    fill="none"
+    stroke="#d4f5e2"
+    stroke-width="3"
+    stroke-linecap="round"
+    opacity="0.55"
+  />
+
+  <!-- Petits points aux extrémités -->
+  <circle cx="308" cy="158" r="7" fill="#7ee8be" opacity="0.7"/>
+  <circle cx="196" cy="362" r="7" fill="#4db896" opacity="0.5"/>
+
+
+</svg>
+
+<text x="165" y="845" text-anchor="middle" font-family="Helvetica" font-size="20" fill="#fff">Serein</text>
+<svg x="300" y="705" width="110" height="110" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  
+  <!-- Icône d'app : S en deux temps sur le fond de Serein. Version arrondie pour les aperçus et le site -->
+  <defs>
+    <radialGradient id="h1-bg" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="#132e26"/><stop offset="100%" stop-color="#0a1a14"/></radialGradient>
+    <radialGradient id="h1-halo" cx="50%" cy="45%" r="50%"><stop offset="0%" stop-color="#2f6f5e" stop-opacity="0.35"/><stop offset="100%" stop-color="#2f6f5e" stop-opacity="0"/></radialGradient>
+    <linearGradient id="h1-vert" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7ee8be"/><stop offset="55%" stop-color="#4db896"/><stop offset="100%" stop-color="#2a8a68"/></linearGradient>
+    <linearGradient id="h1-sable" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f0d9b5"/><stop offset="100%" stop-color="#c9a370"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="108" fill="url(#h1-bg)"/>
+  <rect width="512" height="512" rx="108" fill="url(#h1-halo)"/>
+  <g transform="translate(-47.4 -58.2) scale(1.204)" fill="none" stroke-width="40" stroke-linecap="round">
+    <path d="M 308 158 C 308.0 158.0 242.0 142.0 210.0 178.0 C 187.6 203.2 194.6 223.5 213.8 237.5" stroke="url(#h1-vert)"/>
+    <path d="M 275.3 265.2 C 296.8 277.6 310.2 295.4 306.0 322.0 C 300.0 358.0 228.0 370.0 196.0 362.0" stroke="url(#h1-sable)"/>
+  </g>
+</svg>
+
+<text x="355" y="845" text-anchor="middle" font-family="Helvetica" font-size="20" fill="#fff">Serein Relais</text>
+<svg x="490" y="705" width="110" height="110" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  
+  <!-- C v4 couleur : lune clair de lune, trait vert -->
+  <rect width="512" height="512" rx="108" fill="#0f241d"/><path d="M 318.0 154.0 A 74.0 74.0 0 1 0 232.0 244.0 A 62.9 62.9 0 0 1 318.0 154.0 Z" fill="#efe6d2"/><g fill="none" stroke-linecap="round"><path d="M 270.6 262.7 C 294.8 275.1 310.5 293.5 306.0 322.0 C 300.0 358.0 228.0 370.0 196.0 362.0" stroke="#4db896" stroke-width="44"/></g>
+</svg>
+
+<text x="545" y="845" text-anchor="middle" font-family="Helvetica" font-size="20" fill="#fff">Serein Sommeil</text>
+<svg x="760" y="728.0" width="64" height="64" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="k640-bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#132e26"/>
+      <stop offset="100%" stop-color="#0a1a14"/>
+    </radialGradient>
+    <radialGradient id="k640-halo" cx="50%" cy="42%" r="50%">
+      <stop offset="0%" stop-color="#2f6f5e" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#2f6f5e" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="k640-stroke-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7ee8be"/>
+      <stop offset="50%" stop-color="#4db896"/>
+      <stop offset="100%" stop-color="#2a8a68"/>
+    </linearGradient>
+    <filter id="k640-glow-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="k640-halo-blur">
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+  </defs>
+
+  <!-- Fond arrondi -->
+  <rect width="512" height="512" rx="108" fill="url(#k640-bg)"/>
+
+  <!-- Halo de profondeur -->
+  <ellipse cx="256" cy="210" rx="180" ry="160" fill="url(#k640-halo)" filter="url(#k640-halo-blur)"/>
+
+  <!-- S principal — trait épais avec dégradé -->
+  <path
+    d="M 308 158
+       C 308 158 242 142 210 178
+       C 178 214 206 240 244 252
+       C 282 264 312 284 306 322
+       C 300 358 228 370 196 362"
+    fill="none"
+    stroke="url(#k640-stroke-grad)"
+    stroke-width="32"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    filter="url(#k640-glow-soft)"
+  />
+
+  <!-- S — filet lumineux par-dessus -->
+  <path
+    d="M 308 158
+       C 308 158 242 142 210 178
+       C 178 214 206 240 244 252
+       C 282 264 312 284 306 322
+       C 300 358 228 370 196 362"
+    fill="none"
+    stroke="#d4f5e2"
+    stroke-width="3"
+    stroke-linecap="round"
+    opacity="0.55"
+  />
+
+  <!-- Petits points aux extrémités -->
+  <circle cx="308" cy="158" r="7" fill="#7ee8be" opacity="0.7"/>
+  <circle cx="196" cy="362" r="7" fill="#4db896" opacity="0.5"/>
+
+
+</svg>
+
+<svg x="838" y="728.0" width="64" height="64" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  
+  <!-- Icône d'app : S en deux temps sur le fond de Serein. Version arrondie pour les aperçus et le site -->
+  <defs>
+    <radialGradient id="k641-bg" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="#132e26"/><stop offset="100%" stop-color="#0a1a14"/></radialGradient>
+    <radialGradient id="k641-halo" cx="50%" cy="45%" r="50%"><stop offset="0%" stop-color="#2f6f5e" stop-opacity="0.35"/><stop offset="100%" stop-color="#2f6f5e" stop-opacity="0"/></radialGradient>
+    <linearGradient id="k641-vert" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7ee8be"/><stop offset="55%" stop-color="#4db896"/><stop offset="100%" stop-color="#2a8a68"/></linearGradient>
+    <linearGradient id="k641-sable" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f0d9b5"/><stop offset="100%" stop-color="#c9a370"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="108" fill="url(#k641-bg)"/>
+  <rect width="512" height="512" rx="108" fill="url(#k641-halo)"/>
+  <g transform="translate(-47.4 -58.2) scale(1.204)" fill="none" stroke-width="40" stroke-linecap="round">
+    <path d="M 308 158 C 308.0 158.0 242.0 142.0 210.0 178.0 C 187.6 203.2 194.6 223.5 213.8 237.5" stroke="url(#k641-vert)"/>
+    <path d="M 275.3 265.2 C 296.8 277.6 310.2 295.4 306.0 322.0 C 300.0 358.0 228.0 370.0 196.0 362.0" stroke="url(#k641-sable)"/>
+  </g>
+</svg>
+
+<svg x="916" y="728.0" width="64" height="64" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  
+  <!-- C v4 couleur : lune clair de lune, trait vert -->
+  <rect width="512" height="512" rx="108" fill="#0f241d"/><path d="M 318.0 154.0 A 74.0 74.0 0 1 0 232.0 244.0 A 62.9 62.9 0 0 1 318.0 154.0 Z" fill="#efe6d2"/><g fill="none" stroke-linecap="round"><path d="M 270.6 262.7 C 294.8 275.1 310.5 293.5 306.0 322.0 C 300.0 358.0 228.0 370.0 196.0 362.0" stroke="#4db896" stroke-width="44"/></g>
+</svg>
+
+<svg x="1034" y="744.0" width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="k320-bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#132e26"/>
+      <stop offset="100%" stop-color="#0a1a14"/>
+    </radialGradient>
+    <radialGradient id="k320-halo" cx="50%" cy="42%" r="50%">
+      <stop offset="0%" stop-color="#2f6f5e" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#2f6f5e" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="k320-stroke-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7ee8be"/>
+      <stop offset="50%" stop-color="#4db896"/>
+      <stop offset="100%" stop-color="#2a8a68"/>
+    </linearGradient>
+    <filter id="k320-glow-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="k320-halo-blur">
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+  </defs>
+
+  <!-- Fond arrondi -->
+  <rect width="512" height="512" rx="108" fill="url(#k320-bg)"/>
+
+  <!-- Halo de profondeur -->
+  <ellipse cx="256" cy="210" rx="180" ry="160" fill="url(#k320-halo)" filter="url(#k320-halo-blur)"/>
+
+  <!-- S principal — trait épais avec dégradé -->
+  <path
+    d="M 308 158
+       C 308 158 242 142 210 178
+       C 178 214 206 240 244 252
+       C 282 264 312 284 306 322
+       C 300 358 228 370 196 362"
+    fill="none"
+    stroke="url(#k320-stroke-grad)"
+    stroke-width="32"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    filter="url(#k320-glow-soft)"
+  />
+
+  <!-- S — filet lumineux par-dessus -->
+  <path
+    d="M 308 158
+       C 308 158 242 142 210 178
+       C 178 214 206 240 244 252
+       C 282 264 312 284 306 322
+       C 300 358 228 370 196 362"
+    fill="none"
+    stroke="#d4f5e2"
+    stroke-width="3"
+    stroke-linecap="round"
+    opacity="0.55"
+  />
+
+  <!-- Petits points aux extrémités -->
+  <circle cx="308" cy="158" r="7" fill="#7ee8be" opacity="0.7"/>
+  <circle cx="196" cy="362" r="7" fill="#4db896" opacity="0.5"/>
+
+
+</svg>
+
+<svg x="1080" y="744.0" width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  
+  <!-- Icône d'app : S en deux temps sur le fond de Serein. Version arrondie pour les aperçus et le site -->
+  <defs>
+    <radialGradient id="k321-bg" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="#132e26"/><stop offset="100%" stop-color="#0a1a14"/></radialGradient>
+    <radialGradient id="k321-halo" cx="50%" cy="45%" r="50%"><stop offset="0%" stop-color="#2f6f5e" stop-opacity="0.35"/><stop offset="100%" stop-color="#2f6f5e" stop-opacity="0"/></radialGradient>
+    <linearGradient id="k321-vert" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7ee8be"/><stop offset="55%" stop-color="#4db896"/><stop offset="100%" stop-color="#2a8a68"/></linearGradient>
+    <linearGradient id="k321-sable" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f0d9b5"/><stop offset="100%" stop-color="#c9a370"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="108" fill="url(#k321-bg)"/>
+  <rect width="512" height="512" rx="108" fill="url(#k321-halo)"/>
+  <g transform="translate(-47.4 -58.2) scale(1.204)" fill="none" stroke-width="40" stroke-linecap="round">
+    <path d="M 308 158 C 308.0 158.0 242.0 142.0 210.0 178.0 C 187.6 203.2 194.6 223.5 213.8 237.5" stroke="url(#k321-vert)"/>
+    <path d="M 275.3 265.2 C 296.8 277.6 310.2 295.4 306.0 322.0 C 300.0 358.0 228.0 370.0 196.0 362.0" stroke="url(#k321-sable)"/>
+  </g>
+</svg>
+
+<svg x="1126" y="744.0" width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  
+  <!-- C v4 couleur : lune clair de lune, trait vert -->
+  <rect width="512" height="512" rx="108" fill="#0f241d"/><path d="M 318.0 154.0 A 74.0 74.0 0 1 0 232.0 244.0 A 62.9 62.9 0 0 1 318.0 154.0 Z" fill="#efe6d2"/><g fill="none" stroke-linecap="round"><path d="M 270.6 262.7 C 294.8 275.1 310.5 293.5 306.0 322.0 C 300.0 358.0 228.0 370.0 196.0 362.0" stroke="#4db896" stroke-width="44"/></g>
+</svg>
+
+<svg x="1212" y="752.0" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="k160-bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#132e26"/>
+      <stop offset="100%" stop-color="#0a1a14"/>
+    </radialGradient>
+    <radialGradient id="k160-halo" cx="50%" cy="42%" r="50%">
+      <stop offset="0%" stop-color="#2f6f5e" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#2f6f5e" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="k160-stroke-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7ee8be"/>
+      <stop offset="50%" stop-color="#4db896"/>
+      <stop offset="100%" stop-color="#2a8a68"/>
+    </linearGradient>
+    <filter id="k160-glow-soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="k160-halo-blur">
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+  </defs>
+
+  <!-- Fond arrondi -->
+  <rect width="512" height="512" rx="108" fill="url(#k160-bg)"/>
+
+  <!-- Halo de profondeur -->
+  <ellipse cx="256" cy="210" rx="180" ry="160" fill="url(#k160-halo)" filter="url(#k160-halo-blur)"/>
+
+  <!-- S principal — trait épais avec dégradé -->
+  <path
+    d="M 308 158
+       C 308 158 242 142 210 178
+       C 178 214 206 240 244 252
+       C 282 264 312 284 306 322
+       C 300 358 228 370 196 362"
+    fill="none"
+    stroke="url(#k160-stroke-grad)"
+    stroke-width="32"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    filter="url(#k160-glow-soft)"
+  />
+
+  <!-- S — filet lumineux par-dessus -->
+  <path
+    d="M 308 158
+       C 308 158 242 142 210 178
+       C 178 214 206 240 244 252
+       C 282 264 312 284 306 322
+       C 300 358 228 370 196 362"
+    fill="none"
+    stroke="#d4f5e2"
+    stroke-width="3"
+    stroke-linecap="round"
+    opacity="0.55"
+  />
+
+  <!-- Petits points aux extrémités -->
+  <circle cx="308" cy="158" r="7" fill="#7ee8be" opacity="0.7"/>
+  <circle cx="196" cy="362" r="7" fill="#4db896" opacity="0.5"/>
+
+
+</svg>
+
+<svg x="1242" y="752.0" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  
+  <!-- Icône d'app : S en deux temps sur le fond de Serein. Version arrondie pour les aperçus et le site -->
+  <defs>
+    <radialGradient id="k161-bg" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="#132e26"/><stop offset="100%" stop-color="#0a1a14"/></radialGradient>
+    <radialGradient id="k161-halo" cx="50%" cy="45%" r="50%"><stop offset="0%" stop-color="#2f6f5e" stop-opacity="0.35"/><stop offset="100%" stop-color="#2f6f5e" stop-opacity="0"/></radialGradient>
+    <linearGradient id="k161-vert" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7ee8be"/><stop offset="55%" stop-color="#4db896"/><stop offset="100%" stop-color="#2a8a68"/></linearGradient>
+    <linearGradient id="k161-sable" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f0d9b5"/><stop offset="100%" stop-color="#c9a370"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="108" fill="url(#k161-bg)"/>
+  <rect width="512" height="512" rx="108" fill="url(#k161-halo)"/>
+  <g transform="translate(-47.4 -58.2) scale(1.204)" fill="none" stroke-width="40" stroke-linecap="round">
+    <path d="M 308 158 C 308.0 158.0 242.0 142.0 210.0 178.0 C 187.6 203.2 194.6 223.5 213.8 237.5" stroke="url(#k161-vert)"/>
+    <path d="M 275.3 265.2 C 296.8 277.6 310.2 295.4 306.0 322.0 C 300.0 358.0 228.0 370.0 196.0 362.0" stroke="url(#k161-sable)"/>
+  </g>
+</svg>
+
+<svg x="1272" y="752.0" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  
+  <!-- C v4 couleur : lune clair de lune, trait vert -->
+  <rect width="512" height="512" rx="108" fill="#0f241d"/><path d="M 318.0 154.0 A 74.0 74.0 0 1 0 232.0 244.0 A 62.9 62.9 0 0 1 318.0 154.0 Z" fill="#efe6d2"/><g fill="none" stroke-linecap="round"><path d="M 270.6 262.7 C 294.8 275.1 310.5 293.5 306.0 322.0 C 300.0 358.0 228.0 370.0 196.0 362.0" stroke="#4db896" stroke-width="44"/></g>
+</svg>
+
+<text x="760" y="845" font-family="Helvetica" font-size="18" fill="#dfe7ee">64 · 32 · 16 px, à côté de Serein et Relais</text>
+</svg>

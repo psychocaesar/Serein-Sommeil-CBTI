@@ -13,8 +13,8 @@
   },
   "plugins": {
     "LocalNotifications": {
-      "smallIcon": "ic_stat_moon",
-      "iconColor": "#93c9ac",
+      "smallIcon": "ic_stat_sommeil",
+      "iconColor": "#d9d3bd",
       "sound": null
     }
   }

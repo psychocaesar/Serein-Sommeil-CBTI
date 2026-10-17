@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <title>Serein Relais</title>
+  <!-- Icône d'app : S en deux temps sur le fond de Serein. Version arrondie pour les aperçus et le site -->
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="70%"><stop offset="0%" stop-color="#132e26"/><stop offset="100%" stop-color="#0a1a14"/></radialGradient>
+    <radialGradient id="halo" cx="50%" cy="45%" r="50%"><stop offset="0%" stop-color="#2f6f5e" stop-opacity="0.35"/><stop offset="100%" stop-color="#2f6f5e" stop-opacity="0"/></radialGradient>
+    <linearGradient id="vert" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7ee8be"/><stop offset="55%" stop-color="#4db896"/><stop offset="100%" stop-color="#2a8a68"/></linearGradient>
+    <linearGradient id="sable" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f0d9b5"/><stop offset="100%" stop-color="#c9a370"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="108" fill="url(#halo)"/>
+  <g transform="translate(-47.4 -58.2) scale(1.204)" fill="none" stroke-width="40" stroke-linecap="round">
+    <path d="M 308 158 C 308.0 158.0 242.0 142.0 210.0 178.0 C 187.6 203.2 194.6 223.5 213.8 237.5" stroke="url(#vert)"/>
+    <path d="M 275.3 265.2 C 296.8 277.6 310.2 295.4 306.0 322.0 C 300.0 358.0 228.0 370.0 196.0 362.0" stroke="url(#sable)"/>
+  </g>
+</svg>
